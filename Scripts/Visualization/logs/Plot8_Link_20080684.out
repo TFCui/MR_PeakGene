@@ -1,0 +1,137 @@
+===== Plot8 Fri Oct  9 23:07:12 CDT 2026
+[23:08:02] GWAS: 31 SNP-pair 行 | 27 pairs
+[23:08:02] GWAS 分页: 32 页 (link x trait)
+There were 24 warnings (use warnings() to see them)
+[23:09:16] EnsDb v86: 58613 genes | 2080628 exon/cds/utr 片段
+[23:09:24] 线宽标尺: -log10(FDR) in [1.30, 20.00]
+[23:09:24] ==================== Bn_TCL1A ====================
+[23:10:57]   [Bn_TCL1A] chr1:93179440-93179941__CCDC18: ok, 29 SNPs
+[23:10:58]   [Bn_TCL1A] chr5:96896259-96896760__ERAP1: ok, 78 SNPs
+[23:10:58]   [Bn_TCL1A] chr3:49903714-49904215__UBA7: ok, 13 SNPs
+[23:10:59]   [Bn_TCL1A] chr1:93179440-93179941__DR1: ok, 29 SNPs
+[23:10:59]   [Bn_TCL1A] chr6:28443269-28443770__ZKSCAN8: ok, 64 SNPs
+[23:11:00]   [Bn_TCL1A] chr6:28443269-28443770__ZSCAN16: ok, 66 SNPs
+[23:11:00]   [Bn_TCL1A] chr6:33313910-33314411__RGL2: ok, 97 SNPs
+[23:11:00] [Bn_TCL1A] 对账: SNP 数一致 7 / 7, lead SNP 找到 7 / 7
+[23:11:00] [Bn_TCL1A] GWAS SNP 在 QTL 中找到: caQTL 8 / 8, eQTL 8 / 8
+[23:11:00] [Bn_TCL1A] 方法 P 值缺失 (按 1 处理) 的 pair x method: 0
+[23:11:00] [Bn_TCL1A] 7 genes, 32 显著 links
+Key: <gene_id>
+   gene_id Causal SMR Causal IVW Causal Egger Causal Joint Marginal Multiomics Marginal Pseudobulk
+    <char>      <int>      <int>        <int>        <int>               <int>               <int>
+1:  CCDC18          1          1            0            1                   0                   0
+2:     DR1          1          1            0            1                   0                   0
+3:   ERAP1          2          2            2            2                   0                   1
+4:    RGL2          0          1            1            1                   0                   0
+5:    UBA7          2          2            0            2                   0                   0
+6: ZKSCAN8          0          1            2            1                   1                   0
+7: ZSCAN16          0          0            2            1                   0                   0
+[23:11:00]   plotting CCDC18 | CD
+[23:11:05]     GWAS 轨 CD chr1: 98485 SNPs (sumstats 98486 个在 bim 中, liftOver 1-to-1 98485)
+[23:11:07]   plotting ERAP1 | CD
+[23:11:11]     GWAS 轨 CD chr5: 75094 SNPs (sumstats 75094 个在 bim 中, liftOver 1-to-1 75094)
+[23:11:12]   plotting UBA7 | IBD
+[23:11:17]     GWAS 轨 IBD chr3: 80310 SNPs (sumstats 80331 个在 bim 中, liftOver 1-to-1 80310)
+[23:11:18]   plotting DR1 | CD
+[23:11:20]   plotting ZKSCAN8 | RA
+[23:11:25]     GWAS 轨 RA chr6: 75046 SNPs (sumstats 75046 个在 bim 中, liftOver 1-to-1 75046)
+[23:11:27]   plotting ZSCAN16 | RA
+[23:11:29]   plotting RGL2 | T1D
+[23:11:32]     GWAS 轨 T1D chr6: 75328 SNPs (sumstats 75328 个在 bim 中, liftOver 1-to-1 75328)
+[23:11:33]   plotting RGL2 | RA
+[23:11:36] ==================== CD4_Tn_CCR7 ====================
+[23:13:51]   [CD4_Tn_CCR7] chr1:93179440-93179941__DR1: ok, 47 SNPs
+[23:13:51]   [CD4_Tn_CCR7] chr19:1095225-1095726__POLR2E: ok, 7 SNPs
+[23:13:52]   [CD4_Tn_CCR7] chr21:42425157-42425658__TMPRSS3: ok, 5 SNPs
+[23:13:53]   [CD4_Tn_CCR7] chr11:61827740-61828241__TMEM258: ok, 30 SNPs
+[23:13:53]   [CD4_Tn_CCR7] chr13:99375239-99375740__UBAC2: ok, 138 SNPs
+[23:13:54]   [CD4_Tn_CCR7] chr1:155227359-155227860__HCN3: ok, 115 SNPs
+[23:13:55]   [CD4_Tn_CCR7] chr12:56041553-56042054__ERBB3: ok, 57 SNPs
+[23:13:55]   [CD4_Tn_CCR7] chr20:59254001-59254502__GNAS: ok, 8 SNPs
+[23:13:56]   [CD4_Tn_CCR7] chr2:43537114-43537615__PLEKHH2: ok, 116 SNPs
+[23:13:56]   [CD4_Tn_CCR7] chr11:61827740-61828241__FADS3: ok, 31 SNPs
+[23:13:56] [CD4_Tn_CCR7] 对账: SNP 数一致 10 / 10, lead SNP 找到 10 / 10
+[23:13:56] [CD4_Tn_CCR7] GWAS SNP 在 QTL 中找到: caQTL 8 / 12, eQTL 8 / 12
+[23:13:56] [CD4_Tn_CCR7] 方法 P 值缺失 (按 1 处理) 的 pair x method: 0
+[23:13:56] [CD4_Tn_CCR7] 10 genes, 140 显著 links
+Key: <gene_id>
+    gene_id Causal SMR Causal IVW Causal Egger Causal Joint Marginal Multiomics Marginal Pseudobulk
+     <char>      <int>      <int>        <int>        <int>               <int>               <int>
+ 1:     DR1          2          2            1            2                   0                   1
+ 2:   ERBB3          1          1            1            1                   0                   0
+ 3:   FADS3          4          5            1            4                   2                   1
+ 4:    GNAS          7          7            3            7                   3                   0
+ 5:    HCN3          0          2            2            2                   0                   0
+ 6: PLEKHH2          2          2            2            3                   4                   1
+ 7:  POLR2E          4          6            1            6                   1                   4
+ 8: TMEM258          4          4            2            4                   4                   1
+ 9: TMPRSS3          2          1            0            2                   0                   0
+10:   UBAC2          3          3            2            2                   6                   2
+[23:13:56]   plotting DR1 | CD
+[23:13:59]   plotting POLR2E | CD
+[23:14:01]     GWAS 轨 CD chr19: 22402 SNPs (sumstats 22402 个在 bim 中, liftOver 1-to-1 22402)
+[23:14:03]   plotting TMPRSS3 | T1D
+[23:14:04]     GWAS 轨 T1D chr21: 17027 SNPs (sumstats 17027 个在 bim 中, liftOver 1-to-1 17027)
+[23:14:06]   plotting TMEM258 | Asthma
+[23:14:09]     GWAS 轨 Asthma chr11: 60900 SNPs (sumstats 60900 个在 bim 中, liftOver 1-to-1 60900)
+[23:14:11]   plotting UBAC2 | Asthma
+[23:14:13]     GWAS 轨 Asthma chr13: 45540 SNPs (sumstats 45540 个在 bim 中, liftOver 1-to-1 45540)
+[23:14:15]   plotting HCN3 | IBD
+[23:14:17]     GWAS 轨 IBD chr1: 95730 SNPs (sumstats 95791 个在 bim 中, liftOver 1-to-1 95730)
+[23:14:18]   plotting ERBB3 | T1D
+[23:14:21]     GWAS 轨 T1D chr12: 58540 SNPs (sumstats 58540 个在 bim 中, liftOver 1-to-1 58540)
+[23:14:23]   plotting ERBB3 | Asthma
+[23:14:24]     GWAS 轨 Asthma chr12: 58530 SNPs (sumstats 58530 个在 bim 中, liftOver 1-to-1 58530)
+[23:14:26]   plotting GNAS | IBD
+[23:14:27]     GWAS 轨 IBD chr20: 30192 SNPs (sumstats 30201 个在 bim 中, liftOver 1-to-1 30192)
+[23:14:29]   plotting GNAS | CD
+[23:14:30]     GWAS 轨 CD chr20: 31055 SNPs (sumstats 31055 个在 bim 中, liftOver 1-to-1 31055)
+[23:14:32]   plotting PLEKHH2 | CD
+[23:14:35]     GWAS 轨 CD chr2: 99625 SNPs (sumstats 99625 个在 bim 中, liftOver 1-to-1 99625)
+[23:14:38]   plotting FADS3 | Asthma
+[23:14:41] ==================== CD8_Tn_CCR7 ====================
+[23:16:19]   [CD8_Tn_CCR7] chr1:93179440-93179941__DR1: ok, 43 SNPs
+[23:16:20]   [CD8_Tn_CCR7] chr21:42425157-42425658__TMPRSS3: ok, 20 SNPs
+[23:16:20]   [CD8_Tn_CCR7] chr19:1095225-1095726__POLR2E: ok, 6 SNPs
+[23:16:20]   [CD8_Tn_CCR7] chr20:59254001-59254502__GNAS: ok, 8 SNPs
+[23:16:21]   [CD8_Tn_CCR7] chr2:218287070-218287571__TMBIM1: ok, 13 SNPs
+[23:16:21]   [CD8_Tn_CCR7] chr1:93179440-93179941__CCDC18: ok, 44 SNPs
+[23:16:21]   [CD8_Tn_CCR7] chr1:155227359-155227860__THBS3: ok, 113 SNPs
+[23:16:22]   [CD8_Tn_CCR7] chr1:155227359-155227860__SYT11: ok, 112 SNPs
+[23:16:22]   [CD8_Tn_CCR7] chr12:56041553-56042054__GLS2: ok, 54 SNPs
+[23:16:22]   [CD8_Tn_CCR7] chr1:155227359-155227860__UBQLN4: ok, 114 SNPs
+[23:16:22] [CD8_Tn_CCR7] 对账: SNP 数一致 10 / 10, lead SNP 找到 10 / 10
+[23:16:22] [CD8_Tn_CCR7] GWAS SNP 在 QTL 中找到: caQTL 11 / 11, eQTL 11 / 11
+[23:16:22] [CD8_Tn_CCR7] 方法 P 值缺失 (按 1 处理) 的 pair x method: 0
+[23:16:22] [CD8_Tn_CCR7] 10 genes, 99 显著 links
+Key: <gene_id>
+    gene_id Causal SMR Causal IVW Causal Egger Causal Joint Marginal Multiomics Marginal Pseudobulk
+     <char>      <int>      <int>        <int>        <int>               <int>               <int>
+ 1:  CCDC18          2          1            0            1                   2                   1
+ 2:     DR1          3          1            1            2                   0                   2
+ 3:    GLS2          1          1            1            1                   0                   0
+ 4:    GNAS          7          7            2            7                   3                   0
+ 5:  POLR2E          2          2            3            3                   0                   2
+ 6:   SYT11          0          1            1            1                   1                   0
+ 7:   THBS3          3          2            2            2                   2                   1
+ 8:  TMBIM1          1          1            0            1                   3                   3
+ 9: TMPRSS3          2          1            0            1                   0                   0
+10:  UBQLN4          2          4            2            4                   0                   0
+[23:16:22]   plotting DR1 | CD
+[23:16:24]   plotting TMPRSS3 | T1D
+[23:16:25]   plotting POLR2E | CD
+[23:16:26]   plotting GNAS | IBD
+[23:16:27]   plotting GNAS | CD
+[23:16:29]   plotting TMBIM1 | CD
+[23:16:30]   plotting CCDC18 | CD
+[23:16:31]   plotting THBS3 | IBD
+[23:16:33]   plotting SYT11 | IBD
+[23:16:34]   plotting GLS2 | T1D
+[23:16:35]   plotting GLS2 | Asthma
+[23:16:37]   plotting UBQLN4 | IBD
+null device 
+          1 
+[23:16:39] Saved:
+  /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Fig8_Link_GWAS.pdf
+===== Plot8 OK
+===== DONE Fri Oct  9 23:16:44 CDT 2026

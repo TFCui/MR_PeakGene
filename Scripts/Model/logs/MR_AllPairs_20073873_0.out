@@ -1,0 +1,192 @@
+cell_type = Bn_TCL1A | TEST_N = 200 | cores = 36 | job = 20073873_0
+===== Bn_TCL1A | cores = 36 | chunks = 144 | TEST_N = 200 =====
+eQTL: 36768853 行 | caQTL: 1592365 行 | all_gene_peak: 3814826 pairs
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   5510878  294.4    8165032  436.1   5671702  303.0
+Vcells 446723368 3408.3  717770811 5476.2 622671828 4750.7
+pseudobulk: 335 个体 | WNN: 80 metacell
+候选 pairs:
+  QTL 共享 variant >= 3         46190 pairs | gene   9252 | peak   3010
+  WNN + pseudobulk 均可用      40389 pairs | gene   8166 | peak   2970
+*** TEST_N = 200, 只跑前 200 个 pair ***
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   4739107  253.1   12826907  685.1  12826907  685.1
+Vcells 578009625 4409.9 1073054693 8186.8 931372654 7105.9
+caQTL 子集: 9934 行 | eQTL 子集: 9291 行
+待跑 chunks: 144 / 144
+  chunk 017: 2 pairs, 0.0 min
+  chunk 010: 2 pairs, 0.0 min
+  chunk 018: 2 pairs, 0.0 min
+  chunk 013: 2 pairs, 0.0 min
+  chunk 006: 2 pairs, 0.0 min
+  chunk 009: 2 pairs, 0.0 min
+  chunk 016: 2 pairs, 0.0 min
+  chunk 021: 2 pairs, 0.0 min
+  chunk 008: 2 pairs, 0.0 min
+  chunk 028: 2 pairs, 0.0 min
+  chunk 014: 2 pairs, 0.0 min
+  chunk 026: 2 pairs, 0.0 min
+  chunk 023: 2 pairs, 0.0 min
+  chunk 030: 2 pairs, 0.0 min
+  chunk 031: 2 pairs, 0.0 min
+  chunk 029: 2 pairs, 0.0 min
+  chunk 020: 2 pairs, 0.0 min
+  chunk 027: 2 pairs, 0.0 min
+  chunk 002: 2 pairs, 0.0 min
+  chunk 015: 2 pairs, 0.0 min
+  chunk 003: 2 pairs, 0.0 min
+  chunk 005: 2 pairs, 0.0 min
+  chunk 004: 2 pairs, 0.0 min
+  chunk 012: 2 pairs, 0.0 min
+  chunk 019: 2 pairs, 0.0 min
+  chunk 022: 2 pairs, 0.0 min
+  chunk 007: 2 pairs, 0.0 min
+  chunk 001: 2 pairs, 0.0 min
+  chunk 025: 2 pairs, 0.0 min
+  chunk 032: 2 pairs, 0.0 min
+  chunk 011: 2 pairs, 0.0 min
+  chunk 035: 2 pairs, 0.0 min
+  chunk 024: 2 pairs, 0.0 min
+  chunk 033: 2 pairs, 0.0 min
+  chunk 034: 2 pairs, 0.0 min
+  chunk 036: 2 pairs, 0.0 min
+  chunk 037: 2 pairs, 0.0 min
+  chunk 038: 2 pairs, 0.0 min
+  chunk 040: 2 pairs, 0.0 min
+  chunk 041: 2 pairs, 0.0 min
+  chunk 039: 2 pairs, 0.0 min
+  chunk 043: 2 pairs, 0.0 min
+  chunk 042: 2 pairs, 0.0 min
+  chunk 044: 2 pairs, 0.0 min
+  chunk 045: 2 pairs, 0.0 min
+  chunk 047: 2 pairs, 0.0 min
+  chunk 046: 2 pairs, 0.0 min
+  chunk 048: 2 pairs, 0.0 min
+  chunk 050: 2 pairs, 0.0 min
+  chunk 049: 2 pairs, 0.0 min
+  chunk 051: 2 pairs, 0.0 min
+  chunk 057: 1 pairs, 0.0 min
+  chunk 058: 1 pairs, 0.0 min
+  chunk 053: 2 pairs, 0.0 min
+  chunk 060: 1 pairs, 0.0 min
+  chunk 052: 2 pairs, 0.0 min
+  chunk 059: 1 pairs, 0.0 min
+  chunk 055: 2 pairs, 0.0 min
+  chunk 054: 2 pairs, 0.0 min
+  chunk 061: 1 pairs, 0.0 min
+  chunk 062: 1 pairs, 0.0 min
+  chunk 063: 1 pairs, 0.0 min
+  chunk 056: 2 pairs, 0.0 min
+  chunk 065: 1 pairs, 0.0 min
+  chunk 064: 1 pairs, 0.0 min
+  chunk 066: 1 pairs, 0.0 min
+  chunk 068: 1 pairs, 0.0 min
+  chunk 069: 1 pairs, 0.0 min
+  chunk 067: 1 pairs, 0.0 min
+  chunk 071: 1 pairs, 0.0 min
+  chunk 070: 1 pairs, 0.0 min
+  chunk 072: 1 pairs, 0.0 min
+  chunk 074: 1 pairs, 0.0 min
+  chunk 073: 1 pairs, 0.0 min
+  chunk 076: 1 pairs, 0.0 min
+  chunk 075: 1 pairs, 0.0 min
+  chunk 077: 1 pairs, 0.0 min
+  chunk 078: 1 pairs, 0.0 min
+  chunk 079: 1 pairs, 0.0 min
+  chunk 081: 1 pairs, 0.0 min
+  chunk 080: 1 pairs, 0.0 min
+  chunk 084: 1 pairs, 0.0 min
+  chunk 083: 1 pairs, 0.0 min
+  chunk 082: 1 pairs, 0.0 min
+  chunk 085: 1 pairs, 0.0 min
+  chunk 087: 1 pairs, 0.0 min
+  chunk 088: 1 pairs, 0.0 min
+  chunk 086: 1 pairs, 0.0 min
+  chunk 090: 1 pairs, 0.0 min
+  chunk 089: 1 pairs, 0.0 min
+  chunk 092: 1 pairs, 0.0 min
+  chunk 093: 1 pairs, 0.0 min
+  chunk 091: 1 pairs, 0.0 min
+  chunk 094: 1 pairs, 0.0 min
+  chunk 095: 1 pairs, 0.0 min
+  chunk 096: 1 pairs, 0.0 min
+  chunk 097: 1 pairs, 0.0 min
+  chunk 098: 1 pairs, 0.0 min
+  chunk 099: 1 pairs, 0.0 min
+  chunk 100: 1 pairs, 0.0 min
+  chunk 101: 1 pairs, 0.0 min
+  chunk 102: 1 pairs, 0.0 min
+  chunk 103: 1 pairs, 0.0 min
+  chunk 104: 1 pairs, 0.0 min
+  chunk 106: 1 pairs, 0.0 min
+  chunk 105: 1 pairs, 0.0 min
+  chunk 107: 1 pairs, 0.0 min
+  chunk 108: 1 pairs, 0.0 min
+  chunk 110: 1 pairs, 0.0 min
+  chunk 111: 1 pairs, 0.0 min
+  chunk 109: 1 pairs, 0.0 min
+  chunk 112: 1 pairs, 0.0 min
+  chunk 113: 1 pairs, 0.0 min
+  chunk 114: 1 pairs, 0.0 min
+  chunk 115: 1 pairs, 0.0 min
+  chunk 116: 1 pairs, 0.0 min
+  chunk 117: 1 pairs, 0.0 min
+  chunk 118: 1 pairs, 0.0 min
+  chunk 119: 1 pairs, 0.0 min
+  chunk 120: 1 pairs, 0.0 min
+  chunk 121: 1 pairs, 0.0 min
+  chunk 122: 1 pairs, 0.0 min
+  chunk 123: 1 pairs, 0.0 min
+  chunk 124: 1 pairs, 0.0 min
+  chunk 125: 1 pairs, 0.0 min
+  chunk 126: 1 pairs, 0.0 min
+  chunk 127: 1 pairs, 0.0 min
+  chunk 128: 1 pairs, 0.0 min
+  chunk 129: 1 pairs, 0.0 min
+  chunk 130: 1 pairs, 0.0 min
+  chunk 132: 1 pairs, 0.0 min
+  chunk 131: 1 pairs, 0.0 min
+  chunk 134: 1 pairs, 0.0 min
+  chunk 133: 1 pairs, 0.0 min
+  chunk 135: 1 pairs, 0.0 min
+  chunk 136: 1 pairs, 0.0 min
+  chunk 137: 1 pairs, 0.0 min
+  chunk 138: 1 pairs, 0.0 min
+  chunk 139: 1 pairs, 0.0 min
+  chunk 141: 1 pairs, 0.0 min
+  chunk 140: 1 pairs, 0.0 min
+  chunk 143: 1 pairs, 0.0 min
+  chunk 142: 1 pairs, 0.0 min
+  chunk 144: 1 pairs, 0.0 min
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   4744246  253.4   12826907  685.1  12826907  685.1
+Vcells 577969316 4409.6 1073054693 8186.8 931372654 7105.9
+
+MR 结果: 400 行 | SMR: 200 行
+pair status 分布:
+   status     N
+   <char> <int>
+1:     ok   200
+计算 pseudobulk / WNN Spearman ...
+
+合并与过滤:
+  合并后                         200 pairs | gene     53 | peak     11
+  各基础方法 p 为 NA 的 pair 数:
+   ivw_p egger_p smr_p wnn_p pseudo_p
+   <int>   <int> <int> <int>    <int>
+1:     0       0     0     0        0
+  删除 NA 后                     200 pairs | gene     53 | peak     11
+  ivw_sigma2 <= 10 后              200 pairs | gene     53 | peak     11
+
+最终结果: 200 pairs (gene 53, peak 11)
+   method sig_p05 sig_fdr05 sig_fdr10
+   <char>   <int>     <int>     <int>
+1:    ivw      35        24        33
+2:  egger      34        22        31
+3:    smr      23         9        20
+4:    wnn      78        67        83
+5: pseudo      25        16        22
+6:    cct      31        23        33
+
+全部完成, 用时 2.0 min
+输出: /scratch/user/tfcui2025/CIMA/Claude_project/Results/MR/Bn_TCL1A_TEST200_AllPairs_results.tsv.gz

@@ -1,0 +1,6 @@
+# 白名单：先忽略所有，再放行需要备份的内容
+/*
+!/.gitignore
+!/CLAUDE.md
+!/Scripts/
+!/Results/

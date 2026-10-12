@@ -1,0 +1,23 @@
+job = 20075389_1 | cell_type = CD4_Tn_CCR7 | cores = 16 | node = c744
+[start] CD4_Tn_CCR7 | cores = 16 | 2026-10-09 16:23:39
+[GTEx] 与 validation multiome peak 重叠: 208,608 / 2,254,309
+enhancerAtlas       FANTOM5      4DGenome          GTEx        HiChIP         PCHiC 
+       208480         35854         23835        208608        183079        146605 
+[MR] pairs = 85,527, genes = 10,701
+[enhancerAtlas] genes in gold = 9,602 | genes with AUC = 3,377 | 0.1 min
+[FANTOM5] genes in gold = 6,413 | genes with AUC = 1,093 | 0.0 min
+[4DGenome] genes in gold = 5,669 | genes with AUC = 717 | 0.0 min
+[GTEx] genes in gold = 10,198 | genes with AUC = 3,121 | 0.1 min
+[HiChIP] genes in gold = 9,222 | genes with AUC = 5,452 | 0.1 min
+[PCHiC] genes in gold = 7,981 | genes with AUC = 2,477 | 0.1 min
+
+[done] 97,422 行 -> /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid4_AUC/CD4_Tn_CCR7_AUC_long.tsv.gz
+Key: <gold_standard>
+   gold_standard   cct egger   ivw pseudo   smr   wnn
+          <char> <num> <num> <num>  <num> <num> <num>
+1:      4DGenome 0.800 0.778 0.800  0.750 0.833 0.750
+2:       FANTOM5 0.750 0.760 0.750  0.750 0.778 0.786
+3:          GTEx 0.778 0.750 0.769  0.750 0.800 0.750
+4:        HiChIP 0.750 0.718 0.750  0.727 0.750 0.733
+5:         PCHiC 0.778 0.750 0.778  0.750 0.789 0.750
+6: enhancerAtlas 0.750 0.750 0.750  0.750 0.760 0.750

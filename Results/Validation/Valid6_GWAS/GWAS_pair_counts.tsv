@@ -1,0 +1,7 @@
+cell_type	category	n_pairs_MR	n_pairs_GWAS
+Bn_TCL1A	Both	1182	15
+Bn_TCL1A	MR_only	359	7
+CD4_Tn_CCR7	Both	3329	48
+CD4_Tn_CCR7	MR_only	1130	10
+CD8_Tn_CCR7	Both	1864	30
+CD8_Tn_CCR7	MR_only	609	10

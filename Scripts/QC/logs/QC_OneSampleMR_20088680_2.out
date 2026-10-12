@@ -1,0 +1,10 @@
+job = 20088680_2 | cell_type = CD8_Tn_CCR7 | cores = 4 | node = c007
+[17:05:14] CD8_Tn_CCR7: 读 caQTL / eQTL (pruned, p > 0.05)
+[17:10:25] caQTL 行 = 1484064 | eQTL 行 = 520793
+[17:10:42] pair x SNP 行 = 21833080 | pair = 692131
+[17:10:43] 等位: 一致 21833080 | 反向 0 | 不一致丢弃 0
+[17:11:54] 去重后 SNP 行: 21537822 (阈值 0.001) | 19566454 (阈值 0.01)
+     cell_type         rho       p_value neglog10p    n_snp n_pair n_pair_cor median_pair_rho dup_thr rho_dup0.01     p_dup0.01 n_snp_dup0.01
+        <char>       <num>         <num>     <num>    <num>  <int>      <int>           <num>   <num>       <num>         <num>         <num>
+1: CD8_Tn_CCR7 0.005307766 5.611146e-134  133.2509 21537822 692131     686829     0.004931139   0.001 0.005096123 1.597032e-112      19566454
+[17:12:15] 完成

@@ -1,0 +1,195 @@
+job = 20075388 | cores = 8 | node = c252
+
+==================== Bn_TCL1A (HiChIP Bcell_Q, PCHiC nB) ====================
+[bg] 3,814,826 pairs, 10,613 genes, 316,117 unique peaks; 每基因 peak 数中位 362
+[sig] FDR < 0.10, MR pairs = 40,087
+  IVW        sig = 3,977 pairs, 2,322 genes
+  Egger      sig = 3,361 pairs, 2,160 genes
+  SMR        sig = 3,534 pairs, 1,917 genes
+  CCT        sig = 4,406 pairs, 2,458 genes
+  WNN        sig = 18,179 pairs, 5,700 genes
+  Pseudobulk sig = 4,924 pairs, 2,868 genes
+    [HiChIP] 过滤后 144,430 条 loop, 7,479 基因
+    [HiChIP] liftover: 144,429 / 144,430 保留 (100.0%); 未映射 0, 跨染色体 1; 中位宽度 5001 -> 5001 bp
+    [PCHiC] 过滤后 96,396 条 link, 6,112 基因
+    [PCHiC] liftover: 96,395 / 96,396 保留 (100.0%); 未映射 0, 跨染色体 1; 中位宽度 2402 -> 2402 bp
+[db] gene_universe = 8,149
+  enhancerAtlas  7,482 genes (91.8% of universe), 中位区间数  15, 中位宽度    971 bp
+  FANTOM5        4,986 genes (61.2% of universe), 中位区间数   3, 中位宽度    322 bp
+  4DGenome       4,446 genes (54.6% of universe), 中位区间数   3, 中位宽度   1376 bp
+  GTEx           8,033 genes (98.6% of universe), 中位区间数 160, 中位宽度      1 bp
+  HiChIP         7,479 genes (91.8% of universe), 中位区间数  12, 中位宽度   5001 bp
+  PCHiC          6,112 genes (75.0% of universe), 中位区间数   8, 中位宽度   2402 bp
+[qtl] MR peaks 落在自身背景内: 40,087 / 40,087 (100.0%)
+[run] 待检验基因: 6,993
+[done] 83,053 行 -> /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid1_Hyper/Bn_TCL1A_hyper_long.tsv (13.6 min)
+Key: <method, database>
+        method      database n_gene n_p05 n_p05_qtl
+        <fctr>        <fctr>  <int> <int>     <int>
+ 1:        IVW enhancerAtlas   2122   163        13
+ 2:        IVW       FANTOM5   1469   110         4
+ 3:        IVW      4DGenome   1289    76         2
+ 4:        IVW          GTEx   2282   129         5
+ 5:        IVW        HiChIP   2126   298        21
+ 6:        IVW         PCHiC   1727    68         3
+ 7:      Egger enhancerAtlas   1985   137         5
+ 8:      Egger       FANTOM5   1336    95         3
+ 9:      Egger      4DGenome   1199    68         1
+10:      Egger          GTEx   2115    96         0
+11:      Egger        HiChIP   1980   239         9
+12:      Egger         PCHiC   1611    63         1
+13:        SMR enhancerAtlas   1740   174        16
+14:        SMR       FANTOM5   1223   102         2
+15:        SMR      4DGenome   1078    75         4
+16:        SMR          GTEx   1882   136         4
+17:        SMR        HiChIP   1765   299        21
+18:        SMR         PCHiC   1473    78         2
+19:        CCT enhancerAtlas   2249   193        12
+20:        CCT       FANTOM5   1556   116         3
+21:        CCT      4DGenome   1362    80         4
+22:        CCT          GTEx   2411   138         6
+23:        CCT        HiChIP   2257   336        23
+24:        CCT         PCHiC   1843    80         3
+25:        WNN enhancerAtlas   5254   273         2
+26:        WNN       FANTOM5   3642   234         1
+27:        WNN      4DGenome   3194   145         1
+28:        WNN          GTEx   5632   199         0
+29:        WNN        HiChIP   5238   772         3
+30:        WNN         PCHiC   4301   190         5
+31: Pseudobulk enhancerAtlas   2643   156         4
+32: Pseudobulk       FANTOM5   1827   121         2
+33: Pseudobulk      4DGenome   1611    81         3
+34: Pseudobulk          GTEx   2816   142         5
+35: Pseudobulk        HiChIP   2656   334        14
+36: Pseudobulk         PCHiC   2159    76         4
+        method      database n_gene n_p05 n_p05_qtl
+
+==================== CD4_Tn_CCR7 (HiChIP CD4_Q, PCHiC nCD4) ====================
+[bg] 5,146,441 pairs, 14,365 genes, 318,307 unique peaks; 每基因 peak 数中位 361
+[sig] FDR < 0.10, MR pairs = 85,527
+  IVW        sig = 9,569 pairs, 4,261 genes
+  Egger      sig = 7,265 pairs, 3,884 genes
+  SMR        sig = 8,627 pairs, 3,573 genes
+  CCT        sig = 10,597 pairs, 4,508 genes
+  WNN        sig = 37,181 pairs, 7,520 genes
+  Pseudobulk sig = 17,181 pairs, 6,456 genes
+    [HiChIP] 过滤后 183,100 条 loop, 9,222 基因
+    [HiChIP] liftover: 183,079 / 183,100 保留 (100.0%); 未映射 20, 跨染色体 1; 中位宽度 5001 -> 5001 bp
+    [PCHiC] 过滤后 146,614 条 link, 7,981 基因
+    [PCHiC] liftover: 146,605 / 146,614 保留 (100.0%); 未映射 6, 跨染色体 3; 中位宽度 2496 -> 2496 bp
+[db] gene_universe = 10,701
+  enhancerAtlas  9,602 genes (89.7% of universe), 中位区间数  14, 中位宽度    951 bp
+  FANTOM5        6,413 genes (59.9% of universe), 中位区间数   3, 中位宽度    321 bp
+  4DGenome       5,669 genes (53.0% of universe), 中位区间数   2, 中位宽度   1319 bp
+  GTEx           10,385 genes (97.0% of universe), 中位区间数 158, 中位宽度      1 bp
+  HiChIP         9,222 genes (86.2% of universe), 中位区间数  15, 中位宽度   5001 bp
+  PCHiC          7,981 genes (74.6% of universe), 中位区间数  10, 中位宽度   2496 bp
+[qtl] MR peaks 落在自身背景内: 85,527 / 85,527 (100.0%)
+[run] 待检验基因: 9,804
+[done] 140,465 行 -> /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid1_Hyper/CD4_Tn_CCR7_hyper_long.tsv (19.1 min)
+Key: <method, database>
+        method      database n_gene n_p05 n_p05_qtl
+        <fctr>        <fctr>  <int> <int>     <int>
+ 1:        IVW enhancerAtlas   3818   370        32
+ 2:        IVW       FANTOM5   2597   145         2
+ 3:        IVW      4DGenome   2272   101         8
+ 4:        IVW          GTEx   4129   251        25
+ 5:        IVW        HiChIP   3716   560        47
+ 6:        IVW         PCHiC   3190   188        14
+ 7:      Egger enhancerAtlas   3489   237        19
+ 8:      Egger       FANTOM5   2333    98         1
+ 9:      Egger      4DGenome   2034    84         4
+10:      Egger          GTEx   3768   181        19
+11:      Egger        HiChIP   3409   402        22
+12:      Egger         PCHiC   2891   120        12
+13:        SMR enhancerAtlas   3197   397        34
+14:        SMR       FANTOM5   2200   153         8
+15:        SMR      4DGenome   1970    98        10
+16:        SMR          GTEx   3485   286        40
+17:        SMR        HiChIP   3138   574        56
+18:        SMR         PCHiC   2707   170        28
+19:        CCT enhancerAtlas   4041   396        32
+20:        CCT       FANTOM5   2735   160         3
+21:        CCT      4DGenome   2412   114         6
+22:        CCT          GTEx   4380   275        29
+23:        CCT        HiChIP   3954   634        46
+24:        CCT         PCHiC   3377   195        19
+25:        WNN enhancerAtlas   6811   419         7
+26:        WNN       FANTOM5   4717   244         2
+27:        WNN      4DGenome   4164   158         1
+28:        WNN          GTEx   7350   311         1
+29:        WNN        HiChIP   6514  1338        19
+30:        WNN         PCHiC   5657   357         3
+31: Pseudobulk enhancerAtlas   5827   328        21
+32: Pseudobulk       FANTOM5   3892   193         0
+33: Pseudobulk      4DGenome   3433   114         4
+34: Pseudobulk          GTEx   6287   269        14
+35: Pseudobulk        HiChIP   5656   815        47
+36: Pseudobulk         PCHiC   4915   215        10
+        method      database n_gene n_p05 n_p05_qtl
+
+==================== CD8_Tn_CCR7 (HiChIP CD8_Q, PCHiC nCD8) ====================
+[bg] 4,505,251 pairs, 12,532 genes, 316,823 unique peaks; 每基因 peak 数中位 362
+[sig] FDR < 0.10, MR pairs = 50,931
+  IVW        sig = 5,722 pairs, 3,108 genes
+  Egger      sig = 4,538 pairs, 2,784 genes
+  SMR        sig = 5,220 pairs, 2,676 genes
+  CCT        sig = 6,451 pairs, 3,355 genes
+  WNN        sig = 24,114 pairs, 6,544 genes
+  Pseudobulk sig = 9,618 pairs, 4,761 genes
+    [HiChIP] 过滤后 130,850 条 loop, 8,194 基因
+    [HiChIP] liftover: 130,838 / 130,850 保留 (100.0%); 未映射 12, 跨染色体 0; 中位宽度 5001 -> 5001 bp
+    [PCHiC] 过滤后 131,102 条 link, 7,153 基因
+    [PCHiC] liftover: 131,097 / 131,102 保留 (100.0%); 未映射 2, 跨染色体 3; 中位宽度 2679 -> 2680 bp
+[db] gene_universe = 9,427
+  enhancerAtlas  8,576 genes (91.0% of universe), 中位区间数  15, 中位宽度    951 bp
+  FANTOM5        5,689 genes (60.3% of universe), 中位区间数   3, 中位宽度    322 bp
+  4DGenome       5,014 genes (53.2% of universe), 中位区间数   2, 中位宽度   1350 bp
+  GTEx           9,236 genes (98.0% of universe), 中位区间数 159, 中位宽度      1 bp
+  HiChIP         8,194 genes (86.9% of universe), 中位区间数  12, 中位宽度   5001 bp
+  PCHiC          7,153 genes (75.9% of universe), 中位区间数  10, 中位宽度   2680 bp
+[qtl] MR peaks 落在自身背景内: 50,931 / 50,931 (100.0%)
+[run] 待检验基因: 8,402
+[done] 108,847 行 -> /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid1_Hyper/CD8_Tn_CCR7_hyper_long.tsv (16.0 min)
+Key: <method, database>
+        method      database n_gene n_p05 n_p05_qtl
+        <fctr>        <fctr>  <int> <int>     <int>
+ 1:        IVW enhancerAtlas   2824   245        10
+ 2:        IVW       FANTOM5   1926   112         0
+ 3:        IVW      4DGenome   1677    76         2
+ 4:        IVW          GTEx   3040   171        12
+ 5:        IVW        HiChIP   2707   395        23
+ 6:        IVW         PCHiC   2305   125         5
+ 7:      Egger enhancerAtlas   2536   186         8
+ 8:      Egger       FANTOM5   1741    84         0
+ 9:      Egger      4DGenome   1517    64         5
+10:      Egger          GTEx   2725   123         4
+11:      Egger        HiChIP   2424   312        10
+12:      Egger         PCHiC   2048    88         1
+13:        SMR enhancerAtlas   2430   265        24
+14:        SMR       FANTOM5   1671   116         2
+15:        SMR      4DGenome   1440    78         5
+16:        SMR          GTEx   2617   176        10
+17:        SMR        HiChIP   2327   389        32
+18:        SMR         PCHiC   2021   134         7
+19:        CCT enhancerAtlas   3055   271        16
+20:        CCT       FANTOM5   2086   125         1
+21:        CCT      4DGenome   1809    81         4
+22:        CCT          GTEx   3282   193         8
+23:        CCT        HiChIP   2926   448        25
+24:        CCT         PCHiC   2496   143         7
+25:        WNN enhancerAtlas   5988   299         5
+26:        WNN       FANTOM5   4119   231         1
+27:        WNN      4DGenome   3587   131         0
+28:        WNN          GTEx   6429   231         0
+29:        WNN        HiChIP   5689  1061         4
+30:        WNN         PCHiC   5018   255         3
+31: Pseudobulk enhancerAtlas   4363   227         9
+32: Pseudobulk       FANTOM5   2967   156         1
+33: Pseudobulk      4DGenome   2571    73         0
+34: Pseudobulk          GTEx   4666   173         1
+35: Pseudobulk        HiChIP   4188   574        13
+36: Pseudobulk         PCHiC   3632   135         4
+        method      database n_gene n_p05 n_p05_qtl
+
+全部完成

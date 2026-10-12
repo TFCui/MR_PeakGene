@@ -1,0 +1,40 @@
+job = 20075343 | cores = 4 | node = c013
+显著 motif 数 (p.adjust < 0.05 & fold > 1) / 前景 peak 数:
+Key: <method>
+     method n_sig_Bn_TCL1A n_sig_CD4_Tn_CCR7 n_sig_CD8_Tn_CCR7 n_fg_Bn_TCL1A n_fg_CD4_Tn_CCR7 n_fg_CD8_Tn_CCR7
+     <fctr>          <int>             <int>             <int>         <int>            <int>            <int>
+1:      IVW             58                96                76          1870             3713             2266
+2: MR_Egger             84                92                64          1567             2881             1809
+3:      SMR             41               107                75          1989             3965             2446
+4:      CCT             52               110                79          2047             4016             2490
+5:      WNN             92               123                92          2824             5096             3225
+6:   Pseudo             73               117                74          2177             4629             2829
+Key: <celltype>
+      celltype MR_only Marginal_only Partial Shared_all6
+        <fctr>   <int>         <int>   <int>       <int>
+1:    Bn_TCL1A      23            26      42          30
+2: CD4_Tn_CCR7      16            16      38          75
+3: CD8_Tn_CCR7      12            13      37          43
+读 RNA: Bn_TCL1A 
+读 RNA: CD4_Tn_CCR7 
+读 RNA: CD8_Tn_CCR7 
+RNA 中找不到的 TF: MIX-A, DUX, MSX3, EWSR1-FLI1, RHOX11 
+
+表达的 motif 比例 (按 CT x group):
+Key: <celltype, group>
+       celltype         group n_motif n_expressed  frac
+         <fctr>        <char>   <int>       <int> <num>
+ 1:    Bn_TCL1A       MR_only      23          11 0.478
+ 2:    Bn_TCL1A Marginal_only      26           8 0.308
+ 3:    Bn_TCL1A       Partial      42          15 0.357
+ 4:    Bn_TCL1A   Shared_all6      30          14 0.467
+ 5: CD4_Tn_CCR7       MR_only      16           7 0.438
+ 6: CD4_Tn_CCR7 Marginal_only      16           7 0.438
+ 7: CD4_Tn_CCR7       Partial      38          10 0.263
+ 8: CD4_Tn_CCR7   Shared_all6      75          28 0.373
+ 9: CD8_Tn_CCR7       MR_only      12           4 0.333
+10: CD8_Tn_CCR7 Marginal_only      13           6 0.462
+11: CD8_Tn_CCR7       Partial      37          13 0.351
+12: CD8_Tn_CCR7   Shared_all6      43          20 0.465
+
+全部完成

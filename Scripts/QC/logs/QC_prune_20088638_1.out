@@ -1,0 +1,27 @@
+job = 20088638_1 | cell_type = CD4_Tn_CCR7 | cores = 8 | node = c007
+[16:54:58] CD4_Tn_CCR7: 读取 unique variant
+[16:56:46] unique variant: 4517218
+[16:57:44] 匹配到面板: 3970899 / 4517218 (87.9%)
+[16:57:53] chr1 | variants = 325157
+[16:57:55] chr2 | variants = 319372
+[16:57:56] chr3 | variants = 281111
+[16:57:57] chr4 | variants = 259034
+[16:57:58] chr5 | variants = 249173
+[16:58:00] chr6 | variants = 248402
+[16:58:01] chr7 | variants = 251424
+[16:58:02] chr8 | variants = 205844
+[16:58:03] chr9 | variants = 173833
+[16:58:04] chr10 | variants = 212350
+[16:58:05] chr11 | variants = 196364
+[16:58:06] chr12 | variants = 200615
+[16:58:07] chr13 | variants = 128857
+[16:58:07] chr14 | variants = 125535
+[16:58:08] chr15 | variants = 125696
+[16:58:10] chr16 | variants = 122980
+[16:58:10] chr17 | variants = 113280
+[16:58:11] chr18 | variants = 110719
+[16:58:11] chr19 | variants = 100764
+[16:58:12] chr20 | variants = 98585
+[16:58:12] chr21 | variants = 62130
+[16:58:13] chr22 | variants = 59674
+[16:58:16] CD4_Tn_CCR7: pruned 后保留 56098 个 variant (3970899 个进入 pruning)

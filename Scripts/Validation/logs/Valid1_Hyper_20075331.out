@@ -1,0 +1,5 @@
+job = 20075331 | cores = 8 | node = c252
+Error in download.file(url, destfile, quiet = TRUE) : 
+  cannot open URL 'https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/chromInfo.txt.gz'
+Calls: seqlevelsStyle<- ... .fetch_chrom_sizes_from_UCSC_database -> fetch_table_dump_from_UCSC -> fetch_table_from_url
+Execution halted

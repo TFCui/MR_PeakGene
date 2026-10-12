@@ -1,0 +1,10 @@
+job = 20088680_0 | cell_type = Bn_TCL1A | cores = 4 | node = c004
+[17:04:59] Bn_TCL1A: 读 caQTL / eQTL (pruned, p > 0.05)
+[17:09:33] caQTL 行 = 1420040 | eQTL 行 = 440936
+[17:09:48] pair x SNP 行 = 17496657 | pair = 551626
+[17:09:48] 等位: 一致 17496657 | 反向 0 | 不一致丢弃 0
+[17:10:48] 去重后 SNP 行: 17074938 (阈值 0.001) | 15690838 (阈值 0.01)
+   cell_type         rho      p_value neglog10p    n_snp n_pair n_pair_cor median_pair_rho dup_thr rho_dup0.01    p_dup0.01 n_snp_dup0.01
+      <char>       <num>        <num>     <num>    <num>  <int>      <int>           <num>   <num>       <num>        <num>         <num>
+1:  Bn_TCL1A 0.003536749 2.268775e-48  47.64421 17074938 551626     547452     0.003789361   0.001 0.003497148 1.223046e-43      15690838
+[17:11:07] 完成

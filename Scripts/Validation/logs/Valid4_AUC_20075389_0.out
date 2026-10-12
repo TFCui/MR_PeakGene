@@ -1,0 +1,23 @@
+job = 20075389_0 | cell_type = Bn_TCL1A | cores = 16 | node = c013
+[start] Bn_TCL1A | cores = 16 | 2026-10-09 16:24:11
+[GTEx] 与 validation multiome peak 重叠: 157,979 / 1,708,907
+enhancerAtlas       FANTOM5      4DGenome          GTEx        HiChIP         PCHiC 
+       172923         29989         19011        157979        144429         96395 
+[MR] pairs = 40,087, genes = 8,149
+[enhancerAtlas] genes in gold = 7,482 | genes with AUC = 2,169 | 0.1 min
+[FANTOM5] genes in gold = 4,986 | genes with AUC = 746 | 0.0 min
+[4DGenome] genes in gold = 4,446 | genes with AUC = 488 | 0.0 min
+[GTEx] genes in gold = 7,903 | genes with AUC = 1,656 | 0.1 min
+[HiChIP] genes in gold = 7,479 | genes with AUC = 3,337 | 0.1 min
+[PCHiC] genes in gold = 6,112 | genes with AUC = 1,147 | 0.0 min
+
+[done] 57,258 行 -> /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid4_AUC/Bn_TCL1A_AUC_long.tsv.gz
+Key: <gold_standard>
+   gold_standard   cct egger   ivw pseudo   smr   wnn
+          <char> <num> <num> <num>  <num> <num> <num>
+1:      4DGenome 0.857 0.817 0.875  0.818 0.909 0.818
+2:       FANTOM5 0.804 0.800 0.800  0.800 0.833 0.818
+3:          GTEx 0.810 0.800 0.833  0.800 0.833 0.800
+4:        HiChIP 0.800 0.750 0.800  0.792 0.833 0.786
+5:         PCHiC 0.875 0.833 0.833  0.833 0.895 0.833
+6: enhancerAtlas 0.800 0.800 0.800  0.792 0.800 0.800

@@ -1,0 +1,100 @@
+job = 20080635 | cores = 4 | node = c503
+[23:02:26] MR 强的 pairs (IVW/Egger/SMR/CCT 任一 FDR < 0.001); Both = WNN 或 Pseudo FDR < 0.05:
+Key: <cell_type>
+     cell_type  Both MR_only
+        <char> <int>   <int>
+1:    Bn_TCL1A  1182     359
+2: CD4_Tn_CCR7  3329    1130
+3: CD8_Tn_CCR7  1864     609
+[23:02:28]   AS      SNPs:  1188036 | P<1e-5:    261 | P<5e-8:   134
+[23:02:30]   CD      SNPs:  1188159 | P<1e-5:   5250 | P<5e-8:  2792
+[23:02:32]   IBD     SNPs:  1150510 | P<1e-5:   4090 | P<5e-8:  2200
+[23:02:34]   RA      SNPs:  1184671 | P<1e-5:   2121 | P<5e-8:   909
+[23:02:36]   SLE     SNPs:  1163805 | P<1e-5:    928 | P<5e-8:   298
+[23:02:38]   MS      SNPs:   450159 | P<1e-5:    258 | P<5e-8:    80
+[23:02:40]   T1D     SNPs:  1192414 | P<1e-5:   3688 | P<5e-8:  2191
+[23:02:42]   Asthma  SNPs:  1188981 | P<1e-5:   5768 | P<5e-8:  2564
+[23:02:44]   PBC     SNPs:  1018862 | P<1e-5:    753 | P<5e-8:   273
+[23:03:37] rsID -> hg19: 16453 / 16453 (100.00%)
+[23:03:38] liftOver 1-to-1 (chr1-22): 16452 / 16453 (99.99%)
+[23:03:45] 在 EAS_hg38.bim 中匹配到 (位置 + 等位基因): 90.94%
+[23:03:45] 保存缓存: /scratch/user/tfcui2025/CIMA/Claude_project/tmp/Valid6_GWAS/GWAS_SNPs_P1e-5_hg38.tsv.gz
+[23:03:45] 抽查 rs2476601 (期望 chr1:113834946):
+        rsid    chr  pos_hg19  pos_hg38  varid_hg38
+      <char> <char>     <int>     <int>      <char>
+1: rs2476601   chr1 114377568 113834946 1:113834946
+[23:03:45] GWAS SNP (P < 5e-08) per trait:
+    trait     N
+   <char> <int>
+1:     AS   134
+2: Asthma  2564
+3:     CD  2792
+4:    IBD  2200
+5:     MS    80
+6:    PBC   273
+7:     RA   909
+8:    SLE   298
+9:    T1D  2191
+[23:03:45] 重合: peaks 35 / 3642 含 P<5e-8 SNP; peak x SNP x trait 行数 52
+[23:03:45] 每个 CT x category: MR 强的 pairs / 其中 peak 含 GWAS SNP (P < 5e-08) 的 pairs:
+Key: <cell_type, category>
+     cell_type category n_pairs_MR n_pairs_GWAS
+        <char>   <char>      <int>        <int>
+1:    Bn_TCL1A     Both       1182           15
+2:    Bn_TCL1A  MR_only        359            7
+3: CD4_Tn_CCR7     Both       3329           48
+4: CD4_Tn_CCR7  MR_only       1130           10
+5: CD8_Tn_CCR7     Both       1864           30
+6: CD8_Tn_CCR7  MR_only        609           10
+[23:03:45] Focus (MR_only + GWAS P<5e-8): 37 行 | pairs 27 | genes 21 | peaks 14
+     cell_type n_pairs
+        <char>   <int>
+1: CD4_Tn_CCR7      10
+2: CD8_Tn_CCR7      10
+3:    Bn_TCL1A       7
+    trait n_rows n_pairs
+   <char>  <int>   <int>
+1:     CD     14      12
+2:    T1D      6       5
+3: Asthma      6       5
+4:    IBD      7       7
+5:     RA      4       3
+[23:03:45] 每个 pair 的摘要 (6 个方法 P 值 + 最强 GWAS SNP):
+      cell_type gene_id                  peak_id    mr_methods_sig   ivw_p egger_p   smr_p   cct_p wnn_p pseudo_p  lead_rsid lead_gwas_p     traits
+         <char>  <char>                   <char>            <char>   <num>   <num>   <num>   <num> <num>    <num>     <char>       <num>     <char>
+ 1: CD4_Tn_CCR7     DR1   chr1:93179440-93179941 IVW,Egger,SMR,CCT 7.5e-18 1.1e-08 4.8e-17 2.0e-17 0.940    0.200  rs1335679     3.9e-10         CD
+ 2: CD8_Tn_CCR7     DR1   chr1:93179440-93179941       IVW,SMR,CCT 3.8e-12 5.9e-04 2.9e-10 1.1e-11 0.940    0.650  rs1335679     3.9e-10         CD
+ 3: CD4_Tn_CCR7  POLR2E    chr19:1095225-1095726       IVW,SMR,CCT 7.3e-05 2.0e-02 7.3e-12 2.2e-11 0.940    0.013  rs1046040     1.5e-08         CD
+ 4: CD4_Tn_CCR7 TMPRSS3  chr21:42425157-42425658           SMR,CCT 9.4e-04 2.0e-01 3.6e-11 1.1e-10 0.130    0.040  rs2839508     5.7e-10        T1D
+ 5: CD8_Tn_CCR7 TMPRSS3  chr21:42425157-42425658           SMR,CCT 2.1e-03 2.3e-01 6.5e-09 2.0e-08 0.130    0.053  rs2839508     5.7e-10        T1D
+ 6: CD8_Tn_CCR7  POLR2E    chr19:1095225-1095726           SMR,CCT 7.9e-04 8.4e-02 2.5e-08 7.4e-08 0.940    0.980  rs1046040     1.5e-08         CD
+ 7: CD4_Tn_CCR7 TMEM258  chr11:61827740-61828241       IVW,SMR,CCT 3.1e-06 2.7e-01 8.9e-08 2.6e-07 0.300    0.084   rs968567     3.7e-10     Asthma
+ 8:    Bn_TCL1A  CCDC18   chr1:93179440-93179941       IVW,SMR,CCT 1.4e-04 9.8e-01 1.9e-06 5.8e-06 0.340    0.029  rs1335679     3.9e-10         CD
+ 9:    Bn_TCL1A   ERAP1   chr5:96896259-96896760 IVW,Egger,SMR,CCT 5.4e-06 3.2e-04 1.7e-05 1.2e-05 0.063    0.960  rs2549785     4.8e-11         CD
+10: CD8_Tn_CCR7    GNAS  chr20:59254001-59254502           SMR,CCT 3.8e-03 3.1e-02 2.0e-06 5.9e-06 0.590    0.050   rs259956     2.6e-09     IBD,CD
+11: CD4_Tn_CCR7   UBAC2  chr13:99375239-99375740     IVW,Egger,CCT 7.8e-07 8.5e-06 3.4e-04 2.1e-06 0.045    0.370  rs9517700     2.8e-09     Asthma
+12: CD4_Tn_CCR7    HCN3 chr1:155227359-155227860     IVW,Egger,CCT 1.4e-06 2.6e-06 6.8e-03 2.8e-06 0.190    1.000  rs2990245     7.2e-09        IBD
+13:    Bn_TCL1A    UBA7   chr3:49903714-49904215           SMR,CCT 2.9e-03 5.5e-01 7.1e-06 2.1e-05 0.970    0.070  rs2280406     3.3e-09        IBD
+14: CD8_Tn_CCR7  TMBIM1 chr2:218287070-218287571       IVW,SMR,CCT 3.2e-05 8.8e-02 6.7e-06 1.7e-05 0.170    0.078 rs13031757     2.0e-08         CD
+15: CD8_Tn_CCR7  CCDC18   chr1:93179440-93179941       IVW,SMR,CCT 5.2e-05 2.1e-01 2.4e-05 4.9e-05 0.340    0.160  rs1335679     3.9e-10         CD
+16: CD8_Tn_CCR7   THBS3 chr1:155227359-155227860       IVW,SMR,CCT 5.1e-05 4.2e-03 2.4e-05 4.9e-05 0.018    0.170  rs2990245     7.2e-09        IBD
+17: CD4_Tn_CCR7   ERBB3  chr12:56041553-56042054       IVW,SMR,CCT 4.7e-05 4.4e-03 9.7e-05 9.4e-05 0.150    0.040   rs705704     1.5e-62 T1D,Asthma
+18: CD8_Tn_CCR7   SYT11 chr1:155227359-155227860     IVW,Egger,CCT 3.5e-05 1.5e-04 6.5e-02 8.6e-05 0.810    0.270  rs2990245     7.2e-09        IBD
+19: CD8_Tn_CCR7    GLS2  chr12:56041553-56042054           IVW,CCT 7.9e-05 1.5e-03 3.5e-03 2.2e-04 0.120    0.310   rs705704     1.5e-62 T1D,Asthma
+20: CD4_Tn_CCR7    GNAS  chr20:59254001-59254502           SMR,CCT 3.3e-03 1.5e-02 7.5e-05 2.2e-04 0.590    0.290   rs259956     2.6e-09     IBD,CD
+21: CD4_Tn_CCR7 PLEKHH2   chr2:43537114-43537615       IVW,SMR,CCT 2.7e-04 2.7e-01 1.1e-04 2.3e-04 0.110    0.041 rs17031016     8.2e-10         CD
+22:    Bn_TCL1A     DR1   chr1:93179440-93179941       IVW,SMR,CCT 2.0e-04 9.0e-02 2.9e-04 3.5e-04 0.940    0.160  rs1335679     3.9e-10         CD
+23: CD8_Tn_CCR7  UBQLN4 chr1:155227359-155227860             Egger 7.4e-04 1.0e-04 7.5e-01 2.7e-04 0.200    0.340  rs2990245     7.2e-09        IBD
+24:    Bn_TCL1A ZKSCAN8   chr6:28443269-28443770             Egger 2.4e-03 1.1e-04 1.8e-01 3.1e-04 0.800    0.150  rs2531804     2.0e-09         RA
+25:    Bn_TCL1A ZSCAN16   chr6:28443269-28443770             Egger 4.0e-01 1.3e-04 7.6e-01 3.9e-04 0.920    0.560  rs2531804     2.0e-09         RA
+26:    Bn_TCL1A    RGL2   chr6:33313910-33314411               IVW 9.1e-05 2.2e-03 1.6e-02 2.6e-04 0.260    0.590  rs3130099     7.5e-54     T1D,RA
+27: CD4_Tn_CCR7   FADS3  chr11:61827740-61828241               IVW 1.3e-04 7.1e-02 3.8e-03 3.9e-04 0.980    0.280   rs968567     3.7e-10     Asthma
+      cell_type gene_id                  peak_id    mr_methods_sig   ivw_p egger_p   smr_p   cct_p wnn_p pseudo_p  lead_rsid lead_gwas_p     traits
+[23:03:45] 与旧 Valid8 对照 (pair 层): 旧 29 | 新 27 | 共有 27 | 只在旧 2 | 只在新 0
+Key: <cell_type, gene_id, peak_id>
+     cell_type gene_id                  peak_id old_traits new_traits   status
+        <char>  <char>                   <char>     <char>     <char>   <char>
+1: CD4_Tn_CCR7   CERS2 chr1:150697071-150697572        IBD       <NA> old_only
+2: CD4_Tn_CCR7   TNNT3    chr11:1852778-1853279        IBD       <NA> old_only
+[23:03:45] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid6_GWAS/GWAS_MRonly_overlap.tsv
+[23:03:45] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid6_GWAS/GWAS_pair_counts.tsv

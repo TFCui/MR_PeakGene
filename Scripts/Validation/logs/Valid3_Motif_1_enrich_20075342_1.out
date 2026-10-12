@@ -1,0 +1,35 @@
+job = 20075342_1 | cell_type = CD4_Tn_CCR7 | cores = 8 | node = c239
+[2026-10-09 15:29:54] Cell type: CD4_Tn_CCR7 | cores: 8
+[2026-10-09 15:29:55] MR pairs: 85527 | unique peaks: 5338
+[2026-10-09 15:29:55] Significant peaks (FDR < 0.1) per method:
+     IVW MR_Egger      SMR      CCT      WNN   Pseudo 
+    3713     2881     3965     4016     5096     4629 
+[2026-10-09 15:30:02] AllLinks unique peaks: 318307
+[2026-10-09 15:30:02] Loading snATAC object ...
+[2026-10-09 15:31:47] Assay: ATAC | peaks in object: 338036 | cells: 360343
+[2026-10-09 15:31:47] Accessibility: using 'count' column from meta.features
+[2026-10-09 15:32:02] JASPAR2020 motifs: 746
+[2026-10-09 15:32:08] Running AddMotifs ...
+Building motif matrix
+Finding motif positions
+Creating Motif object
+[2026-10-09 15:46:38] AddMotifs done
+[2026-10-09 15:46:38] Running FindMotifs for 6 methods on 6 cores ...
+[2026-10-09 15:46:52] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid3_Motif/CD4_Tn_CCR7_motif_enrichment.tsv.gz (4476 rows)
+     method  n_fg  n_bg GC_fg GC_bg logcnt_fg logcnt_bg n_sig
+     <fctr> <int> <int> <num> <num>     <num>     <num> <int>
+1:      IVW  3713 50000 52.99  51.0     10.10      8.91    96
+2: MR_Egger  2881 50000 53.19  51.2     10.15      8.93    92
+3:      SMR  3965 50000 52.99  50.8     10.08      8.89   107
+4:      CCT  4016 50000 52.99  51.0     10.10      8.90   110
+5:      WNN  5096 50000 52.59  50.6     10.02      8.86   123
+6:   Pseudo  4629 50000 52.79  50.8     10.08      8.90   117
+                    top5
+                  <char>
+1: SP1,SP4,SP9,SP3,KLF15
+2: SP4,SP1,SP9,SP3,KLF15
+3: SP1,SP4,SP9,SP3,KLF14
+4: SP1,SP4,SP9,SP3,KLF14
+5: SP9,SP1,SP4,SP3,KLF14
+6: SP1,SP4,SP9,SP3,KLF14
+[2026-10-09 15:46:52] Done.

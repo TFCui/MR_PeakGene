@@ -1,0 +1,35 @@
+job = 20075342_0 | cell_type = Bn_TCL1A | cores = 8 | node = c013
+[2026-10-09 15:30:11] Cell type: Bn_TCL1A | cores: 8
+[2026-10-09 15:30:12] MR pairs: 40087 | unique peaks: 2951
+[2026-10-09 15:30:12] Significant peaks (FDR < 0.1) per method:
+     IVW MR_Egger      SMR      CCT      WNN   Pseudo 
+    1870     1567     1989     2047     2824     2177 
+[2026-10-09 15:30:17] AllLinks unique peaks: 316117
+[2026-10-09 15:30:17] Loading snATAC object ...
+[2026-10-09 15:31:03] Assay: ATAC | peaks in object: 338036 | cells: 123580
+[2026-10-09 15:31:03] Accessibility: using 'count' column from meta.features
+[2026-10-09 15:32:24] JASPAR2020 motifs: 746
+[2026-10-09 15:32:31] Running AddMotifs ...
+Building motif matrix
+Finding motif positions
+Creating Motif object
+[2026-10-09 15:44:13] AddMotifs done
+[2026-10-09 15:44:13] Running FindMotifs for 6 methods on 6 cores ...
+[2026-10-09 15:44:23] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid3_Motif/Bn_TCL1A_motif_enrichment.tsv.gz (4476 rows)
+     method  n_fg  n_bg GC_fg GC_bg logcnt_fg logcnt_bg n_sig
+     <fctr> <int> <int> <num> <num>     <num>     <num> <int>
+1:      IVW  1870 50000 53.59 52.39      9.81      8.66    58
+2: MR_Egger  1567 50000 53.39 52.19      9.85      8.65    84
+3:      SMR  1989 50000 53.78 52.59      9.80      8.66    41
+4:      CCT  2047 50000 53.59 52.39      9.81      8.66    52
+5:      WNN  2824 50000 53.39 52.19      9.78      8.63    92
+6:   Pseudo  2177 50000 53.78 52.39      9.84      8.65    73
+                                             top5
+                                           <char>
+1:                SP1,KLF14,SP3,KLF2,Ptf1a(var.3)
+2: TCF4,ATF3,JDP2(var.2),Rbpjl,FOSL2::JUNB(var.2)
+3:                        SP3,SP1,KLF14,SP9,KLF11
+4:                       SP1,KLF14,KLF11,KLF2,SP3
+5:                         SP1,KLF14,SP3,KLF6,SP9
+6:                         SP1,KLF14,SP3,KLF6,SP8
+[2026-10-09 15:44:23] Done.

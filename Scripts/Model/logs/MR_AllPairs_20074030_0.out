@@ -1,0 +1,192 @@
+cell_type = Bn_TCL1A | TEST_N = 0 | cores = 36 | job = 20074030_0
+===== Bn_TCL1A | cores = 36 | chunks = 144 | TEST_N = 0 =====
+eQTL: 36768853 行 | caQTL: 1592365 行 | all_gene_peak: 3814826 pairs
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   5510875  294.4    8165032  436.1   5671699  303.0
+Vcells 446723362 3408.3  717770801 5476.2 622671822 4750.7
+pseudobulk: 335 个体 | WNN: 80 metacell
+候选 pairs:
+  QTL 共享 variant >= 3         46190 pairs | gene   9252 | peak   3010
+  WNN + pseudobulk 均可用      40389 pairs | gene   8166 | peak   2970
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   4823130  257.6   12826898  685.1  12826898  685.1
+Vcells 596679477 4552.4 1073054685 8186.8 945448841 7213.3
+caQTL 子集: 1371480 行 | eQTL 子集: 1076565 行
+待跑 chunks: 144 / 144
+  chunk 023: 281 pairs, 2.8 min
+  chunk 027: 281 pairs, 2.8 min
+  chunk 001: 281 pairs, 2.9 min
+  chunk 022: 281 pairs, 2.8 min
+  chunk 024: 281 pairs, 2.8 min
+  chunk 035: 281 pairs, 2.8 min
+  chunk 019: 281 pairs, 2.8 min
+  chunk 032: 281 pairs, 2.8 min
+  chunk 028: 281 pairs, 2.8 min
+  chunk 002: 281 pairs, 2.9 min
+  chunk 005: 281 pairs, 2.9 min
+  chunk 020: 281 pairs, 2.9 min
+  chunk 016: 281 pairs, 2.9 min
+  chunk 017: 281 pairs, 2.9 min
+  chunk 012: 281 pairs, 2.9 min
+  chunk 026: 281 pairs, 2.9 min
+  chunk 034: 281 pairs, 2.8 min
+  chunk 003: 281 pairs, 2.9 min
+  chunk 036: 281 pairs, 2.8 min
+  chunk 011: 281 pairs, 2.9 min
+  chunk 006: 281 pairs, 2.9 min
+  chunk 025: 281 pairs, 2.9 min
+  chunk 015: 281 pairs, 2.9 min
+  chunk 008: 281 pairs, 2.9 min
+  chunk 004: 281 pairs, 2.9 min
+  chunk 010: 281 pairs, 2.9 min
+  chunk 013: 281 pairs, 2.9 min
+  chunk 014: 281 pairs, 2.9 min
+  chunk 009: 281 pairs, 2.9 min
+  chunk 033: 281 pairs, 2.9 min
+  chunk 031: 281 pairs, 2.9 min
+  chunk 018: 281 pairs, 2.9 min
+  chunk 007: 281 pairs, 2.9 min
+  chunk 029: 281 pairs, 2.9 min
+  chunk 021: 281 pairs, 2.9 min
+  chunk 030: 281 pairs, 2.9 min
+  chunk 048: 281 pairs, 2.7 min
+  chunk 056: 281 pairs, 2.7 min
+  chunk 039: 281 pairs, 2.7 min
+  chunk 071: 280 pairs, 2.7 min
+  chunk 047: 281 pairs, 2.7 min
+  chunk 050: 281 pairs, 2.7 min
+  chunk 042: 281 pairs, 2.7 min
+  chunk 065: 281 pairs, 2.7 min
+  chunk 058: 281 pairs, 2.7 min
+  chunk 038: 281 pairs, 2.7 min
+  chunk 060: 281 pairs, 2.7 min
+  chunk 068: 281 pairs, 2.7 min
+  chunk 061: 281 pairs, 2.7 min
+  chunk 037: 281 pairs, 2.8 min
+  chunk 046: 281 pairs, 2.8 min
+  chunk 049: 281 pairs, 2.7 min
+  chunk 044: 281 pairs, 2.8 min
+  chunk 072: 280 pairs, 2.7 min
+  chunk 052: 281 pairs, 2.7 min
+  chunk 041: 281 pairs, 2.8 min
+  chunk 067: 281 pairs, 2.7 min
+  chunk 055: 281 pairs, 2.8 min
+  chunk 045: 281 pairs, 2.8 min
+  chunk 066: 281 pairs, 2.8 min
+  chunk 043: 281 pairs, 2.8 min
+  chunk 057: 281 pairs, 2.8 min
+  chunk 051: 281 pairs, 2.8 min
+  chunk 054: 281 pairs, 2.8 min
+  chunk 070: 280 pairs, 2.8 min
+  chunk 040: 281 pairs, 2.8 min
+  chunk 064: 281 pairs, 2.8 min
+  chunk 053: 281 pairs, 2.8 min
+  chunk 062: 281 pairs, 2.8 min
+  chunk 063: 281 pairs, 2.8 min
+  chunk 059: 281 pairs, 2.8 min
+  chunk 069: 281 pairs, 2.8 min
+  chunk 079: 280 pairs, 2.7 min
+  chunk 080: 280 pairs, 2.7 min
+  chunk 077: 280 pairs, 2.7 min
+  chunk 088: 280 pairs, 2.7 min
+  chunk 086: 280 pairs, 2.7 min
+  chunk 092: 280 pairs, 2.7 min
+  chunk 083: 280 pairs, 2.7 min
+  chunk 081: 280 pairs, 2.7 min
+  chunk 075: 280 pairs, 2.7 min
+  chunk 082: 280 pairs, 2.7 min
+  chunk 089: 280 pairs, 2.7 min
+  chunk 076: 280 pairs, 2.7 min
+  chunk 084: 280 pairs, 2.7 min
+  chunk 078: 280 pairs, 2.7 min
+  chunk 085: 280 pairs, 2.7 min
+  chunk 074: 280 pairs, 2.7 min
+  chunk 087: 280 pairs, 2.7 min
+  chunk 090: 280 pairs, 2.7 min
+  chunk 098: 280 pairs, 2.7 min
+  chunk 094: 280 pairs, 2.7 min
+  chunk 091: 280 pairs, 2.7 min
+  chunk 095: 280 pairs, 2.7 min
+  chunk 073: 280 pairs, 2.8 min
+  chunk 093: 280 pairs, 2.7 min
+  chunk 097: 280 pairs, 2.7 min
+  chunk 102: 280 pairs, 2.7 min
+  chunk 103: 280 pairs, 2.7 min
+  chunk 107: 280 pairs, 2.7 min
+  chunk 101: 280 pairs, 2.8 min
+  chunk 108: 280 pairs, 2.7 min
+  chunk 099: 280 pairs, 2.8 min
+  chunk 106: 280 pairs, 2.8 min
+  chunk 100: 280 pairs, 2.8 min
+  chunk 105: 280 pairs, 2.8 min
+  chunk 096: 280 pairs, 2.8 min
+  chunk 104: 280 pairs, 2.8 min
+  chunk 109: 280 pairs, 2.6 min
+  chunk 112: 280 pairs, 2.6 min
+  chunk 119: 280 pairs, 2.6 min
+  chunk 110: 280 pairs, 2.6 min
+  chunk 128: 280 pairs, 2.6 min
+  chunk 115: 280 pairs, 2.6 min
+  chunk 116: 280 pairs, 2.6 min
+  chunk 120: 280 pairs, 2.6 min
+  chunk 114: 280 pairs, 2.6 min
+  chunk 122: 280 pairs, 2.6 min
+  chunk 129: 280 pairs, 2.6 min
+  chunk 121: 280 pairs, 2.6 min
+  chunk 111: 280 pairs, 2.6 min
+  chunk 113: 280 pairs, 2.6 min
+  chunk 125: 280 pairs, 2.6 min
+  chunk 130: 280 pairs, 2.6 min
+  chunk 123: 280 pairs, 2.6 min
+  chunk 134: 280 pairs, 2.6 min
+  chunk 133: 280 pairs, 2.6 min
+  chunk 126: 280 pairs, 2.6 min
+  chunk 131: 280 pairs, 2.6 min
+  chunk 132: 280 pairs, 2.6 min
+  chunk 124: 280 pairs, 2.6 min
+  chunk 117: 280 pairs, 2.6 min
+  chunk 137: 280 pairs, 2.6 min
+  chunk 118: 280 pairs, 2.6 min
+  chunk 139: 280 pairs, 2.6 min
+  chunk 140: 280 pairs, 2.6 min
+  chunk 127: 280 pairs, 2.6 min
+  chunk 138: 280 pairs, 2.6 min
+  chunk 135: 280 pairs, 2.6 min
+  chunk 142: 280 pairs, 2.6 min
+  chunk 141: 280 pairs, 2.6 min
+  chunk 144: 280 pairs, 2.6 min
+  chunk 136: 280 pairs, 2.6 min
+  chunk 143: 280 pairs, 2.6 min
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   4831333  258.1   12826898  685.1  12826898  685.1
+Vcells 598326885 4564.9 1073054685 8186.8 945448841 7213.3
+
+MR 结果: 80306 行 | SMR: 40153 行
+pair status 分布:
+        status     N
+        <char> <int>
+1:          ok 40153
+2: few_snp_qtl   236
+计算 pseudobulk / WNN Spearman ...
+
+合并与过滤:
+  合并后                       40389 pairs | gene   8166 | peak   2970
+  各基础方法 p 为 NA 的 pair 数:
+   ivw_p egger_p smr_p wnn_p pseudo_p
+   <int>   <int> <int> <int>    <int>
+1:   236     236   236     0        0
+  删除 NA 后                   40153 pairs | gene   8150 | peak   2951
+  ivw_sigma2 <= 10 后            40087 pairs | gene   8149 | peak   2951
+
+最终结果: 40087 pairs (gene 8149, peak 2951)
+   method sig_p05 sig_fdr05 sig_fdr10
+   <char>   <int>     <int>     <int>
+1:    ivw    5122      2952      3977
+2:  egger    4603      2311      3361
+3:    smr    4421      2630      3534
+4:    wnn   18167     15767     18179
+5: pseudo    6229      3436      4924
+6:    cct    5529      3271      4406
+
+全部完成, 用时 13.3 min
+输出: /scratch/user/tfcui2025/CIMA/Claude_project/Results/MR/Bn_TCL1A_AllPairs_results.tsv.gz
