@@ -1,0 +1,52 @@
+job = 20159517 | N_PERM = 5000 | node = c265
+Bn_TCL1A     term 1516 | 随机 5000 次 | n_null 中位 4997 (最小 51) | FDR < 0.1: 0 | emp_p < 0.05: 147 (期望约 76) | emp_p < 0.01: 75 | emp_fdr < 0.1: 34 | p 与 emp_p 的 Spearman 0.87 | 两者都 < 0.05: 42
+CD4_Tn_CCR7  term 2288 | 随机 5000 次 | n_null 中位 5000 (最小 18) | FDR < 0.1: 0 | emp_p < 0.05: 382 (期望约 114) | emp_p < 0.01: 219 | emp_fdr < 0.1: 213 | p 与 emp_p 的 Spearman 0.88 | 两者都 < 0.05: 115
+CD8_Tn_CCR7  term 1731 | 随机 5000 次 | n_null 中位 4998 (最小 0) | FDR < 0.1: 0 | emp_p < 0.05: 361 (期望约 87) | emp_p < 0.01: 209 | emp_fdr < 0.1: 224 | p 与 emp_p 的 Spearman 0.91 | 两者都 < 0.05: 131
+Combined     term 3006 | 随机 5000 次 | n_null 中位 5000 (最小 22) | FDR < 0.1: 9 | emp_p < 0.05: 682 (期望约 150) | emp_p < 0.01: 437 | emp_fdr < 0.1: 499 | p 与 emp_p 的 Spearman 0.81 | 两者都 < 0.05: 189
+
+每组经验 P 最小的 10 个 term
+       gene_set                                                  Description setSize   NES null_NES_mean  pvalue p.adjust   emp_p emp_fdr
+         <char>                                                       <char>   <int> <num>         <num>   <num>    <num>   <num>   <num>
+ 1:    Combined                 purine-containing compound metabolic process     157  1.64          1.18 0.00010    0.087 0.00020  0.0042
+ 2:    Combined              purine-containing compound biosynthetic process      67  1.83          1.31 0.00011    0.087 0.00020  0.0042
+ 3:    Combined                                     electron transport chain      37  1.99          0.98 0.00014    0.087 0.00020  0.0042
+ 4:    Combined                          purine nucleotide metabolic process     114  1.69          1.09 0.00014    0.087 0.00020  0.0042
+ 5:    Combined                                         fatty acid transport      17  2.07          1.25 0.00029    0.097 0.00020  0.0042
+ 6:    Combined                         respiratory electron transport chain      36  1.89          0.98 0.00039    0.120 0.00020  0.0042
+ 7:    Combined                       purine nucleotide biosynthetic process      47  1.82          1.19 0.00065    0.150 0.00020  0.0042
+ 8:    Combined                     ATP synthesis coupled electron transport      30  1.88          0.95 0.00098    0.170 0.00020  0.0042
+ 9:    Combined       mitochondrial ATP synthesis coupled electron transport      30  1.88          0.95 0.00098    0.170 0.00020  0.0042
+10:    Combined                                monocarboxylic acid transport      25  1.91          1.35 0.00100    0.170 0.00020  0.0042
+11: CD8_Tn_CCR7       negative regulation of cellular component organization      60  1.78          1.05 0.00050    0.460 0.00020  0.0097
+12: CD8_Tn_CCR7                negative regulation of organelle organization      25  2.02          1.08 0.00062    0.460 0.00020  0.0097
+13: CD8_Tn_CCR7      regulation of monoatomic cation transmembrane transport      19  1.93          1.10 0.00190    0.460 0.00020  0.0097
+14: CD8_Tn_CCR7                       positive regulation of phosphorylation      32  1.84          0.95 0.00240    0.460 0.00020  0.0097
+15: CD8_Tn_CCR7          positive regulation of phosphorus metabolic process      35  1.79          0.95 0.00250    0.460 0.00020  0.0097
+16: CD8_Tn_CCR7           positive regulation of phosphate metabolic process      35  1.79          0.95 0.00250    0.460 0.00020  0.0097
+17: CD8_Tn_CCR7               positive regulation of protein phosphorylation      31  1.86          0.94 0.00280    0.460 0.00020  0.0097
+18: CD8_Tn_CCR7                                     fat cell differentiation      14  1.98          0.95 0.00310    0.460 0.00020  0.0097
+19: CD8_Tn_CCR7                             negative regulation of transport      33  1.77          1.08 0.00340    0.460 0.00020  0.0097
+20: CD8_Tn_CCR7                                      organic anion transport      40  1.66          1.05 0.00540    0.460 0.00020  0.0097
+21: CD4_Tn_CCR7                                                  cytokinesis      37  1.83          1.01 0.00130    0.370 0.00020  0.0110
+22: CD4_Tn_CCR7                  antigen receptor-mediated signaling pathway      33  1.82          1.10 0.00190    0.370 0.00020  0.0110
+23: CD4_Tn_CCR7                       purine nucleotide biosynthetic process      29  1.83          1.20 0.00220    0.370 0.00020  0.0110
+24: CD4_Tn_CCR7                          purine nucleotide metabolic process      67  1.68          1.11 0.00280    0.370 0.00020  0.0110
+25: CD4_Tn_CCR7                              nucleotide biosynthetic process      31  1.83          1.20 0.00360    0.370 0.00020  0.0110
+26: CD4_Tn_CCR7                                    oxidative phosphorylation      23  1.83          1.06 0.00410    0.370 0.00020  0.0110
+27: CD4_Tn_CCR7                                          locomotory behavior      23  1.82          1.08 0.00440    0.370 0.00020  0.0110
+28: CD4_Tn_CCR7                                 nucleotide metabolic process      74  1.58          1.12 0.00470    0.390 0.00020  0.0110
+29: CD4_Tn_CCR7                                  regulation of cell division      38  1.70          1.02 0.00510    0.400 0.00020  0.0110
+30: CD4_Tn_CCR7 negative regulation of DNA-binding transcription factor acti      21  1.82          1.19 0.00640    0.460 0.00020  0.0110
+31:    Bn_TCL1A          positive regulation of phosphorus metabolic process      28  1.68          0.78 0.02200    0.990 0.00020  0.0330
+32:    Bn_TCL1A           positive regulation of phosphate metabolic process      28  1.68          0.78 0.02200    0.990 0.00020  0.0330
+33:    Bn_TCL1A               positive regulation of protein phosphorylation      26  1.59          0.74 0.03900    0.990 0.00020  0.0330
+34:    Bn_TCL1A                       positive regulation of phosphorylation      26  1.59          0.71 0.03900    0.990 0.00020  0.0330
+35:    Bn_TCL1A                                     DNA biosynthetic process      12  1.94          0.89 0.00900    0.990 0.00020  0.0330
+36:    Bn_TCL1A                         regulation of protein polymerization      21  1.97          1.27 0.00250    0.990 0.00020  0.0330
+37:    Bn_TCL1A                                ameboidal-type cell migration      19  1.91          1.09 0.00400    0.990 0.00020  0.0330
+38:    Bn_TCL1A     negative regulation of supramolecular fiber organization      12  1.95          1.22 0.00780    0.990 0.00022  0.0330
+39:    Bn_TCL1A                                                 gastrulation      12  1.89          0.96 0.01300    0.990 0.00022  0.0330
+40:    Bn_TCL1A         regulation of protein-containing complex disassembly      10  2.22          1.31 0.00063    0.950 0.00022  0.0330
+       gene_set                                                  Description setSize   NES null_NES_mean  pvalue p.adjust   emp_p emp_fdr
+
+写出: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid7_GO/GO_GSEA_MROnly.tsv.gz | 8541 行

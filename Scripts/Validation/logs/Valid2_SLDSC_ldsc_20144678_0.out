@@ -1,0 +1,12 @@
+[Wed Oct 14 14:41:35 CDT 2026] task 0: Bn_TCL1A_MROnly
+[14:46:34] ldscore: 22 / 22
+   h2 SLE: OK
+   h2 IBD: OK
+   h2 CD: OK
+   h2 AS: OK
+   h2 MS: OK
+   h2 Asthma: OK
+   h2 RA: OK
+   h2 PBC: OK
+   h2 T1D: OK
+[Wed Oct 14 14:49:52 CDT 2026] task 0 done: 9 / 9 results

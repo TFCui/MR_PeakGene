@@ -187,7 +187,7 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 |---|---|---|
 | Valid1_Hyper | 轻 | 1 个 job（循环 3 个 CT） |
 | Valid2_SLDSC `1_prep` | 轻 | 1 个 job |
-| Valid2_SLDSC `2_ldsc` | 重（每个 annotation 22 个 LD score + 9 个 h2） | array 0–20，每个 (CT, 集合) 一个 task |
+| Valid2_SLDSC `2_ldsc` | 重（每个 annotation 22 个 LD score + 9 个 h2） | array 0–7，每个 (CT, 集合) 一个 task |
 | Valid2_SLDSC `3_merge` | 轻 | 1 个 job |
 | Valid3_Motif `1_enrich` | 重（AddMotifs，150G） | array 0–2，每个 CT 一个 task |
 | Valid3_Motif `2_summary` | 轻 | 1 个 job |
@@ -249,6 +249,8 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 - peak 坐标：`chr:start-end` 直接按数字建 GRanges（沿用旧代码）。
 - 日志检查：MR 表的 peak 落在自己 gene 的 All_GenePeak 背景中的比例（应 ≈ 100%）。
 
+**汇总口径（画图/做表时使用）**：`hyper_long.tsv` 是 gene 级结果。Fig3 对每个 CT × 方法 × 金标准，把各 gene 的 N / K / n_sig / k 分别求和，用合并计数做一次超几何检验得 **global P**，并给 **pooled fold enrichment** = (Σk / Σn_sig) / (ΣK / ΣN)（显著 peak 的金标准命中率 ÷ 候选 peak 的金标准背景率）。只用 N > 0、K > 0、n_sig > 0、N > K 的行。完整定义和读表注意见 `Scripts/Visualization.md` 3.3 节。
+
 **输出**（`Results/Validation/Valid1_Hyper/`）
 - `<CT>_hyper_long.tsv`：`gene_id, method, database, pval, pval_qtl, N, K, n_sig, k, N_qtl, K_qtl`（本模块的结果）
 - `<CT>_gold_standard.rds`：只为 Valid4_AUC 保存的金标准
@@ -259,22 +261,26 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 
 ### 3.2 Valid2_SLDSC：S-LDSC 遗传力富集
 
-**目的**：看各方法的显著 peak 是否富集免疫疾病的遗传力。
+**目的**：看 MR-Only peak（只有 MR 认为显著的 link）是否富集免疫疾病的遗传力，与全部候选 peak 比较。
 
 **分 3 步**（旧 D1 → D2 → D3）：
 
 **步骤 1 `Valid2_SLDSC_1_prep.R`（准备 annotation；1 个 job，3 个 CT 一起，22 条染色体用 mclapply 并行）**
-- 每个 CT 7 个集合：6 个方法 `*_fdr < 0.05` 的 peak（跨 gene 去重）+ `pool` = 该 CT 在 All_GenePeak 中的全部 peak。
+- 每个 CT 2 个集合（2026-10-14 起）：
+  - `MROnly`：IVW / Egger / SMR 任一 `*_fdr < 0.1`，且 WNN、Pseudo 的 `*_fdr` 都 ≥ 0.1 的 pair → 收集 peak（link 层定义，跨 gene 去重）；
+  - `pool`：该 CT 在 All_GenePeak 中的全部 peak（Fig5 的 All peaks 对照；与 FDR 无关）。
+- 另加第 4 个“细胞类型” `Combined`（2026-10-14）：MROnly = 3 个 CT 各自 MROnly peak 的并集，pool = 3 个 CT pool 的并集（hg19 id 取并集，扩展后 `reduce` 合并跨 CT 的重叠区间）。
+- 历史：2026-10-13 曾跑 6 个方法各自 `*_fdr < 0.1` 的集合 + pool，结果表暂存为 `SLDSC_6methods_FDR0.1.tsv`、`set_stats_6methods_FDR0.1.tsv`（jobs 20138809/10/11；对应的 h2 文件和 annot 已删）。2026-10-14 测试过 MR-All（MR 任一显著）和 peak 层 MR-Only，未采用。
 - hg38 → hg19 liftOver（`hg38ToHg19.over.chain`）：peak_id 起点按 0-based 处理（+1 后建 GRanges）；只保留一对一映射且在 chr1–22 上的。
 - **只做一种扩展**：每个 peak 两侧各扩 500 bp（501 bp 的 peak → 约 1501 bp），然后 `reduce` 合并重叠区间。不跑不扩展的版本。
 - 用 1000G EUR plink 的 `.bim`，为每条染色体写单列 thin-annot（SNP 落在区间内 = 1）。
-- 共 3 CT × 7 集合 = 21 个 annotation，每个 22 个文件 → `tmp/Valid2_SLDSC/annot_ld/<CT>/<CT>_<集合>.<chr>.annot.gz`。
+- 共 4（3 CT + Combined）× 2 集合 = 8 个 annotation，每个 22 个文件 → `tmp/Valid2_SLDSC/annot_ld/<CT>/<CT>_<集合>.<chr>.annot.gz`。
 - 输出 `Results/Validation/Valid2_SLDSC/set_stats.tsv`（3 个 CT 合并）：每个集合的 peak 数、bp、覆盖 SNP 数和比例、在 pool 中的比例。
 
-**步骤 2 `Valid2_SLDSC_2_ldsc_slurm.sh`（array 0–20，每个 task 一个 (CT, 集合)）**
+**步骤 2 `Valid2_SLDSC_2_ldsc_slurm.sh`（array 0–7，每个 task 一个 (CT, 集合)，task id = 2 × CT + 集合；CT 含 Combined）**
 - LD score：22 条染色体并行，`ldsc.py --l2 --bfile 1000G.EUR.QC.<chr> --ld-wind-cm 1 --annot ... --thin-annot --print-snps listHM3.txt`；22 个都在就跳过。
 - h2：9 个 GWAS 并行，`ldsc.py --h2 <gwas>.sumstats.gz --ref-ld-chr <annot>.,baselineLD. --w-ld-chr weights.hm3_noMHC. --overlap-annot --frqfile-chr 1000G.EUR.QC. --print-coefficients`；`.results` 已存在就跳过。
-- 即：每个方法的显著集合 + baselineLD 各跑一次；pool + baselineLD 单独跑一次。
+- 即：MROnly + baselineLD 跑一次；pool + baselineLD 单独跑一次（pool 的 ldscore 和 `.results` 已存在时自动跳过）。
 - 9 个 GWAS：
 
 | 标签 | 文件前缀 |
@@ -289,13 +295,13 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 | Asthma | `GBMI.Asthma` |
 | PBC | `PASS.Primary_Biliary_Cirrhosis.Cordell2015` |
 
-- 资源（沿用）：22 核、150G、12 h，`%20` 限制并发。`.results` 和 `.log` 写到 `Results/Validation/Valid2_SLDSC/h2/<CT>/`。
+- 资源（沿用）：22 核、150G、12 h。`.results` 和 `.log` 写到 `Results/Validation/Valid2_SLDSC/h2/<CT>/`。
 
 **步骤 3 `Valid2_SLDSC_3_merge.R`（合并）**
 - 读每个 `.results` 的第 1 行（`L2_0`，即我们的 annotation）：Prop._SNPs、Prop._h2(±se)、Enrichment(±se, p)、Coefficient(±se, z)。
 - 从 `.log` 解析总 h2g(±se) 和 intercept(±se)。
 - 派生：`tau_p`（双侧）、`tau_p1`（单侧，τ > 0）、`sd_annot = sqrt(p(1−p))`、`tau_star = τ · sd_annot · M / h2g`，M = 5,961,159（`tau_star_se` 同理，忽略 h2g 的不确定性）。
-- 检查缺失组合（应为 3 CT × 7 集合 × 9 GWAS = 189 行）。
+- 检查缺失组合（应为 4 CT × 2 集合 × 9 GWAS = 72 行）。
 - 输出 `Results/Validation/Valid2_SLDSC/SLDSC_all.tsv`。
 
 **与旧脚本的差异**：读新表的 `*_fdr`，不再自己过滤和重新 BH；只跑两侧各扩 500 bp 的版本（旧脚本还跑了不扩展的版本）；GWAS 从 13 个减为 9 个，标签直接用短名（IBD、RA、SLE）；旧文件名里的 `0911` 和扩展后缀去掉；不画网格图。
@@ -456,3 +462,7 @@ sbatch --dependency=afterok:$j1 QC_OneSampleMR_slurm.sh
 - 2026-10-09：写好并运行 5 个验证模块（`Scripts/Validation/`），全部完成，结果在 `Results/Validation/`；Valid1 首次运行因 `seqlevelsStyle<-` 需联网取 UCSC chromInfo 而失败，改为本地重命名染色体（1→chr1、MT→chrM）后重跑成功。
 - 2026-10-09：新增 Valid6_GWAS（移植 `G1_find_gwas.R`，GWAS 用项目的 9 个），写入 3.6 节；运行完成，27 个 MR_only + GWAS pair（旧版 29 个中保留 27 个）。
 - 2026-10-10：新增第 4 节 QC，加入 QC_OneSampleMR（移植 `Server2_ApplyMR0_Prune.sh`：null SNP 上 caQTL 与 eQTL z-score 的相关性）；三个 CT 统一用 hg38 面板做 LD pruning，去重阈值 1e-3；Update History 顺延为第 5 节。尚未写代码。
+- 2026-10-13：Fig3 改为 global test 表；Valid1 结果的汇总口径（global P、pooled fold enrichment）写入 3.1 节，完整定义见 `Scripts/Visualization.md` 3.3 节。
+- 2026-10-13：Valid2_SLDSC 显著 peak 阈值由 FDR < 0.05 改为 < 0.1 并重跑（jobs 20138809/10/11）；pool 集合沿用旧 ldscore 和 h2；0.05 版本备份为 `SLDSC_all_FDR0.05.tsv`、`set_stats_FDR0.05.tsv`。
+- 2026-10-14：Valid2_SLDSC 的集合改为 MROnly（IVW/Egger/SMR 任一 FDR < 0.1 且 WNN、Pseudo 都不显著的 link 的 peak）+ pool；6 个方法的 FDR 0.1 结果表暂存为 `SLDSC_6methods_FDR0.1.tsv`、`set_stats_6methods_FDR0.1.tsv`，FDR 0.05 备份删除。
+- 2026-10-14：Valid2_SLDSC 新增 `Combined`（3 个 CT 的 MROnly 并集 / pool 并集）一组，原 3 个 CT 的结果不变；array 0–7，`SLDSC_all.tsv` 72 行。

@@ -1,0 +1,11 @@
+job = 20159127_0 | set = Bn_TCL1A | cores = 24 | N_PERM = 24 | node = c798
+Bn_TCL1A: MR-Only link 2262, MR-Only gene 1581, tested gene (随机池) 8149, N_PERM = 24, cores = 24
+观测 score 分位数:
+   0%   25%   50%   75%  100% 
+ 1.00  1.78  2.24  3.00 16.02 
+随机池 score 分位数:
+    0%    25%    50%    75%   100% 
+  0.03   0.83   1.36   2.19 171.75 
+观测 GSEA: 1516 个 term, FDR < 0.1: 0, 28.0 s
+batch 01 (perm 1-24) 完成, 0.2 min
+Bn_TCL1A 完成, 共 0.7 min

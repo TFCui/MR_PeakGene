@@ -1,0 +1,17 @@
+job = 20145536 | cores = 22 | node = c209
+[Bn_TCL1A] liftOver 1-to-1: 314385 / 316117 | MR pairs: 40087 -> 39621 | pool peaks (hg19): 314382
+[CD4_Tn_CCR7] liftOver 1-to-1: 316511 / 318307 | MR pairs: 85527 -> 84703 | pool peaks (hg19): 316508
+[CD8_Tn_CCR7] liftOver 1-to-1: 315052 / 316823 | MR pairs: 50931 -> 50527 | pool peaks (hg19): 315049
+[Combined] MROnly peaks (hg19): 3777 | pool peaks (hg19): 316798
+annotation sets: 8 (应为 4 x 2 = 8)
+     cell_type    set       bp   n_snp    n_in n_peak in_pool prop_snp
+        <fctr> <fctr>    <num>   <int>   <int>  <int>   <num>    <num>
+1:    Bn_TCL1A MROnly 1.84e+06 9997231    8528   1271       1 0.000853
+2:    Bn_TCL1A   pool 4.12e+08 9997231 1501428 314382       1 0.150184
+3: CD4_Tn_CCR7 MROnly 3.49e+06 9997231   15967   2433       1 0.001597
+4: CD4_Tn_CCR7   pool 4.15e+08 9997231 1512942 316508       1 0.151336
+5: CD8_Tn_CCR7 MROnly 2.16e+06 9997231    9966   1498       1 0.000997
+6: CD8_Tn_CCR7   pool 4.13e+08 9997231 1504929 315049       1 0.150535
+7:    Combined MROnly 5.39e+06 9997231   24508   3777       1 0.002451
+8:    Combined   pool 4.16e+08 9997231 1514559 316798       1 0.151498
+annot files: 176 (应为 8 x 22 = 176)

@@ -1,0 +1,30 @@
+job = 20138809 | cores = 22 | node = c630
+[Bn_TCL1A] liftOver 1-to-1: 314385 / 316117 | MR pairs: 40087 -> 39621 | pool peaks (hg19): 314382
+[CD4_Tn_CCR7] liftOver 1-to-1: 316511 / 318307 | MR pairs: 85527 -> 84703 | pool peaks (hg19): 316508
+[CD8_Tn_CCR7] liftOver 1-to-1: 315052 / 316823 | MR pairs: 50931 -> 50527 | pool peaks (hg19): 315049
+annotation sets: 21 (应为 3 x 7 = 21)
+      cell_type    set       bp   n_snp    n_in n_peak in_pool prop_snp
+         <fctr> <fctr>    <num>   <int>   <int>  <int>   <num>    <num>
+ 1:    Bn_TCL1A    ivw 2.66e+06 9997231   12344   1846       1  0.00123
+ 2:    Bn_TCL1A  egger 2.23e+06 9997231   10559   1546       1  0.00106
+ 3:    Bn_TCL1A    smr 2.82e+06 9997231   13036   1965       1  0.00130
+ 4:    Bn_TCL1A    cct 2.90e+06 9997231   13494   2020       1  0.00135
+ 5:    Bn_TCL1A pseudo 3.11e+06 9997231   14501   2151       1  0.00145
+ 6:    Bn_TCL1A    wnn 4.03e+06 9997231   19004   2795       1  0.00190
+ 7:    Bn_TCL1A   pool 4.12e+08 9997231 1501428 314382       1  0.15018
+ 8: CD4_Tn_CCR7    ivw 5.19e+06 9997231   23668   3670       1  0.00237
+ 9: CD4_Tn_CCR7  egger 4.05e+06 9997231   18631   2842       1  0.00186
+10: CD4_Tn_CCR7    smr 5.55e+06 9997231   25040   3923       1  0.00250
+11: CD4_Tn_CCR7    cct 5.63e+06 9997231   25686   3970       1  0.00257
+12: CD4_Tn_CCR7 pseudo 6.53e+06 9997231   30169   4584       1  0.00302
+13: CD4_Tn_CCR7    wnn 7.18e+06 9997231   33458   5047       1  0.00335
+14: CD4_Tn_CCR7   pool 4.15e+08 9997231 1512942 316508       1  0.15134
+15: CD8_Tn_CCR7    ivw 3.20e+06 9997231   14746   2238       1  0.00148
+16: CD8_Tn_CCR7  egger 2.57e+06 9997231   12038   1783       1  0.00120
+17: CD8_Tn_CCR7    smr 3.46e+06 9997231   15881   2419       1  0.00159
+18: CD8_Tn_CCR7    cct 3.52e+06 9997231   16273   2462       1  0.00163
+19: CD8_Tn_CCR7 pseudo 4.03e+06 9997231   18811   2801       1  0.00188
+20: CD8_Tn_CCR7    wnn 4.59e+06 9997231   21654   3195       1  0.00217
+21: CD8_Tn_CCR7   pool 4.13e+08 9997231 1504929 315049       1  0.15053
+      cell_type    set       bp   n_snp    n_in n_peak in_pool prop_snp
+annot files: 462 (应为 21 x 22 = 462)

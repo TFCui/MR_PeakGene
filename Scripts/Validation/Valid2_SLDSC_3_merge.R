@@ -1,7 +1,7 @@
 # 2026-10-09
 # Valid2_SLDSC 步骤 3: 合并 S-LDSC 结果 (流程见 Scripts/Pipeline.md 3.2)
 # 移植自 Scripts_reference/D3_merge_plot.R 的 Part 1 (不画图)
-# 每行 = CT x 集合 (6 methods + pool) x GWAS; 第 1 行 (L2_0) = 我们的 annotation
+# 每行 = CT (3 个 + Combined) x 集合 (MROnly + pool; 2026-10-14 起) x GWAS; 第 1 行 (L2_0) = 我们的 annotation
 # 输出: Results/Validation/Valid2_SLDSC/SLDSC_all.tsv
 
 suppressPackageStartupMessages(library(data.table))
@@ -12,8 +12,8 @@ OUT_DIR <- file.path(PROJ, "Results/Validation/Valid2_SLDSC")
 H2_DIR  <- file.path(OUT_DIR, "h2")
 
 M_TOT  <- 5961159                                                 # 1000G EUR MAF >= 5% SNP 数
-CELLS  <- c("Bn_TCL1A", "CD4_Tn_CCR7", "CD8_Tn_CCR7")
-SETS   <- c("ivw", "egger", "smr", "cct", "pseudo", "wnn", "pool")
+CELLS  <- c("Bn_TCL1A", "CD4_Tn_CCR7", "CD8_Tn_CCR7", "Combined")
+SETS   <- c("MROnly", "pool")
 TRAITS <- c("AS", "CD", "IBD", "RA", "SLE", "MS", "T1D", "Asthma", "PBC")
 
 # log: 总 h2 和 intercept
@@ -42,7 +42,7 @@ read_one <- function(ct, set, trait) {
 
 full <- CJ(cell_type = CELLS, set = SETS, trait = TRAITS, sorted = FALSE)
 res  <- rbindlist(lapply(seq_len(nrow(full)), function(i) read_one(full$cell_type[i], full$set[i], full$trait[i])))
-cat("results:", nrow(res), "(应为 3 CT x 7 集合 x 9 GWAS = 189)\n")
+cat("results:", nrow(res), "(应为 4 CT x 2 集合 x 9 GWAS = 72)\n")
 stopifnot(all(res$category == "L2_0"))
 res[, category := NULL]
 
@@ -56,7 +56,7 @@ res[, tau_p1 := pnorm(-tau_z)]                                    # 单侧, H1: 
 res[, sd_annot    := sqrt(prop_snp * (1 - prop_snp))]
 res[, tau_star    := tau    * sd_annot * M_TOT / h2g]
 res[, tau_star_se := tau_se * sd_annot * M_TOT / h2g]             # 忽略 h2g 的不确定性
-res[, annot := fifelse(set == "pool", "All", "Sig")]
+res[, annot := fifelse(set == "pool", "All", "MROnly")]
 
 res[, `:=`(cell_type = factor(cell_type, levels = CELLS), set = factor(set, levels = SETS), trait = factor(trait, levels = TRAITS))]
 setcolorder(res, c("cell_type", "set", "annot", "trait"))

@@ -5,11 +5,11 @@
 #SBATCH --cpus-per-task=22
 #SBATCH --mem=150G
 #SBATCH --time=12:00:00
-#SBATCH --array=0-20%20
+#SBATCH --array=0-7
 #SBATCH --output=/scratch/user/tfcui2025/CIMA/Claude_project/Scripts/Validation/logs/%x_%A_%a.out
 
 # Valid2_SLDSC 步骤 2 (流程见 Scripts/Pipeline.md 3.2); 移植自 Scripts_reference/D2_sldsc_slurm.sh
-# 一个 array task = 一个 (CT, 集合); task id = 7 * CT_index + set_index
+# 一个 array task = 一个 (CT, 集合); task id = 2 * CT_index + set_index (2026-10-14: 集合改为 MROnly + pool)
 #   (1) ldsc --l2: 22 条染色体并行 (22 个 ldscore 都在就跳过)
 #   (2) ldsc --h2: 9 个 GWAS 并行, 模型 = 该集合 (第一位) + baselineLD (.results 已存在就跳过)
 # 依赖步骤 1: sbatch --dependency=afterok:<prep jobid> Valid2_SLDSC_2_ldsc_slurm.sh
@@ -30,8 +30,8 @@ FRQ=$REF_DIR/1000G_Phase3_frq/1000G.EUR.QC.
 GWAS_DIR=/scratch/user/tfcui2025/CIMA/R_package/S_LDSC/GWAS_data/selected_sumstats
 
 PROJ=/scratch/user/tfcui2025/CIMA/Claude_project
-CELLS=(Bn_TCL1A CD4_Tn_CCR7 CD8_Tn_CCR7)
-SETS=(ivw egger smr cct pseudo wnn pool)
+CELLS=(Bn_TCL1A CD4_Tn_CCR7 CD8_Tn_CCR7 Combined)   # Combined = 3 个 CT 的并集 (2026-10-14)
+SETS=(MROnly pool)
 
 # 9 个 GWAS: 标签和 sumstats 文件前缀一一对应
 TRAITS=(AS CD IBD RA SLE MS T1D Asthma PBC)
@@ -46,8 +46,8 @@ TFILES=(CUSTOM.AS
         PASS.Primary_Biliary_Cirrhosis.Cordell2015)
 
 ID=$SLURM_ARRAY_TASK_ID
-CT=${CELLS[$((ID / 7))]}
-S=${SETS[$((ID % 7))]}
+CT=${CELLS[$((ID / 2))]}
+S=${SETS[$((ID % 2))]}
 NAME=${CT}_${S}
 PRE=$PROJ/tmp/Valid2_SLDSC/annot_ld/$CT/$NAME
 OUT3=$PROJ/Results/Validation/Valid2_SLDSC/h2/$CT

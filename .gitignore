@@ -4,3 +4,16 @@
 !/CLAUDE.md
 !/Scripts/
 !/Results/
+!/Manuscript/
+
+# Manuscript：只备份源文件、图、模板和主 PDF；排除编译中间文件、审阅缓存、备份
+Manuscript/.plos-review/
+Manuscript/*.aux
+Manuscript/*.bbl
+Manuscript/*.blg
+Manuscript/*.log
+Manuscript/*.out
+Manuscript/plos_draft.*
+Manuscript/overleaf_project.zip
+Manuscript/*.before
+Manuscript/**/*.before

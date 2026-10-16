@@ -1,42 +1,33 @@
 #!/usr/bin/env Rscript
 # ==============================================================================
-# 2026.10.07  Fig2 v2: 示例 peak-gene pairs, 每个 pair 一页, 每个细胞类型一个 PDF (Fig2_examples_<CT>_v2.pdf)
-# 由 v1 (Plot2_scripts.R) 升级: 左 2/3 = 2x2 证据面板, 右 1/3 = 位点 link 图 (来自 Plot8, 只突出当前 pair)
-# 版面 (2 行 x 3 列):
-#   a (左上) = 两条轨: caQTL | eQTL (共用 xlim = peak/TSS 中点 ±500 kb); 红色三角 = MR 用到的 SNP; 金色三角 = SMR lead SNP
-#   b (中上) = MR (flip 后散点 + Causal SMR / IVW / Egger 线, 图例在图内左上角)
-#   c (左下) = Marginal Multiomics: WNN metacell Spearman
-#   d (中下) = Marginal Pseudobulk: 个体层 Spearman
-#   e (右侧, 跨两行) = 位点图: Gene / Peaks (当前 pair 的 peak 红色, 其他显著 peak 黑色) / MR SNPs (当前 pair) /
-#       6 个方法各一行的显著 link (FDR < 0.05; 颜色 = 方向, 线宽 = -log10 FDR; 无图例, 说明见页面 caption)
-# 数值 (p / FDR / beta) 全部取自 MR_results_formal; SNP 层数据由 run_one_pair 重跑得到并与全量结果对账
+# 2026.10.13  Fig2: 指定的示例 peak-gene pairs, 一个 PDF (Figures_20261019/Fig2_examples.pdf)
+# 选哪些 pair / 在哪一页哪一行: Example_pairs.tsv 中 pair_set == "Fig2_selected" 的行 (page, row, type, cell_type, gene_id, peak_id, category)
+#   page 1 = 4 个指定 pair; page 2-6 = 每页 Type 1-4 各一个 (行 = type)
+#   原来每个细胞类型 24 个 example 也在 Example_pairs.tsv (pair_set = original_example; 01_example_pairs.R 仍供 Plot1 检查使用)
+# 版面: 每页 4 行, 每行一个 pair, 行内 4 个 panel:
+#   a = 两条轨: caQTL | eQTL (共用 xlim = peak/TSS 中点 ±500 kb); 红色三角 = MR 用到的 SNP; 金色三角 = SMR lead SNP
+#       caQTL 轨不画 P < 1e-8 且不在 MR 中的 variant; 角标 = 进入 MR 的 SNP 数
+#   b = MR (flip 后散点 + Causal IVW / Egger 线; 不画 SMR 线, 但保留 SMR lead SNP 标注)
+#   c = Marginal Multiomics: WNN metacell Spearman (across metacells / cell types)
+#   d = Marginal Pseudobulk: 个体层 Spearman (across individuals)
+# 数值 (p / FDR / beta) 全部取自 Results/MR; SNP 层数据由 run_one_pair 重跑得到并与全量结果对账
 # panel b-d 的 subtitle 只显示 p; FDR < 0.1 的结果仍用该方法的颜色加粗显示 (需 ggtext; 未安装时不高亮)
+# 历史: 由 20261006_paper/Scripts/Source_visual/Plot2_scripts_v2.R 移植 (2026-10-09); 2026-10-13 去掉位点 link 图 (panel e),
+#       改为每页 4 个 pair; 旧版图见 Results/Figures/Figures_20261012/
 #
-# Usage:
-#   Rscript Plot2_scripts_v2.R                                 # 默认: Bn_TCL1A, 前 3 个 example (试跑)
-#   Rscript Plot2_scripts_v2.R --celltype all --n 0            # 三个细胞类型, 全部 example
-#   可选: --outdir DIR
+# 运行: sbatch Scripts/Visualization/Plot2_examples_slurm.sh   (可选: Rscript Plot2_examples_v2.R --outdir DIR --pairs TSV)
 # ==============================================================================
-# ------------------------------------------------------------------------------
-# Claude_project 移植版 (2026-10-09): 由 20261006_paper/Scripts/Source_visual/Plot2_scripts_v2.R 复制, 只改:
-#   输入 = Results/MR/<CT>_AllPairs_results.tsv.gz (已过滤, 不再做 sigma2 过滤); LD 参考 = data/ref_chr/hg38
-#   example pairs 改为 source 01_example_pairs.R; 输出 = Results/Figures; PLINK / 临时文件 = tmp/plink_fig2/
-#   新 MR 表无 egger_int 列 -> 用重跑得到的 Egger 截距画 Egger 线, 并核对重跑 Egger 斜率与表一致
-# 运行: sbatch Scripts/Visualization/Plot2_examples_slurm.sh (array 0-2, 每个 CT 依次跑 v1 和 v2)
-# ------------------------------------------------------------------------------
 
 suppressPackageStartupMessages({
   library(data.table); library(ggplot2); library(patchwork); library(ggrepel); library(scales)
-  library(GenomicRanges); library(EnsDb.Hsapiens.v86); library(Signac)
 })
 options(width = 300)
 
 # ---------------------------- 参数 (试跑 / 全量 只改这里或命令行) -------------
 args    <- commandArgs(trailingOnly = TRUE)
 get_arg <- function(name, default) { i <- match(paste0("--", name), args); if (is.na(i) || i == length(args)) default else args[i + 1] }
-CT_ARG     <- get_arg("celltype", "Bn_TCL1A")      # "Bn_TCL1A" / "CD4_Tn_CCR7" / "CD8_Tn_CCR7" / "all"
-N_EXAMPLES <- as.integer(get_arg("n", "3"))        # 每个细胞类型画前 N 个 example; 0 = 全部
-FIG_DIR    <- get_arg("outdir", "/scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures")
+FIG_DIR  <- get_arg("outdir", "/scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261019")
+SEL_FILE <- get_arg("pairs",  "/scratch/user/tfcui2025/CIMA/Claude_project/Scripts/Visualization/Example_pairs.tsv")
 
 msg <- function(...) cat(format(Sys.time(), "[%H:%M:%S] "), ..., "\n", sep = "")
 
@@ -65,14 +56,16 @@ SIGMA2_MAX <- 10; FDR_CUT <- 0.1
 MIN_SNP <- 3; DEDUP_TOL <- 1e-3; KEEP_ALLELE <- TRUE; FLIP_POINTS <- TRUE
 EIG_TRUNCATE <- TRUE; EIG_VAR_KEEP <- 0.999; EIG_MIN_KEEP <- 5; EIG_TOL <- 1e-10; P_FLOOR <- 1e-300; SIGMA_MODE <- "over"
 
-# ---------------------------- Example pairs ------------------------------------
-source(file.path(PROJ, "Scripts/Visualization/01_example_pairs.R"))   # CATS / EXAMPLE_PAIRS / prep_examples
-EXAMPLES <- lapply(EXAMPLE_PAIRS, prep_examples)
+# ---------------------------- 选定的 pairs --------------------------------------
+SEL <- fread(SEL_FILE, na.strings = "")[pair_set == "Fig2_selected"]
+SEL[is.na(category), category := ""]
+stopifnot(all(SEL$cell_type %in% CELLTYPES))
 
 # ---------------------------- 配色 / 主题 (方法名 / 配色全文统一, 见 CLAUDE.md) ---
 pal_method <- c(`Causal IVW` = "#E64B35", `Causal Egger` = "#3C5488", `Causal SMR` = "#F0A14A",
                 `Causal Joint` = "#8491B4", `Marginal Multiomics` = "#4DBBD5", `Marginal Pseudobulk` = "#00A087")
-MR_LINES   <- c("Causal SMR", "Causal IVW", "Causal Egger")
+MR_LINES   <- c("Causal IVW", "Causal Egger")       # 不画 SMR 线
+LINE_ALPHA <- 0.75
 COL_PEAK  <- "#6F99AD"     # caQTL 点 / peak 方块
 COL_TSS   <- "#B09C85"     # eQTL 点 / TSS 三角
 COL_MRSNP <- "#DC0000"     # MR 用到的 SNP (红色三角)
@@ -80,22 +73,12 @@ LEAD_FILL <- "#FFD34E"; LEAD_BORDER <- "#5C4A00"
 COL_ERR   <- "#C8D1D9"; COL_REF <- "grey60"; COL_NS <- "grey45"
 
 WIN_HALF     <- 0.5        # caQTL / eQTL 轨: peak-TSS 中点 ± 0.5 Mb
+CA_HIDE_P    <- 1e-8       # caQTL 轨: P < 1e-8 且不在 MR 中的 variant 不画
 
-# panel e (位点 link 图, 来自 Plot8)
-LINK_FDR_CUT <- 0.05                 # link 显著阈值 (与 Plot8 一致; 与 subtitle 用的 FDR_CUT 分开)
-SCORE_CAP    <- 20                   # -log10(FDR) 上限, 线宽标尺三个 CT 共用
-LK_PAD_FRAC  <- 0.08; LK_PAD_MIN <- 1e4; LK_EMPTY_HALF <- 5e4
-LW_RANGE     <- c(0.25, 1.0)         # link 线宽范围 (比 Plot8 细)
-DIR_COL      <- c("Positive" = "#D7191C", "Negative" = "#2C7BB6", "No direction" = "grey15")
-GENE_COL     <- "#1B1B1B"; PEAK_CUR <- "#E64B35"; PEAK_OTH <- "grey25"; SNP_COL <- "#3C5488"
-LINK_METHODS <- data.table(method  = c("Causal SMR", "Causal IVW", "Causal Egger", "Causal Joint", "Marginal Multiomics", "Marginal Pseudobulk"),
-                           fdr_col = c("smr_fdr", "ivw_fdr", "egger_fdr", "cct_fdr", "wnn_fdr", "pseudo_fdr"),
-                           eff_col = c("smr_b", "ivw_beta", "egger_beta", NA, "wnn_rho", "pseudo_rho"))
-
-PAGE_W <- 21; PAGE_H <- 12
-BASE   <- 11
+PAGE_W <- 22; PAGE_H <- 20; ROWS_PER_PAGE <- 4
+BASE   <- 10
 ANNOT  <- 3.4                                      # annotate 字号 (mm), 约 9.5 pt
-PT_MR  <- 3.6; PT_LEAD <- 5.2; PT_QTL <- 1.5; PT_MARG <- 2.7; LWD <- 1.1
+PT_MR  <- 3.6; PT_LEAD <- 5.2; PT_QTL <- 1.5; PT_MARG <- 2.7; LWD <- 1.6
 SUB_SIZE <- BASE + 1                               # panel b-d subtitle 字号 (想再大就改成 BASE + 2)
 
 USE_MD <- requireNamespace("ggtext", quietly = TRUE)
@@ -266,9 +249,10 @@ build_track_panel <- function(ca_d, eq_d, peak, gene, mr_ids, lead_id) {
     o[o$x >= xlim[1] & o$x <= xlim[2], , drop = FALSE]
   }
   d_ca <- mk(ca_d); d_eq <- mk(eq_d)
-  p_ca <- qtl_track(d_ca, "caQTL", COL_PEAK, xlim, mean(pk), tss, list(txt = sprintf("%d variants", nrow(d_ca)), col = "black"), chr)
-  p_eq <- qtl_track(d_eq, "eQTL",  COL_TSS,  xlim, mean(pk), tss,
-                    list(txt = sprintf("%d variants", nrow(d_eq)), col = "black"), chr, show_x = TRUE)
+  d_ca <- d_ca[d_ca$is_mr | d_ca$is_lead | d_ca$y <= -log10(CA_HIDE_P), , drop = FALSE]   # 不画 P < 1e-8 且不在 MR 中的 caQTL variant
+  n_mr <- list(txt = sprintf("%d SNPs in MR", length(mr_ids)), col = "black")
+  p_ca <- qtl_track(d_ca, "caQTL", COL_PEAK, xlim, mean(pk), tss, n_mr, chr)
+  p_eq <- qtl_track(d_eq, "eQTL",  COL_TSS,  xlim, mean(pk), tss, n_mr, chr, show_x = TRUE)
   list(plot = p_ca / p_eq + plot_layout(heights = c(1, 1)), lab = peak_tss_lab(pk, tss))
 }
 
@@ -282,8 +266,8 @@ build_mr_panel <- function(obj, rf) {
   pts <- data.frame(x = xf, y = yf, xmin = xf - 1.96 * d$se_x, xmax = xf + 1.96 * d$se_x, ymin = yf - 1.96 * d$se_y, ymax = yf + 1.96 * d$se_y,
                     is_lead = is_lead, label = ifelse(is_lead, d$variant_id, NA_character_))
   lines <- data.table(series = MR_LINES,
-                      slope = as.numeric(c(getv(rf, "smr_b"), getv(rf, "ivw_beta"), getv(rf, "egger_beta"))),
-                      intercept = as.numeric(c(0, 0, getv(rf, "egger_int"))))[is.finite(slope) & is.finite(intercept)]
+                      slope = as.numeric(c(getv(rf, "ivw_beta"), getv(rf, "egger_beta"))),
+                      intercept = as.numeric(c(0, getv(rf, "egger_int"))))[is.finite(slope) & is.finite(intercept)]
   lines[, series := factor(series, levels = MR_LINES)]
   sub_txt <- join_lines(c(paste0(pq_txt(rf, "Causal SMR", "smr"),   "  |  ", pq_txt(rf, "Causal IVW", "ivw")),
                           paste0(pq_txt(rf, "Causal Egger", "egger"), "  |  ", pq_txt(rf, "Causal Joint", "cct"))))
@@ -293,13 +277,12 @@ build_mr_panel <- function(obj, rf) {
     geom_vline(xintercept = 0, linetype = "dotted", color = COL_REF, linewidth = 0.4) +
     geom_errorbar(aes(ymin = ymin, ymax = ymax), color = COL_ERR, width = 0, linewidth = 0.45) +
     geom_errorbar(aes(xmin = xmin, xmax = xmax), orientation = "y", color = COL_ERR, width = 0, linewidth = 0.45) +
-    geom_abline(data = lines, aes(slope = slope, intercept = intercept, color = series, linetype = series), linewidth = LWD) +
+    geom_abline(data = lines, aes(slope = slope, intercept = intercept, color = series), linewidth = LWD, alpha = LINE_ALPHA) +
     geom_point(data = pts[!pts$is_lead, ], shape = 24, fill = COL_MRSNP, color = "white", size = PT_MR, stroke = 0.4) +
     geom_point(data = pts[pts$is_lead, ], shape = 24, fill = LEAD_FILL, color = LEAD_BORDER, size = PT_LEAD, stroke = 0.5) +
     geom_text_repel(data = pts[pts$is_lead, ], aes(label = label), size = ANNOT, fontface = "bold", color = LEAD_BORDER,
                     box.padding = 0.6, min.segment.length = 0, segment.size = 0.3, seed = 1) +
     scale_color_manual(values = pal_method, breaks = levels(lines$series)) +
-    scale_linetype_manual(values = c(`Causal SMR` = "dashed", `Causal IVW` = "solid", `Causal Egger` = "solid"), breaks = levels(lines$series)) +
     scale_y_continuous(expand = expansion(mult = c(0.05, 0.25))) + expand_limits(x = 0) +
     labs(title = ttl, subtitle = sub_txt, x = "caQTL effect size (aligned)", y = "eQTL effect size (aligned)") +
     theme_fig + legend_inside(c(0.02, 0.98))
@@ -315,7 +298,7 @@ marg_subtitle <- function(rf, method, key) {
 }
 
 plot_wnn <- function(gene, peak_seurat, rf) {
-  ttl <- "Marginal Multiomics (WNN metacells)"
+  ttl <- "Marginal Multiomics (across metacells / cell types)"
   if (!(gene %chin% colnames(wnn_rna_log)) || !(peak_seurat %chin% colnames(wnn_peak_log))) return(empty_plot(ttl))
   df <- data.frame(X = as.numeric(wnn_peak_log[, peak_seurat]), Y = as.numeric(wnn_rna_log[, gene]))
   p <- ggplot(df, aes(X, Y)) + geom_smooth(method = "lm", formula = y ~ x, color = "grey30", fill = "grey85", linetype = "longdash", linewidth = LWD, alpha = 0.5)
@@ -333,7 +316,7 @@ plot_wnn <- function(gene, peak_seurat, rf) {
 }
 
 plot_pseudo <- function(gene, peak_seurat, rf) {
-  ttl <- "Marginal Pseudobulk (individuals)"
+  ttl <- "Marginal Pseudobulk (across individuals)"
   if (!(gene %chin% rownames(subject_gene_logcpm)) || !(peak_seurat %chin% rownames(subject_peak_logcpm))) return(empty_plot(ttl))
   df <- data.frame(X = as.numeric(subject_peak_logcpm[peak_seurat, ]), Y = as.numeric(subject_gene_logcpm[gene, ]))
   p <- ggplot(df, aes(X, Y)) +
@@ -342,138 +325,6 @@ plot_pseudo <- function(gene, peak_seurat, rf) {
     scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
     labs(title = ttl, subtitle = marg_subtitle(rf, "Marginal Pseudobulk", "pseudo"), x = "ATAC log1p(CPM)", y = "RNA log1p(CPM)") + theme_fig
   add_corner(p, sprintf("%d individuals", nrow(df)))
-}
-
-# ---------------------------- Panel e: 位点 link 图 (来自 Plot8, 只突出当前 pair) ----
-# 基因注释 (EnsDb.Hsapiens.v86, hg38). 不用 seqlevelsStyle<- "UCSC" (会联网, 计算节点报错), 直接加 "chr" 前缀
-to_ucsc <- function(x) sub("^chrMT$", "chrM", paste0("chr", as.character(x)))
-gene_gr <- genes(EnsDb.Hsapiens.v86, filter = SeqNameFilter(c(1:22, "X", "Y")))
-gene_dt <- data.table(chr = to_ucsc(seqnames(gene_gr)), start = start(gene_gr), end = end(gene_gr),
-                      strand = as.character(strand(gene_gr)), gene_name = gene_gr$gene_name)
-gene_dt[, tss := fifelse(strand == "+", start, end)]
-exon_gr <- GetGRangesFromEnsDb(ensdb = EnsDb.Hsapiens.v86)
-exon_dt <- data.table(chr = to_ucsc(seqnames(exon_gr)), start = start(exon_gr), end = end(exon_gr),
-                      gene_name = exon_gr$gene_name, type = as.character(exon_gr$type))[type %chin% c("exon", "cds", "utr")]
-rm(gene_gr, exon_gr); invisible(gc())
-msg(sprintf("EnsDb v86: %d genes | %d exon/cds/utr 片段", nrow(gene_dt), nrow(exon_dt)))
-
-parse_peak <- function(dt) {
-  dt[, c("pk_chr", "pk_start", "pk_end") := tstrsplit(peak_id, "[:-]")]
-  dt[, `:=`(pk_start = as.integer(pk_start), pk_end = as.integer(pk_end))]
-  dt[, pk_mid := (pk_start + pk_end) / 2]
-  dt[]
-}
-
-# 每个方法 FDR < cut 的 links (长表: 一行 = 一个 gene-peak-method)
-get_sig_links <- function(res, genes, fdr_cut = LINK_FDR_CUT) {
-  sub <- res[gene_id %chin% genes]
-  lk <- rbindlist(lapply(seq_len(nrow(LINK_METHODS)), function(k) {
-    m <- LINK_METHODS[k]; f <- sub[[m$fdr_col]]
-    eff <- if (is.na(m$eff_col)) rep(NA_real_, nrow(sub)) else sub[[m$eff_col]]
-    idx <- which(!is.na(f) & f < fdr_cut)
-    data.table(gene_id = sub$gene_id[idx], peak_id = sub$peak_id[idx], method = m$method, fdr = f[idx], effect = eff[idx])
-  }))
-  if (!nrow(lk)) lk <- data.table(gene_id = character(), peak_id = character(), method = character(), fdr = numeric(), effect = numeric())
-  parse_peak(lk)
-  lk[, direction := fcase(is.na(effect), "No direction", effect > 0, "Positive", default = "Negative")]
-  lk[, score := -log10(pmax(fdr, 1e-300))]
-  lk[]
-}
-
-plot_locus_pair <- function(g, peak, lk_all, mr_dat, lead_id, score_max) {
-  ttl <- "Peak-gene links"
-  lk <- copy(lk_all[gene_id == g])
-  ex <- parse_peak(data.table(gene_id = g, peak_id = peak))
-  cand <- gene_dt[gene_name == g & chr == ex$pk_chr][order(abs(tss - ex$pk_mid))]
-  if (!nrow(cand)) return(empty_plot(ttl, sprintf("%s not found in EnsDb v86", g)))
-  tg <- cand[1]
-  lk <- lk[pk_chr == tg$chr]
-  sd <- if (is.null(mr_dat) || !nrow(mr_dat)) data.table(variant_id = character(), pos = numeric()) else
-          data.table(variant_id = mr_dat$variant_id, pos = parse_pos(mr_dat$variant_id))
-  sd[, is_lead := !is.na(lead_id) & variant_id == lead_id]
-
-  # 窗口: TSS + 显著 peak + 当前 peak (不含 MR SNP, 否则 SNP 分布太宽会把 link 压扁; 窗口外的 SNP 不画, 只计数)
-  xs <- c(tg$tss, lk$pk_start, lk$pk_end, ex$pk_start, ex$pk_end)
-  if (length(xs) > 1) { pad <- max(LK_PAD_MIN, diff(range(xs)) * LK_PAD_FRAC); xlim <- c(min(xs) - pad, max(xs) + pad) } else xlim <- tg$tss + c(-LK_EMPTY_HALF, LK_EMPTY_HALF)
-  wid <- diff(xlim)
-  n_snp <- nrow(sd); sd <- sd[pos >= xlim[1] & pos <= xlim[2]]
-
-  ytitle   <- element_text(angle = 90, vjust = 0.5, hjust = 0.5, face = "bold", size = BASE - 2)
-  th_track <- theme_classic(base_size = BASE) +
-    theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), axis.title.x = element_blank(),
-          axis.title.y = ytitle, legend.position = "none", plot.margin = margin(1, 4, 1, 4))
-  tss_line <- geom_vline(xintercept = tg$tss, linetype = "dashed", color = "grey60", linewidth = 0.4)
-
-  ## Gene 轨 (只画目标基因)
-  gx  <- exon_dt[chr == tg$chr & gene_name == g]
-  arr <- tg$tss + ifelse(tg$strand == "+", 1, -1) * wid * 0.04
-  pG <- ggplot() + tss_line +
-    annotate("segment", x = tg$start, xend = tg$end, y = 0, yend = 0, color = GENE_COL, linewidth = 0.7) +
-    geom_rect(data = gx[type != "cds"], aes(xmin = start, xmax = end, ymin = -0.15, ymax = 0.15), fill = GENE_COL, color = NA) +
-    geom_rect(data = gx[type == "cds"], aes(xmin = start, xmax = end, ymin = -0.28, ymax = 0.28), fill = GENE_COL, color = NA) +
-    annotate("segment", x = tg$tss, xend = tg$tss, y = 0, yend = 0.45, color = GENE_COL, linewidth = 0.7) +
-    annotate("segment", x = tg$tss, xend = arr, y = 0.45, yend = 0.45, color = GENE_COL, linewidth = 0.7, arrow = arrow(length = unit(0.18, "cm"))) +
-    annotate("text", x = (max(tg$start, xlim[1]) + min(tg$end, xlim[2])) / 2, y = 0.8, label = g, fontface = "bold.italic", size = ANNOT + 0.4) +
-    coord_cartesian(xlim = xlim, ylim = c(-0.4, 1.05), expand = FALSE) +
-    labs(title = ttl, y = "Gene") + th_track +
-    theme(plot.title = element_text(face = "bold", size = BASE + 1, hjust = 0, margin = margin(b = 3)))
-
-  ## Peak 轨: 该基因所有显著 peak (黑色) + 当前 pair 的 peak (红色, 画在最上层)
-  pk <- unique(lk[, .(peak_id, pk_start, pk_end, pk_mid)], by = "peak_id")[peak_id != peak]
-  hw_min <- wid * 0.003
-  if (nrow(pk)) pk[, hw := pmax((pk_end - pk_start) / 2, hw_min)]
-  ex[, hw := pmax((pk_end - pk_start) / 2, hw_min)]
-  pP <- ggplot() + tss_line
-  if (nrow(pk)) pP <- pP + geom_rect(data = pk, aes(xmin = pk_mid - hw, xmax = pk_mid + hw, ymin = 0.15, ymax = 0.85), fill = PEAK_OTH, color = NA)
-  pP <- pP + geom_rect(data = ex, aes(xmin = pk_mid - hw, xmax = pk_mid + hw, ymin = 0.05, ymax = 0.95), fill = PEAK_CUR, color = NA) +
-    coord_cartesian(xlim = xlim, ylim = c(0, 1), expand = FALSE) + labs(y = "Peaks") + th_track
-
-  ## MR SNP 轨 (当前 pair): 竖线 = MR instruments, 金色三角 = SMR lead SNP
-  pS <- ggplot() + tss_line +
-    annotate("rect", xmin = ex$pk_mid - ex$hw, xmax = ex$pk_mid + ex$hw, ymin = -0.45, ymax = 0.45, fill = PEAK_CUR, alpha = 0.25)
-  if (nrow(sd)) {
-    pS <- pS + geom_segment(data = sd, aes(x = pos, xend = pos, y = -0.32, yend = 0.32), color = SNP_COL, linewidth = 0.45)
-    if (sd[is_lead == TRUE, .N]) pS <- pS +
-      geom_point(data = sd[is_lead == TRUE], aes(pos, 0.42), shape = 25, fill = LEAD_FILL, color = LEAD_BORDER, size = 3, stroke = 0.5) +
-      geom_text_repel(data = sd[is_lead == TRUE], aes(pos, 0.42, label = variant_id), size = ANNOT - 0.6, fontface = "bold", color = LEAD_BORDER,
-                      nudge_y = 0.35, direction = "x", min.segment.length = 0, segment.size = 0.3, seed = 1)
-  } else pS <- pS + annotate("text", x = mean(xlim), y = 0, label = "no MR SNPs", color = "grey40", fontface = "italic", size = ANNOT - 0.4)
-  pS <- pS + annotate("text", x = xlim[1] + wid * 0.01, y = -0.62, label = if (nrow(sd) < n_snp) sprintf("n = %d (%d in view)", n_snp, nrow(sd)) else sprintf("n = %d", n_snp), hjust = 0, size = ANNOT - 0.6, color = "grey20") +
-    coord_cartesian(xlim = xlim, ylim = c(-0.8, 1.05), expand = FALSE, clip = "off") + labs(y = "MR SNPs") + th_track
-
-  ## Link 轨: 6 个方法各一行; 当前 pair 的 link 画在最上层
-  lev <- LINK_METHODS$method
-  cnt <- lk[, .N, by = method][data.table(method = lev), on = "method"][is.na(N), N := 0L]
-  cnt[, method := factor(method, levels = lev)]
-  s_lo <- -log10(LINK_FDR_CUT)
-  if (nrow(lk)) {
-    lk[, `:=`(x1 = pk_mid, x2 = tg$tss, link_id = .I, is_cur = peak_id == peak, score_plot = pmin(pmax(score, s_lo), score_max))]
-    lk[, h := pmax(0.2, abs(x2 - x1) / max(1, max(abs(x2 - x1))))]
-    tt <- seq(0, 1, length.out = 100)
-    arcs <- lk[, .(x = x1 + (x2 - x1) * tt, y = -0.92 * h * sin(pi * tt)), by = .(link_id, method, direction, score_plot, is_cur)]
-    setorder(arcs, is_cur, score_plot)
-  } else arcs <- data.table(link_id = integer(), method = character(), direction = character(), score_plot = numeric(), is_cur = logical(), x = numeric(), y = numeric())
-  arcs[, `:=`(method = factor(method, levels = lev), direction = factor(direction, levels = names(DIR_COL)))]
-
-  pL <- ggplot() + tss_line +
-    geom_blank(data = data.table(method = factor(lev, levels = lev), x = tg$tss, y = 0), aes(x, y)) +
-    geom_hline(yintercept = 0, color = "grey70", linewidth = 0.35) +
-    geom_path(data = arcs, aes(x, y, group = link_id, color = direction, linewidth = score_plot), alpha = 0.95, lineend = "round") +
-    geom_text(data = cnt, aes(x = xlim[1] + wid * 0.01, y = -0.9, label = sprintf("%s  (n = %d)", method, N), color = I(pal_method[as.character(method)])),
-              hjust = 0, size = ANNOT - 0.4, fontface = "bold") +
-    facet_grid(method ~ ., drop = FALSE) +
-    scale_color_manual(values = DIR_COL, drop = FALSE, guide = "none") +
-    scale_linewidth_continuous(range = LW_RANGE, limits = c(s_lo, score_max), guide = "none") +
-    scale_x_continuous(labels = function(x) sprintf("%.2f", x / 1e6), breaks = scales::breaks_pretty(n = 4)) +
-    coord_cartesian(xlim = xlim, ylim = c(-1, 0.04), expand = FALSE) +
-    labs(x = sprintf("%s position (Mb)", tg$chr), y = "Links") + theme_classic(base_size = BASE) +
-    theme(strip.background = element_blank(), strip.text = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.line.y = element_blank(),
-          axis.title.y = element_text(angle = 90, face = "bold", size = BASE - 2),
-          axis.text.x = element_text(size = BASE - 1, color = "black"), axis.title.x = element_text(size = BASE),
-          panel.spacing.y = unit(0.6, "mm"), legend.position = "none", plot.margin = margin(1, 4, 2, 4))
-
-  (pG / pP / pS / pL) + plot_layout(heights = c(0.8, 0.35, 0.55, 6.6))
 }
 
 # ---------------------------- WNN (全局一份) ------------------------------------
@@ -486,30 +337,19 @@ rm(e2); invisible(gc())
 HAS_CT <- exists("wnn.celltype") && exists("wnn.celltype.col") && length(wnn.celltype) == nrow(wnn_rna_log)
 msg("WNN: ", nrow(wnn_rna_log), " metacells | cell-type colours: ", HAS_CT)
 
-# ---------------------------- 主循环 ---------------------------------------------
-cts <- if (CT_ARG == "all") CELLTYPES else CT_ARG
-stopifnot(all(cts %in% CELLTYPES))
+# ---------------------------- 主循环: 按细胞类型生成每个 pair 的 4 个 panel ----------
+ROWS <- list()                                     # key = "CT|gene|peak" -> list(pA, pB, pC, pD, lab, n_snp)
+row_key <- function(ct, gene, peak) paste(ct, gene, peak, sep = "|")
 
-# MR 结果 (三个 CT; 统一 sigma2 规则). panel e 的线宽标尺在三个 CT 的 example 基因间共用
-RES <- setNames(lapply(CELLTYPES, function(ct) fread(file.path(MR_DIR, paste0(ct, "_AllPairs_results.tsv.gz")))), CELLTYPES)
-SCORE_MAX <- min(SCORE_CAP, max(c(2, unlist(lapply(CELLTYPES, function(ct) get_sig_links(RES[[ct]], unique(EXAMPLES[[ct]]$gene_id))$score)))))
-msg(sprintf("panel e 线宽标尺: -log10(FDR) in [%.2f, %.2f]", -log10(LINK_FDR_CUT), SCORE_MAX))
-LAYOUT <- c(patchwork::area(1, 1), patchwork::area(1, 2), patchwork::area(2, 1), patchwork::area(2, 2), patchwork::area(1, 3, 2, 3))
-CAPTION <- sprintf(paste0("e: significant peak-gene links (FDR < %.2f) per method; arc colour = effect direction (red positive, blue negative, black = no direction for Causal Joint); ",
-                          "arc width ∝ -log10 FDR (shared scale, %.1f-%.0f); red peak = this pair's peak, black = other significant peaks; ticks = MR instruments within the window, gold triangle = SMR lead SNP."),
-                   LINK_FDR_CUT, -log10(LINK_FDR_CUT), SCORE_MAX)
-open_pdf <- function(f) if (capabilities("cairo")) cairo_pdf(f, width = PAGE_W, height = PAGE_H, onefile = TRUE) else pdf(f, width = PAGE_W, height = PAGE_H, useDingbats = FALSE)
-
-for (CT in cts) {
+for (CT in intersect(CELLTYPES, SEL$cell_type)) {
   msg("==================== ", CT, " ====================")
-  mr_all <- RES[[CT]]
-  ex <- EXAMPLES[[CT]]
+  mr_all <- fread(file.path(MR_DIR, paste0(CT, "_AllPairs_results.tsv.gz")))
+  ex <- unique(SEL[cell_type == CT, .(gene_id, peak_id)])
   pc <- mr_all[ex, on = .(gene_id, peak_id), nomatch = NULL]
   miss <- ex[!pc, on = .(gene_id, peak_id)]
-  if (nrow(miss)) { msg("警告: 以下 example 不在 MR 结果中 (或被 sigma2 过滤), 跳过:"); print(miss) }
-  setorder(pc, ord)
-  if (N_EXAMPLES > 0) pc <- head(pc, N_EXAMPLES)
+  if (nrow(miss)) { msg("警告: 以下 pair 不在 MR 结果中, 跳过:"); print(miss) }
   pc[, peak_seurat := gsub("[:-]", "-", peak_id)]
+  rm(mr_all); invisible(gc())
   msg("作图 pairs: ", nrow(pc))
 
   # QTL 数据 (只读需要的 gene / peak)
@@ -544,42 +384,49 @@ for (CT in cts) {
   subject_peak_logcpm <- log1p(sweep(pk_cnt[, smp, drop = FALSE], 2, setNames(lib$atac_lib_size, lib$sample)[smp], "/") * 1e6)
   rm(pk_cnt, gn_cnt); invisible(gc())
 
-  # panel e: 该 CT 中 example 基因的全部显著 links
-  lk_all <- get_sig_links(mr_all, unique(pc$gene_id))
-
-  # 作图
-  suffix   <- if (N_EXAMPLES > 0) sprintf("_top%d", N_EXAMPLES) else ""
-  pdf_file <- file.path(FIG_DIR, sprintf("Fig2_examples_%s%s_v2.pdf", CT, suffix))
-  open_pdf(pdf_file)
   for (i in seq_len(nrow(pc))) {
     rf <- pc[i]; gene <- rf$gene_id; peak <- rf$peak_id; pid <- paste(peak, gene, sep = "__")
     msg(sprintf("  [%d/%d] %s", i, nrow(pc), pid))
     tryCatch({
       obj <- objs[[pid]]; mr_ids <- if (is.null(obj$dat)) character(0) else obj$dat$variant_id
       tr  <- build_track_panel(ca_full[phenotype_id == peak], eq_full[phenotype_id == gene], peak, gene, mr_ids, getv(rf, "smr_variant_id"))
-      pA  <- wrap_elements(full = tr$plot)
-      pB  <- build_mr_panel(obj, rf)
-      pC  <- plot_wnn(gene, rf$peak_seurat, rf)
-      pD  <- plot_pseudo(gene, rf$peak_seurat, rf)
-      pE  <- wrap_elements(full = plot_locus_pair(gene, peak, lk_all, obj$dat, getv(rf, "smr_variant_id"), SCORE_MAX))
-      fig <- wrap_plots(pA, pB, pC, pD, pE, design = LAYOUT) +
-        plot_annotation(tag_levels = "a", caption = CAPTION,
-          title    = sprintf("%s  |  %s  (%s)", gene, peak, CT),
-          subtitle = sprintf("Example category: %s   |   peak-TSS distance: %s   |   %d SNPs in MR", rf$category, tr$lab, if (is.null(obj$dat)) 0L else nrow(obj$dat)),
-          theme = theme(plot.title = element_text(size = BASE + 4, face = "bold", hjust = 0),
-                        plot.subtitle = element_text(size = BASE, color = "grey30", hjust = 0, margin = margin(b = 6)),
-                        plot.caption  = element_text(size = BASE - 2, color = "grey35", hjust = 0))) &
-        theme(plot.tag = element_text(face = "bold", size = BASE + 3))
-      print(fig)
+      ROWS[[row_key(CT, gene, peak)]] <- list(pA = wrap_elements(full = tr$plot), pB = build_mr_panel(obj, rf),
+                                               pC = plot_wnn(gene, rf$peak_seurat, rf), pD = plot_pseudo(gene, rf$peak_seurat, rf),
+                                               lab = tr$lab, n_snp = length(mr_ids))
     }, error = function(e) msg("    作图失败: ", conditionMessage(e)))
   }
-  dev.off()
-  msg("Saved: ", pdf_file)
-  rm(eq_full, ca_full, eq_sub, ca_sub, objs, subject_gene_logcpm, subject_peak_logcpm, lk_all); invisible(gc())
+  rm(eq_full, ca_full, eq_sub, ca_sub, objs, subject_gene_logcpm, subject_peak_logcpm); invisible(gc())
 }
+
+# ---------------------------- 组装: 每页 4 行, 每行一个 pair ------------------------
+make_row <- function(s) {
+  r <- ROWS[[row_key(s$cell_type, s$gene_id, s$peak_id)]]
+  if (is.null(r)) return(wrap_elements(full = empty_plot(sprintf("%s | %s (%s)", s$gene_id, s$peak_id, s$cell_type), "Plot failed")))
+  sub <- c(if (nzchar(s$category)) sprintf("Type %d: %s", s$type, s$category), sprintf("peak-TSS distance: %s", r$lab), sprintf("%d SNPs in MR", r$n_snp))
+  row <- (r$pA | r$pB | r$pC | r$pD) + plot_layout(widths = c(1.3, 1, 1, 1)) +
+    plot_annotation(tag_levels = "a", title = sprintf("%s  |  %s  (%s)", s$gene_id, s$peak_id, s$cell_type), subtitle = paste(sub, collapse = "   |   "),
+      theme = theme(plot.title = element_text(size = BASE + 3, face = "bold", hjust = 0),
+                    plot.subtitle = element_text(size = BASE, color = "grey30", hjust = 0, margin = margin(b = 4)),
+                    plot.margin = margin(6, 4, 10, 4))) &
+    theme(plot.tag = element_text(face = "bold", size = BASE + 3))
+  wrap_elements(full = row)
+}
+
+open_pdf <- function(f) if (capabilities("cairo")) cairo_pdf(f, width = PAGE_W, height = PAGE_H, onefile = TRUE) else pdf(f, width = PAGE_W, height = PAGE_H, useDingbats = FALSE)
+pdf_file <- file.path(FIG_DIR, "Fig2_examples.pdf")
+open_pdf(pdf_file)
+pages <- sort(unique(SEL$page))
+for (pg in pages) {
+  s_pg <- SEL[page == pg][order(row)]
+  msg(sprintf("page %d: %s", pg, paste(s_pg$gene_id, collapse = ", ")))
+  rows <- lapply(seq_len(nrow(s_pg)), function(j) make_row(s_pg[j]))
+  if (length(rows) < ROWS_PER_PAGE) rows <- c(rows, rep(list(plot_spacer()), ROWS_PER_PAGE - length(rows)))   # 行高保持一致
+  ttl <- if (all(is.na(s_pg$type))) "Example peak-gene pairs" else sprintf("Example peak-gene pairs by type (set %d)", match(pg, pages[pages != 1]))
+  print(wrap_plots(rows, ncol = 1) +
+        plot_annotation(title = ttl, theme = theme(plot.title = element_text(size = BASE + 6, face = "bold", hjust = 0))))
+}
+dev.off()
+msg("Saved: ", pdf_file)
 
 unlink(LD_DIR, recursive = TRUE)
 msg("All done.")
-
-
-

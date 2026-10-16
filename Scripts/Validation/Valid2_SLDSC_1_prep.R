@@ -1,8 +1,12 @@
 # 2026-10-09
+# 2026-10-14: 集合改为 MROnly + pool (6 个方法各自的 FDR 0.1 结果暂存为 SLDSC_6methods_FDR0.1.tsv / set_stats_6methods_FDR0.1.tsv)
 # Valid2_SLDSC 步骤 1: 准备 annotation (流程见 Scripts/Pipeline.md 3.2)
 # 移植自 Scripts_reference/D1_prep.R; 改动: 读新表的 *_fdr (不再过滤 / 重新 BH), 只做两侧各扩 500 bp, 文件名去掉 0911 / ext 后缀
-# 每个 CT 7 个集合: 6 个方法 FDR < 0.05 的 peak + pool (All_GenePeak 全部 peak) -> hg19 -> 两侧各扩 500 bp -> reduce -> thin-annot
-# 一个 job 处理 3 个 CT; 22 条染色体 mclapply 并行
+# 每个 CT 2 个集合 -> hg19 -> 两侧各扩 500 bp -> reduce -> thin-annot
+#   MROnly: IVW / Egger / SMR 任一 FDR < 0.1, 且 WNN、Pseudo 的 FDR 都 >= 0.1 的 pair 的 peak (link 层)
+#   pool  : All_GenePeak 的全部 peak (与 FDR 无关)
+# 2026-10-14: 另加 Combined (第 4 个 "CT") = 3 个 CT 的 MROnly 并集 / pool 并集 (hg19 id 取并集, 扩展后 reduce 合并跨 CT 的重叠)
+# 一个 job 处理 3 个 CT + Combined; 22 条染色体 mclapply 并行
 # 输出: tmp/Valid2_SLDSC/annot_ld/<CT>/<CT>_<set>.<chr>.annot.gz
 #       Results/Validation/Valid2_SLDSC/set_stats.tsv
 
@@ -24,14 +28,16 @@ CHAIN    <- file.path(BASE_DIR, "Data/PBMC_validation/hg38ToHg19.over.chain")
 PLINK    <- file.path(BASE_DIR, "R_package/S_LDSC/reference_genome/1000G_EUR_Phase3_plink/1000G.EUR.QC.")
 
 CELLS   <- c("Bn_TCL1A", "CD4_Tn_CCR7", "CD8_Tn_CCR7")
-METHODS <- c("ivw", "egger", "smr", "cct", "pseudo", "wnn")
-SETS    <- c(METHODS, "pool")
-FDR_CUT <- 0.05
+CELLS_ALL <- c(CELLS, "Combined")
+MR_M    <- c("ivw", "egger", "smr")
+MG_M    <- c("wnn", "pseudo")
+SETS    <- c("MROnly", "pool")
+FDR_CUT <- 0.1
 EXT     <- 500L
 N_CORES <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", "22"))
 
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
-for (ct in CELLS) dir.create(file.path(ANNOT, ct), recursive = TRUE, showWarnings = FALSE)
+for (ct in CELLS_ALL) dir.create(file.path(ANNOT, ct), recursive = TRUE, showWarnings = FALSE)
 chain <- import.chain(CHAIN)
 
 # pool 格式 "chr1-9928-10429" -> "chr1:9928-10429"
@@ -44,12 +50,15 @@ id2gr <- function(ids, ext = 0L) {
 }
 
 ###----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-### Step 1: 每个 CT: 显著 peak (6 个方法) + pool -> liftOver hg19
+### Step 1: 每个 CT: MROnly + pool -> liftOver hg19
 
 peaksets  <- list()
 set_stats <- list()
 for (CT in CELLS) {
-  pairs <- fread(file.path(MR_DIR, paste0(CT, "_AllPairs_results.tsv.gz")), select = c("gene_id", "peak_id", paste0(METHODS, "_fdr")))
+  pairs <- fread(file.path(MR_DIR, paste0(CT, "_AllPairs_results.tsv.gz")), select = c("gene_id", "peak_id", paste0(c(MR_M, MG_M), "_fdr")))
+  stopifnot(!anyNA(pairs))
+  pairs[, mr := Reduce(`|`, lapply(paste0(MR_M, "_fdr"), function(k) get(k) < FDR_CUT))]
+  pairs[, mg := Reduce(`|`, lapply(paste0(MG_M, "_fdr"), function(k) get(k) < FDR_CUT))]
   pool_peaks38 <- unique(norm_id(as.data.table(readRDS(file.path(POOL_DIR, paste0("All_GenePeak_", CT, ".rds"))))$peak_id))
 
   # liftOver hg38 -> hg19 (只保留 1-to-1 + chr1-22)
@@ -67,21 +76,28 @@ for (CT in CELLS) {
   cat(sprintf("[%s] liftOver 1-to-1: %d / %d | MR pairs: %d -> %d | pool peaks (hg19): %d\n",
               CT, sum(n_hit == 1), length(n_hit), nrow(pairs), nrow(pairs19), length(pool19)))
 
-  for (m in METHODS) peaksets[[CT]][[m]] <- unique(pairs19[get(paste0(m, "_fdr")) < FDR_CUT, peak_id_hg19])
+  peaksets[[CT]][["MROnly"]] <- unique(pairs19[mr & !mg, peak_id_hg19])
   peaksets[[CT]][["pool"]] <- pool19
 
   set_stats[[CT]] <- data.table(cell_type = CT, set = SETS,
                                 n_peak  = sapply(SETS, function(a) length(peaksets[[CT]][[a]])),
                                 in_pool = sapply(SETS, function(a) mean(peaksets[[CT]][[a]] %in% pool19)))
 }
+
+# Combined: 3 个 CT 的并集
+for (s in SETS) peaksets[["Combined"]][[s]] <- unique(unlist(lapply(CELLS, function(ct) peaksets[[ct]][[s]])))
+set_stats[["Combined"]] <- data.table(cell_type = "Combined", set = SETS,
+                                      n_peak  = sapply(SETS, function(a) length(peaksets[["Combined"]][[a]])),
+                                      in_pool = sapply(SETS, function(a) mean(peaksets[["Combined"]][[a]] %in% peaksets[["Combined"]][["pool"]])))
+cat(sprintf("[Combined] MROnly peaks (hg19): %d | pool peaks (hg19): %d\n", length(peaksets$Combined$MROnly), length(peaksets$Combined$pool)))
 set_stats <- rbindlist(set_stats)
 
 ###----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Step 2: 写 thin-annot (22 条染色体并行)
 
-jobs <- CJ(cell_type = CELLS, set = SETS, sorted = FALSE)
+jobs <- CJ(cell_type = CELLS_ALL, set = SETS, sorted = FALSE)
 jobs[, name := paste0(cell_type, "_", set)]
-cat("annotation sets:", nrow(jobs), "(应为 3 x 7 = 21)\n")
+cat("annotation sets:", nrow(jobs), "(应为 4 x 2 = 8)\n")
 gr_list <- lapply(seq_len(nrow(jobs)), function(j) id2gr(peaksets[[jobs$cell_type[j]]][[jobs$set[j]]], EXT))
 
 write_chr <- function(chr) {
@@ -105,12 +121,12 @@ snp_stats <- snp_stats[, .(n_snp = sum(n_snp), n_in = sum(n_in)), by = name]
 jobs[, bp := sapply(gr_list, function(g) sum(as.numeric(width(g))))]
 stats_all <- merge(merge(jobs, snp_stats, by = "name"), set_stats, by = c("cell_type", "set"))
 stats_all[, prop_snp := n_in / n_snp]
-stats_all[, `:=`(cell_type = factor(cell_type, levels = CELLS), set = factor(set, levels = SETS))]
+stats_all[, `:=`(cell_type = factor(cell_type, levels = CELLS_ALL), set = factor(set, levels = SETS))]
 setorder(stats_all, cell_type, set)
 stats_all[, name := NULL]
 fwrite(stats_all, file.path(OUT_DIR, "set_stats.tsv"), sep = "\t")
 print(stats_all, digits = 3)
 
 n_files <- length(list.files(ANNOT, pattern = "annot.gz$", recursive = TRUE))
-cat("annot files:", n_files, "(应为 21 x 22 = 462)\n")
-stopifnot(n_files == 462L)
+cat("annot files:", n_files, "(应为 8 x 22 = 176)\n")
+stopifnot(n_files == 176L)

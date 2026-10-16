@@ -1,0 +1,118 @@
+job = 20145955 | cores = 8 | node = c212
+Bn_TCL1A: universe 10613 gene, MR 表 8149 gene | MR_Only link 2262
+CD4_Tn_CCR7: universe 14365 gene, MR 表 10701 gene | MR_Only link 4749
+CD8_Tn_CCR7: universe 12532 gene, MR 表 9427 gene | MR_Only link 2886
+Combined: universe 14492 gene, MR_Only_combined 4509 gene
+enrichGO 完成: 25 个集合, 1.2 min
+
+每个集合: 输入 gene 数 / 有 GO 注释的前景数 / 背景数 / term 数 / FDR < 0.1 的 term 数
+      cell_type              set n_input  n_fg  n_bg n_term n_sig
+         <char>           <char>   <int> <int> <int>  <int> <int>
+ 1:    Bn_TCL1A              ivw    2322  2118  8909   4541     0
+ 2:    Bn_TCL1A            egger    2160  1956  8909   4511     0
+ 3:    Bn_TCL1A              smr    1917  1743  8909   4496    18
+ 4:    Bn_TCL1A              cct    2458  2235  8909   4563     0
+ 5:    Bn_TCL1A              wnn    5700  5239  8909   4589   243
+ 6:    Bn_TCL1A           pseudo    2868  2612  8909   4570    12
+ 7:    Bn_TCL1A           MR_All    3328  3031  8909   4584     0
+ 8:    Bn_TCL1A          MR_Only    1581  1432  8909   4388     0
+ 9: CD4_Tn_CCR7              ivw    4261  3849 10704   5118     0
+10: CD4_Tn_CCR7            egger    3884  3475 10704   5096     0
+11: CD4_Tn_CCR7              smr    3573  3222 10704   5106     0
+12: CD4_Tn_CCR7              cct    4508  4067 10704   5118     0
+13: CD4_Tn_CCR7              wnn    7520  6876 10704   5121   258
+14: CD4_Tn_CCR7           pseudo    6456  5843 10704   5121     8
+15: CD4_Tn_CCR7           MR_All    5591  5039 10704   5120     0
+16: CD4_Tn_CCR7          MR_Only    2834  2530 10704   5038     0
+17: CD8_Tn_CCR7              ivw    3108  2798  9896   4850     0
+18: CD8_Tn_CCR7            egger    2784  2515  9896   4842     0
+19: CD8_Tn_CCR7              smr    2676  2420  9896   4833     0
+20: CD8_Tn_CCR7              cct    3355  3036  9896   4867     0
+21: CD8_Tn_CCR7              wnn    6544  5993  9896   4879    96
+22: CD8_Tn_CCR7           pseudo    4761  4330  9896   4875    21
+23: CD8_Tn_CCR7           MR_All    4333  3927  9896   4878     0
+24: CD8_Tn_CCR7          MR_Only    1903  1714  9896   4724     0
+25:    Combined MR_Only_combined    4509  4051 10780   5129     0
+      cell_type              set n_input  n_fg  n_bg n_term n_sig
+
+每个集合 FDR 最小的 3 个 term
+      cell_type              set                                                                               Description Count     fold     p.adjust
+         <char>           <char>                                                                                    <char> <int>    <num>        <num>
+ 1:    Bn_TCL1A              ivw                                                         supramolecular fiber organization   130 1.277623 7.933847e-01
+ 2:    Bn_TCL1A              ivw                                                   purine ribonucleotide catabolic process    33 1.672395 7.933847e-01
+ 3:    Bn_TCL1A              ivw                                                              actin filament-based process   124 1.284691 7.933847e-01
+ 4:    Bn_TCL1A            egger                                                                     cholesterol transport    25 1.897793 7.624216e-01
+ 5:    Bn_TCL1A            egger                                                   regulation of astrocyte differentiation     9 2.928024 7.624216e-01
+ 6:    Bn_TCL1A            egger                                                               purine nucleotide transport    12 2.376367 7.624216e-01
+ 7:    Bn_TCL1A              smr                                                                         B cell activation    65 1.644726 5.325800e-02
+ 8:    Bn_TCL1A              smr                                                              actin filament-based process   112 1.410014 7.780351e-02
+ 9:    Bn_TCL1A              smr                                                           actin cytoskeleton organization   104 1.398883 7.780351e-02
+10:    Bn_TCL1A              cct                                                              actin filament-based process   133 1.305801 4.459726e-01
+11:    Bn_TCL1A              cct                                                                         B cell activation    73 1.440532 4.459726e-01
+12:    Bn_TCL1A              cct                                                           actin cytoskeleton organization   125 1.311227 4.459726e-01
+13:    Bn_TCL1A              wnn                                                          mononuclear cell differentiation   258 1.271690 8.440337e-07
+14:    Bn_TCL1A              wnn                                                                 leukocyte differentiation   289 1.234796 7.445370e-06
+15:    Bn_TCL1A              wnn                                                                lymphocyte differentiation   221 1.269642 7.516367e-06
+16:    Bn_TCL1A           pseudo                                                                regulation of RNA splicing    65 1.550362 4.558080e-02
+17:    Bn_TCL1A           pseudo                                                                         B cell activation    86 1.452121 4.558080e-02
+18:    Bn_TCL1A           pseudo                                              regulation of mRNA splicing, via spliceosome    41 1.726452 4.558080e-02
+19:    Bn_TCL1A           MR_All                                                              actin filament-based process   172 1.245218 2.730771e-01
+20:    Bn_TCL1A           MR_All                                                           actin cytoskeleton organization   162 1.253067 2.730771e-01
+21:    Bn_TCL1A           MR_All                                                               actin filament organization   111 1.294689 2.730771e-01
+22:    Bn_TCL1A          MR_Only ubiquitin-dependent protein catabolic process via the multivesicular body sorting pathway    15 3.010340 1.166505e-01
+23:    Bn_TCL1A          MR_Only                                endosome transport via multivesicular body sorting pathway    16 2.765053 1.176004e-01
+24:    Bn_TCL1A          MR_Only                                                        late endosome to vacuole transport    15 2.744721 1.487253e-01
+25: CD4_Tn_CCR7              ivw                      positive regulation of CD4-positive, alpha-beta T cell proliferation    10 2.780982 1.835959e-01
+26: CD4_Tn_CCR7              ivw                                                                  viral protein processing    20 1.917919 6.886768e-01
+27: CD4_Tn_CCR7              ivw                                                                  AMP biosynthetic process     9 2.502884 6.886768e-01
+28: CD4_Tn_CCR7            egger                                                                     GMP metabolic process    14 2.053525 9.998099e-01
+29: CD4_Tn_CCR7            egger                                                                      macrophage migration    22 1.737598 9.998099e-01
+30: CD4_Tn_CCR7            egger                                                            succinyl-CoA metabolic process     8 2.464230 9.998099e-01
+31: CD4_Tn_CCR7              smr                                                                mononuclear cell migration    64 1.446383 8.462527e-01
+32: CD4_Tn_CCR7              smr                                                                      macrophage migration    22 1.874039 8.462527e-01
+33: CD4_Tn_CCR7              smr                                           negative regulation of monoatomic ion transport    30 1.689234 8.462527e-01
+34: CD4_Tn_CCR7              cct                                                          ganglioside biosynthetic process    11 2.412589 9.464311e-01
+35: CD4_Tn_CCR7              cct                                                                    response to copper ion    14 1.939306 9.995642e-01
+36: CD4_Tn_CCR7              cct                                                    glycosphingolipid biosynthetic process    15 1.879940 9.995642e-01
+37: CD4_Tn_CCR7              wnn                                                                 leukocyte differentiation   359 1.189068 2.441489e-05
+38: CD4_Tn_CCR7              wnn                                                                         T cell activation   347 1.182016 6.049418e-05
+39: CD4_Tn_CCR7              wnn                                                          mononuclear cell differentiation   308 1.192710 6.049418e-05
+40: CD4_Tn_CCR7           pseudo                                                              myeloid cell differentiation   207 1.207677 4.555291e-02
+41: CD4_Tn_CCR7           pseudo                                                  cellular response to mechanical stimulus    44 1.492688 4.555291e-02
+42: CD4_Tn_CCR7           pseudo                                                    cellular response to external stimulus    44 1.492688 4.555291e-02
+43: CD4_Tn_CCR7           MR_All                                                          ganglioside biosynthetic process    12 2.124231 5.447886e-01
+44: CD4_Tn_CCR7           MR_All                                                                     GMP metabolic process    18 1.820769 5.447886e-01
+45: CD4_Tn_CCR7           MR_All                                          purinergic nucleotide receptor signaling pathway    13 1.972500 5.447886e-01
+46: CD4_Tn_CCR7          MR_Only                                                           protein transmembrane transport    26 1.718775 9.999976e-01
+47: CD4_Tn_CCR7          MR_Only                                             positive regulation of chromosome segregation    13 2.115415 9.999976e-01
+48: CD4_Tn_CCR7          MR_Only                                                                           vesicle coating    16 1.880369 9.999976e-01
+49: CD8_Tn_CCR7              ivw                                      detection of stimulus involved in sensory perception    19 1.816201 9.999358e-01
+50: CD8_Tn_CCR7              ivw                                                                        liver regeneration    11 2.161385 9.999358e-01
+51: CD8_Tn_CCR7              ivw                                                           response to mechanical stimulus    46 1.414725 9.999358e-01
+52: CD8_Tn_CCR7            egger                                                           response to mechanical stimulus    46 1.573917 9.999384e-01
+53: CD8_Tn_CCR7            egger                                                                 heparin metabolic process     8 2.861666 9.999384e-01
+54: CD8_Tn_CCR7            egger                                                                       cholesterol storage    11 2.404595 9.999384e-01
+55: CD8_Tn_CCR7              smr                                                                mononuclear cell migration    51 1.511247 7.683934e-01
+56: CD8_Tn_CCR7              smr                                                       secondary alcohol metabolic process    37 1.626908 7.683934e-01
+57: CD8_Tn_CCR7              smr                                                        intermediate filament organization     8 2.974005 7.683934e-01
+58: CD8_Tn_CCR7              cct                                                 carbohydrate derivative catabolic process    75 1.404979 9.698295e-01
+59: CD8_Tn_CCR7              cct                                                                 defense response to virus    98 1.325461 9.698295e-01
+60: CD8_Tn_CCR7              cct                                                                         response to virus   122 1.282791 9.698295e-01
+61: CD8_Tn_CCR7              wnn                                                positive regulation of cytokine production   242 1.225782 4.511906e-04
+62: CD8_Tn_CCR7              wnn                                                               regulation of cell adhesion   342 1.159612 8.241502e-03
+63: CD8_Tn_CCR7              wnn                                                                 leukocyte differentiation   311 1.164494 8.677106e-03
+64: CD8_Tn_CCR7           pseudo                                                                         T cell activation   237 1.253823 6.774302e-03
+65: CD8_Tn_CCR7           pseudo                                             T cell activation involved in immune response    62 1.491557 2.229574e-02
+66: CD8_Tn_CCR7           pseudo                                                  regulation of lymphocyte differentiation    98 1.365696 2.229574e-02
+67: CD8_Tn_CCR7           MR_All                                                 carbohydrate derivative catabolic process    90 1.303443 9.997740e-01
+68: CD8_Tn_CCR7           MR_All                                                                       cholesterol storage    14 1.959992 9.997740e-01
+69: CD8_Tn_CCR7           MR_All                                               positive regulation of reproductive process    19 1.773326 9.997740e-01
+70: CD8_Tn_CCR7          MR_Only                                                             aminoglycan catabolic process    11 3.528329 1.353482e-01
+71: CD8_Tn_CCR7          MR_Only                                                 carbohydrate derivative catabolic process    51 1.692271 1.353482e-01
+72: CD8_Tn_CCR7          MR_Only                                                       glycosaminoglycan catabolic process     8 3.079269 9.998891e-01
+73:    Combined MR_Only_combined                                                  regulation of autophagy of mitochondrion    27 1.670905 9.999998e-01
+74:    Combined MR_Only_combined                                                                   regulation of mitophagy    24 1.680677 9.999998e-01
+75:    Combined MR_Only_combined                                                                               pinocytosis    13 1.921885 9.999998e-01
+      cell_type              set                                                                               Description Count     fold     p.adjust
+
+写出: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid7_GO/GO_BP_all.tsv.gz | 120957 行

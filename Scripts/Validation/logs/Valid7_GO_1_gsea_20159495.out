@@ -1,0 +1,62 @@
+job = 20159495 | cores = 8 | node = c277
+Bn_TCL1A     MR-Only link   2262 | MR-Only gene  1581 | tested gene (随机池)   8149 | 观测 score 中位 2.24 [1.00, 16.02] | 随机池 score 中位 1.36 [0.03, 171.75]
+CD4_Tn_CCR7  MR-Only link   4749 | MR-Only gene  2834 | tested gene (随机池)  10701 | 观测 score 中位 2.60 [1.00, 47.45] | 随机池 score 中位 1.84 [0.04, 189.56]
+CD8_Tn_CCR7  MR-Only link   2886 | MR-Only gene  1903 | tested gene (随机池)   9427 | 观测 score 中位 2.33 [1.01, 38.29] | 随机池 score 中位 1.50 [0.04, 151.85]
+Combined     MR-Only link   9897 | MR-Only gene  4509 | tested gene (随机池)  10983 | 观测 score 中位 2.52 [1.00, 47.45] | 随机池 score 中位 2.27 [0.05, 189.56]
+
+gseGO 完成: 4 组, 0.7 min
+
+每组: term 数 / 最小 p / p < 0.05 的 term 数 (期望 5%) / FDR < 0.1 / FDR < 0.05
+      gene_set n_genes n_term   min_p p_lt_05 exp_05 fdr_lt_01 fdr_lt_005 min_fdr
+        <char>   <int>  <int>   <num>   <int>  <num>     <int>      <int>   <num>
+1:    Bn_TCL1A    1581   1516 0.00063      46     76         0          0   0.950
+2: CD4_Tn_CCR7    2834   2288 0.00015     120    114         0          0   0.340
+3: CD8_Tn_CCR7    1903   1731 0.00050     136     87         0          0   0.460
+4:    Combined    4509   3006 0.00006     195    150         9          0   0.087
+
+每组 p 最小的 10 个 term
+       gene_set                                                  Description setSize   NES  pvalue p.adjust
+         <char>                                                       <char>   <int> <num>   <num>    <num>
+ 1:    Bn_TCL1A         regulation of protein-containing complex disassembly      10  2.22 0.00063    0.950
+ 2:    Bn_TCL1A                                     protein depolymerization      13  2.07 0.00240    0.990
+ 3:    Bn_TCL1A                         regulation of protein polymerization      21  1.97 0.00250    0.990
+ 4:    Bn_TCL1A                                ameboidal-type cell migration      19  1.91 0.00400    0.990
+ 5:    Bn_TCL1A adenylate cyclase-modulating G protein-coupled receptor sign      16  1.92 0.00550    0.990
+ 6:    Bn_TCL1A regulation of microtubule polymerization or depolymerization      10  1.99 0.00650    0.990
+ 7:    Bn_TCL1A     negative regulation of supramolecular fiber organization      12  1.95 0.00780    0.990
+ 8:    Bn_TCL1A          production of molecular mediator of immune response      18  1.84 0.00890    0.990
+ 9:    Bn_TCL1A                                     DNA biosynthetic process      12  1.94 0.00900    0.990
+10:    Bn_TCL1A             negative regulation of cytoskeleton organization      13  1.91 0.00950    0.990
+11: CD4_Tn_CCR7                                   rescue of stalled ribosome      10  2.25 0.00015    0.340
+12: CD4_Tn_CCR7                                             actin nucleation      10  2.14 0.00051    0.370
+13: CD4_Tn_CCR7 negative regulation of NF-kappaB transcription factor activi      14  2.14 0.00067    0.370
+14: CD4_Tn_CCR7                                     electron transport chain      23  1.98 0.00073    0.370
+15: CD4_Tn_CCR7                                 xenobiotic metabolic process      17  2.00 0.00082    0.370
+16: CD4_Tn_CCR7                                                  cytokinesis      37  1.83 0.00130    0.370
+17: CD4_Tn_CCR7                           cortical cytoskeleton organization      11  2.07 0.00140    0.370
+18: CD4_Tn_CCR7                               response to type II interferon      25  1.88 0.00170    0.370
+19: CD4_Tn_CCR7                  antigen receptor-mediated signaling pathway      33  1.82 0.00190    0.370
+20: CD4_Tn_CCR7                       purine nucleotide biosynthetic process      29  1.83 0.00220    0.370
+21: CD8_Tn_CCR7       negative regulation of cellular component organization      60  1.78 0.00050    0.460
+22: CD8_Tn_CCR7                negative regulation of organelle organization      25  2.02 0.00062    0.460
+23: CD8_Tn_CCR7                                monocarboxylic acid transport      11  2.10 0.00088    0.460
+24: CD8_Tn_CCR7                                     electron transport chain      16  1.99 0.00120    0.460
+25: CD8_Tn_CCR7                             small molecule metabolic process     203  1.45 0.00160    0.460
+26: CD8_Tn_CCR7      regulation of monoatomic cation transmembrane transport      19  1.93 0.00190    0.460
+27: CD8_Tn_CCR7                       positive regulation of phosphorylation      32  1.84 0.00240    0.460
+28: CD8_Tn_CCR7          positive regulation of phosphorus metabolic process      35  1.79 0.00250    0.460
+29: CD8_Tn_CCR7           positive regulation of phosphate metabolic process      35  1.79 0.00250    0.460
+30: CD8_Tn_CCR7               positive regulation of protein phosphorylation      31  1.86 0.00280    0.460
+31:    Combined                     Arp2/3 complex-mediated actin nucleation      15  2.21 0.00006    0.087
+32:    Combined                 purine-containing compound metabolic process     157  1.64 0.00010    0.087
+33:    Combined              purine-containing compound biosynthetic process      67  1.83 0.00011    0.087
+34:    Combined                                     electron transport chain      37  1.99 0.00014    0.087
+35:    Combined                          purine nucleotide metabolic process     114  1.69 0.00014    0.087
+36:    Combined                                             actin nucleation      16  2.16 0.00024    0.097
+37:    Combined negative regulation of monoatomic ion transmembrane transpor      10  2.14 0.00028    0.097
+38:    Combined        negative regulation of cation transmembrane transport      10  2.14 0.00028    0.097
+39:    Combined                                         fatty acid transport      17  2.07 0.00029    0.097
+40:    Combined                         respiratory electron transport chain      36  1.89 0.00039    0.120
+       gene_set                                                  Description setSize   NES  pvalue p.adjust
+
+写出: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid7_GO/GO_GSEA_MROnly.tsv.gz | 8541 行

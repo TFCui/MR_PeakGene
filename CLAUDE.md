@@ -14,7 +14,7 @@
 - 所有输出写到 `Claude_project` 内：结果放 `Results/`，中间文件和临时文件（包括 PLINK 临时文件）放 `tmp/`，SLURM 日志也放在项目内。
   不使用 `$TMPDIR` 或其他外部路径存放输出。
 - 如果某一步看起来必须写到项目外，先停下来问用户。
-
+ 
 ## 3. 协作方式
 - 和用户一步一步推进。每一步先说明要做什么，做完汇报结果；不要一次把整个流程跑完。
 - 重计算用 `sbatch` 提交到 SLURM，不使用交互节点。登录节点只做轻量的检查和汇总。
@@ -91,8 +91,8 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 ## 8. Validation 要点（细节逐个审阅后再更新）
 | 模块 | 内容 |
 |---|---|
-| V1+V2 | 每个 gene 内做超几何检验：显著 peak 与 6 个金标准（EnhancerAtlas、FANTOM5、4DGenome、GTEx、HiChIP、PCHiC）的重叠 |
-| V3 | S-LDSC：各方法显著 peak（hg19，±0/500 bp）+ baselineLD，9 个 GWAS，pool 作背景；看 enrichment 和 τ |
+| V1+V2 | 每个 gene 内做超几何检验：显著 peak 与 6 个金标准（EnhancerAtlas、FANTOM5、4DGenome、GTEx、HiChIP、PCHiC）的重叠；Fig3 汇总为 global test 表（各 gene 的 N/K/n_sig/k 求和后给 global P 和 pooled fold enrichment，定义见 `Scripts/Visualization.md` 3.3 节） |
+| V3 | S-LDSC：MR-Only peak（IVW/Egger/SMR 任一 FDR < 0.1 且 WNN、Pseudo 都不显著的 link；hg19，±500 bp）+ baselineLD，9 个 GWAS，pool（全部候选 peak）作对照；另加 3 个 CT 合并（Combined，MR-Only 和 pool 各取并集）一组；看 enrichment |
 | V4 | Motif 富集：Signac + JASPAR2020，背景按 GC 和可及性匹配；检查对应 TF 是否表达 |
 | V5 | 逐 gene ROC AUC，用同样的 6 个金标准 |
 | V6 | 与 CIMA SCENIC+ GRN 的重叠，做 Fisher 检验 |
@@ -108,8 +108,14 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 - 2026-10-09：开始可视化：按 `20261006_paper` 的思路复现论文图，代码在 `Scripts/Visualization/`，说明在 `Scripts/Visualization.md`，图在 `Results/Figures/`；已完成 Fig1、Fig2（v1 + v2）、Fig3、Fig4、Fig5（第 1 页）、Fig6（Motif_all.tsv + 复制 xlsx）、Fig7、Fig8（GWAS 模式，基于 Valid6_GWAS）。
 - 2026-10-09：新增验证模块 `Valid6_GWAS`（`Scripts/Validation/Valid6_GWAS.R`，移植旧 `G1_find_gwas.R`，只用 9 个 GWAS），输出 `Results/Validation/Valid6_GWAS/`；Fig8 将基于它复现。
 - 2026-10-12：建立 git 仓库（分支 main，远程 `git@github.com:TFCui/MR_PeakGene.git`），白名单 `.gitignore`；新增第 11 节 Git 规则。
+- 2026-10-13：可视化更新（Fig1、Fig2、Fig8），新图在 `Results/Figures/Figures_20261019/`，详见 `Scripts/Visualization.md`。
+- 2026-10-13：Fig3 改为 global test 表（Global P + pooled fold enrichment）；Hyper 相关文档（`Scripts/Visualization.md` 3.3、`Scripts/Pipeline.md` 3.1）已更新。
+- 2026-10-13：Valid2_SLDSC 的显著 peak 阈值改为 FDR < 0.1 并重跑（0.05 版本备份为 `*_FDR0.05.tsv`）；Fig5 去掉 s.e.，raw enrichment P < 0.1 标 `*`。
+- 2026-10-14：Valid2_SLDSC 改为只跑 MR-Only + pool（6 方法 FDR 0.1 结果表暂存为 `SLDSC_6methods_FDR0.1.tsv`，FDR 0.05 备份已删）；Fig5 改为 MR-Only vs All peaks。
+- 2026-10-14：Valid2_SLDSC 新增 Combined（3 个 CT 合并）一组；Fig5 加第 2 页。
+- 2026-10-15：论文稿件目录 `Manuscript/`（CodeX 生成）纳入 git 备份；`.gitignore` 放行该目录，排除编译中间文件（aux/bbl/blg/log/out）、`plos_draft.*` 重复文件、`overleaf_project.zip`、`.plos-review/` 和 `*.before` 备份。
 
 ## 11. Git 规则
-- 只提交 `Scripts/`、`Results/`、`CLAUDE.md`（外加白名单 `.gitignore` 本身）；`data/`、`tmp/`、`Scripts_reference/` 不提交。
+- 只提交 `Scripts/`、`Results/`、`Manuscript/`（排除规则见 `.gitignore`）、`CLAUDE.md`（外加白名单 `.gitignore` 本身）；`data/`、`tmp/`、`Scripts_reference/` 不提交。
 - 提交前先检查 `git status`（以及是否有超过 50MB 的大文件）。
 - 不 force push。

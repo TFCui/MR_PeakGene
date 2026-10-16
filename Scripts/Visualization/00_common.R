@@ -13,7 +13,7 @@ PROJ    <- "/scratch/user/tfcui2025/CIMA/Claude_project"
 BASE    <- "/scratch/user/tfcui2025/CIMA"
 MR_DIR  <- file.path(PROJ, "Results/MR")
 VAL_DIR <- file.path(PROJ, "Results/Validation")
-FIG_DIR <- file.path(PROJ, "Results/Figures")
+FIG_DIR <- file.path(PROJ, "Results/Figures/Figures_20261019")
 TMP_DIR <- file.path(PROJ, "tmp")
 dir.create(FIG_DIR, recursive = TRUE, showWarnings = FALSE)
 
