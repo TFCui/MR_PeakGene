@@ -1,0 +1,103 @@
+\section{Materials and Methods}
+\label{sec:methods}
+\textit{Structured outline; mathematical details and complete source citations
+will be developed in subsequent revisions.}
+
+\subsection{Data sources}
+We used CIMA caQTL and eQTL summary statistics (OMIX009786), cell-type-specific
+pseudobulk matrices, and an external PBMC multiome WNN dataset. The MR LD
+reference is hg38 1000 Genomes EAS; S-LDSC uses its separate EUR reference.
+\TODO{Add study citations, donor and QTL sample sizes, published covariates,
+normalization, ancestry details, and data-access statements.}
+
+\subsection{Candidate peak--gene pairs}
+Precomputed cell-type-specific candidate tables supplied the pair universe.
+The documented upstream search includes peaks with centers within 1 Mb of a
+gene's TSS. Current eligibility requires at least three shared QTL variants
+and feature availability in both marginal datasets.
+\TODO{Document the definitive candidate-table generation and coordinate rules.}
+
+\subsection{Instrument selection and LD preparation}
+The model consumes pair-indexed caQTL files documented as clumped at
+\(r^2=0.99\) within 20 Mb. QTL alleles must match exactly; approximately
+duplicated exposure/outcome slope pairs are removed at tolerance \(10^{-3}\).
+Signed PLINK LD is aligned to the retained variants, and exposure effects,
+outcome effects, and LD signs are oriented together.
+\TODO{Recover the original clumping command and initial instrument-selection
+thresholds; give the complete retained-variant rules.}
+
+\subsection{GLS-IVW}
+IVW is fitted through the origin after whitening by the outcome-effect
+covariance constructed from outcome SEs and LD. Eigenvalue truncation targets
+99.9\% variance with a five-direction minimum setting, subject to available
+positive directions. The implementation uses SNP-count-based degrees of
+freedom and inflates SEs only for overdispersion.
+\TODO{Add the GLS formulation, reference for correlated instruments, and the
+precise truncation and uncertainty conventions.}
+
+\subsection{GLS-MR Egger}
+Egger uses the same LD-aware transformation and an additional intercept
+\citep{bowden2015egger}. Final tables retain the slope, SE, and p-value.
+\TODO{Describe the intercept and assumptions, distinguishing the general
+MR-Egger reference from this project's GLS implementation.}
+
+\subsection{Summary-data-based Mendelian randomization}
+The SMR calculation uses the retained SNP with the smallest caQTL p-value,
+its outcome/exposure effect ratio, and the implemented chi-square test based
+on p-derived z-scores \citep{zhu2016smr}.
+\TODO{Add the exact test and SE expressions. Clarify that this implementation
+does not include a HEIDI analysis.}
+
+\subsection{Cauchy combination}
+CCT combines the SMR, IVW, and Egger p-values with equal weights
+\citep{liu2020cauchy}. It supplies a combined significance measure rather than
+a combined causal effect estimate.
+
+\subsection{Pseudobulk and WNN correlations}
+Pseudobulk Spearman correlations use matched donors and log-transformed CPM.
+WNN Spearman correlations use 80 external PBMC metacells shared across the
+three analyses. Neither correlation stage includes covariate residualization.
+\TODO{Complete the upstream pseudobulk and metacell construction descriptions.}
+
+\subsection{Filtering and multiple testing}
+Pairs with any missing base-method p-value are removed, then pairs with IVW
+residual variance greater than 10 are removed. CCT is calculated afterward.
+BH adjustment is applied separately within each gene and method
+\citep{benjamini1995fdr}. Discovery uses \(\q<0.1\); GRN uses \(\q<0.05\).
+The two definitions of MR-only links are stated in their Results subsections.
+
+\subsection{Regulatory references, enrichment, and ROC-AUC}
+Six reference datasets are mapped to genes and genomic intervals. Gene-level
+upper-tail hypergeometric tests compare significant peaks with candidate
+backgrounds; the existing global summary pools eligible gene counts and reports
+fold enrichment. ROC-AUC uses \(-\log_{10}(p)\), genes with both classes, and
+the existing automatic ROC direction. GTEx ROC labels additionally require
+overlap with validation multiome peaks.
+\TODO{Add resource citations, overlap/liftOver details, reference thresholds,
+and a precise definition of the comparison population.}
+
+\subsection{Motifs, regulatory networks, and GO}
+Motif analysis uses Signac, JASPAR2020, and backgrounds matched on GC and
+accessibility; enrichment requires BH-adjusted \(p<0.05\) and fold \(>1\).
+TF-expression checks require detection in at least 5\% of cells. GRN overlap
+uses Fisher tests against all retained tested pairs. GO BP GSEA ranks MR-only
+genes by minimum MR p-value over MR-only links; a separate 5,000-draw analysis
+samples tested genes scored using all their links and calculates empirical
+p-values from term-specific available null NES values.
+\TODO{Add resource/software citations, term-size settings, gene identifiers,
+and the intended interpretation of each GO null comparison.}
+
+\subsection{Disease heritability and GWAS overlap}
+S-LDSC \citep{finucane2015sldsc} evaluates hg19 peak annotations extended by
+500 bp per side, each fitted with 97 baseline-LD annotations. The nine GWAS
+are listed in Figure~\ref{fig:sldsc}. A separate locus screen requires a
+genome-wide-significant GWAS variant inside an unextended peak.
+\TODO{Add each GWAS citation and cohort description, regression resources,
+uncertainty reporting, and the variant-mapping procedure.}
+
+\subsection{Null-SNP diagnostic}
+An existing diagnostic LD-prunes variants, retains caQTL/eQTL associations
+with both nominal \(p>0.05\), and examines correlations of their z-scores
+(Supplementary Figure~\ref{fig:supp-qc}).
+\TODO{Describe its descriptive role and distinguish SNP--pair observations
+from unique variants in the pooled summary.}

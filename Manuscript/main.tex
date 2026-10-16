@@ -1,0 +1,104 @@
+% Adapted from the user-supplied official PLOS template, version 3.8 (Apr 2026).
+% Development exceptions: modular inputs, visible PDF figures, editorial TODOs.
+\documentclass[10pt,letterpaper]{article}
+\ifdefined\pdfminorversion\pdfminorversion=7\fi
+\ifdefined\pdfsuppresswarningpagegroup\pdfsuppresswarningpagegroup=1\fi
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{changepage}
+\usepackage{textcomp,marvosym}
+\usepackage{cite}
+% Compatibility alias preserves the existing section sources and citation keys.
+\let\citep\cite
+\usepackage{nameref,hyperref}
+\hypersetup{hidelinks}
+\usepackage[right]{lineno}
+% setspace changes footnote internals; avoid an unnecessary microtype patch.
+\usepackage[nopatch={eqnum,footnote}]{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+\usepackage[table]{xcolor}
+\usepackage{array}
+\newcolumntype{+}{!{\vrule width 2pt}}
+\newlength\savedwidth
+\newcommand\thickcline[1]{%
+  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+  \cline{#1}%
+  \noalign{\vskip\arrayrulewidth}%
+  \noalign{\global\arrayrulewidth\savedwidth}}
+\newcommand\thickhline{%
+  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+  \hline\noalign{\global\arrayrulewidth\savedwidth}}
+\usepackage{setspace}
+\doublespacing
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in
+\textheight 8.75in
+\setcounter{secnumdepth}{0}
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,
+  justification=raggedright,singlelinecheck=off]{caption}
+\DeclareCaptionFont{plosdouble}{\doublespacing}
+\captionsetup{font=plosdouble}
+\renewcommand{\figurename}{Fig}
+\DeclareCaptionLabelFormat{plossupport}{#2 Fig}
+\bibliographystyle{plos2025}
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+\usepackage{lastpage,fancyhdr,graphicx}
+\usepackage{epstopdf}
+\pagestyle{fancy}
+\fancyhf{}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+\lfoot{\today}
+\usepackage{booktabs}
+\usepackage{placeins}
+
+\graphicspath{{figures/}}
+\setlength{\emergencystretch}{2em}
+\newif\ifshowtodos
+\showtodostrue % Change to \showtodosfalse to hide editorial TODO paragraphs.
+\newcommand{\TODO}[1]{\ifshowtodos\par\smallskip
+  {\small\textbf{TODO:} #1}\par\smallskip\fi}
+\newcommand{\q}{q}
+% Keep research graphics visible for drafting. This switch hides images only;
+% captions, labels, and cross-references remain when preparing submission files.
+\newif\ifdraftfigures
+\draftfigurestrue
+\let\PLOSincludegraphics\includegraphics
+\renewcommand{\includegraphics}[2][]{%
+  \ifdraftfigures\PLOSincludegraphics[#1]{#2}\fi}
+
+\newcommand{\ManuscriptTitle}{Mendelian randomization and multi-omic evidence for regulatory
+peak--gene links in human immune cells}
+\newcommand{\ShortTitle}{Genetic evidence for immune-cell peak--gene links}
+
+\begin{document}
+\linenumbers % Continuous numbering, including the draft front matter.
+\input{sections/title_page}
+\section*{Abstract}
+\input{sections/abstract}
+\input{sections/author_summary}
+\clearpage
+\newgeometry{top=0.85in,left=1in,right=1in,footskip=0.75in}
+% Align the footer with the body margins after the template geometry change.
+\fancyheadoffset[L]{0pt}
+\fancyfootoffset[L]{0pt}
+\input{sections/introduction}
+\input{sections/results}
+\FloatBarrier
+\input{sections/discussion}
+\input{sections/methods}
+\FloatBarrier
+\input{sections/acknowledgments}
+\bibliography{references}
+\clearpage
+\input{sections/supplementary}
+\end{document}

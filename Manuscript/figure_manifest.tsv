@@ -1,0 +1,11 @@
+source_project_relative	manuscript_file	source_pages	displayed_source_pages	placement	sha256
+Results/Figures/Figures_20261019/Fig1_MR_overview.pdf	figures/Fig1_MR_overview.pdf	4	1,4	Main Fig. 1; other cell-type UpSets retained	79ff1e0f29ba7cc6677a884fa5d4d867a9eda88a159cfa67b2aa33ce9bf92095
+Results/Figures/Figures_20261019/Fig2_examples.pdf	figures/Fig2_examples.pdf	6	1	Main Fig. 2; additional example pages retained	219edfc47f70cb3fba4184c48fdad937b21b8613105a92bd6cebccc9c6d6130c
+Results/Figures/Figures_20261012/Fig4_AUC.pdf	figures/Fig4_AUC.pdf	3	1	Main Fig. 3; CD4/CD8 pages retained	5c985e8f34ece616cedb71cb247b6e4015812c2ed4f4f174ae28a3f87564a9e0
+Results/Figures/Figures_20261012/Fig7_GRN.pdf	figures/Fig7_GRN.pdf	1	1	Supplementary Fig. S1	0b85df41a8f50f87a84ef869c978c9f5b51837972699eae80fed8021e447b1b2
+Results/Figures/Figures_20261019/Fig5_SLDSC.pdf	figures/Fig5_SLDSC.pdf	2	2;1	Main Fig. 4 page 2; Supplementary Fig. S3 page 1	04616df4de908e3480ff25fdd33598d37b69cb75d9a7a064749b77221ea9a76b
+Results/Figures/Figures_20261019/Fig8_Link_GWAS.pdf	figures/Fig8_Link_GWAS.pdf	27	7	Main Fig. 5 TMEM258 example; other loci retained	85e67e63c21e533d382a35058df0ece642e6363c98807f80c00949eadbe1992f
+Results/Figures/Figures_20261019/Fig9_GO_GSEA.pdf	figures/Fig9_GO_GSEA.pdf	3	2	Supplementary Fig. S2; other comparisons retained	346f4c20737a4960e61938e6940a78fc85d229ace72fdac93e7d541892ff242a
+Results/Figures/Figures_20261019/Sup1_OneSampleMR.pdf	figures/Sup1_OneSampleMR.pdf	3	1	Supplementary Fig. S4; CD4/CD8 pages retained	988af3dfac730188af60e29704b12f74dc8d4097e93b111c0501027eaf95c045
+Results/Figures/Figures_20261019/Fig3_Hyper_table.xlsx	figures/Fig3_Hyper_table.xlsx			Supporting Table S1; native workbook	8a9a514c4324f5e627133b3cb3d0bda67887130452ee60f7cbc37ed0ecf53547
+Results/Figures/Figures_20261019/Fig6_Motif_table.xlsx	figures/Fig6_Motif_table.xlsx			Supporting Table S2; native workbook	12ed6316a1b1e8d6dae66a4a8e910edf77ec9b7984c92ccd5486ab8a9104c61e
