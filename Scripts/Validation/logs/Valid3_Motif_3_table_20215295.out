@@ -1,0 +1,26 @@
+job = 20215295 | cores = 1 | node = c006
+[17:05:12] Rows: 47 | unique motifs: 42
+Warning message:
+The `<scale>` argument of `guides()` cannot be `FALSE`. Use "none" instead as
+of ggplot2 3.3.4.
+ℹ The deprecated feature was likely used in the ggseqlogo package.
+  Please report the issue at <https://github.com/omarwagih/ggseqlogo/issues>. 
+[17:05:34] Logos: 42 PNG + SVG in /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid3_Motif/logos
+[17:05:36] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261026/Table_2.xlsx
+[17:05:36] Embedded images: 47 | highlighted FDR cells: 66 | rows by CT: Bn_TCL1A 23, CD4_Tn_CCR7 14, CD8_Tn_CCR7 10
+Key: <celltype, immune_relevance>
+       celltype immune_relevance     N
+         <char>           <char> <int>
+ 1:    Bn_TCL1A         Moderate     9
+ 2:    Bn_TCL1A             None     2
+ 3:    Bn_TCL1A           Strong    10
+ 4:    Bn_TCL1A             Weak     2
+ 5: CD4_Tn_CCR7         Moderate     3
+ 6: CD4_Tn_CCR7             None     1
+ 7: CD4_Tn_CCR7           Strong     8
+ 8: CD4_Tn_CCR7             Weak     2
+ 9: CD8_Tn_CCR7         Moderate     4
+10: CD8_Tn_CCR7             None     1
+11: CD8_Tn_CCR7           Strong     2
+12: CD8_Tn_CCR7             Weak     3
+[17:05:36] Done.

@@ -28,7 +28,7 @@
 |---|---|
 | MR 代码 | `Scripts/Model/MR_AllPairs.R`、`Scripts/Model/MR_AllPairs_slurm.sh` |
 | 验证代码 | `Scripts/Validation/` |
-| QC 代码 | `Scripts/QC/`（日志 `Scripts/QC/logs/`；结果 `Results/QC/`；中间文件 `tmp/QC_OneSampleMR/`） |
+| QC 代码 | `Scripts/QC/`（日志 `Scripts/QC/logs/`；结果 `Results/QC/<编号>_<任务>/`；脚本按任务编号 `QC1_*`、`QC2_*`；中间文件 `tmp/QC_OneSampleMR/`） |
 | SLURM 日志 | 和脚本放一起：`Scripts/Model/logs/`、`Scripts/Validation/logs/` |
 | MR 结果 | `Results/MR/<CT>_AllPairs_results.tsv.gz` |
 | 验证结果 | `Results/Validation/Valid<k>_<名>/` |
@@ -118,7 +118,7 @@ tab 分隔（旧结果虽然叫 `.tsv.gz`，实际是逗号分隔；`fread` 两�
 | `ivw_fdr`、`egger_fdr`、`smr_fdr`、`wnn_fdr`、`pseudo_fdr`、`cct_fdr` | 各方法 gene 内 BH 的 FDR |
 
 ### 2.7 运行
-SLURM 配置：36 核、360G、4 h，`--array=0-2`（`CELLS=(Bn_TCL1A CD4_Tn_CCR7 CD8_Tn_CCR7)`），
+SLURM 配置：36 核、360G、4 h，`--array=0-4`（`CELLS=(Bn_TCL1A CD4_Tn_CCR7 CD8_Tn_CCR7 cMono_CD14 Mature_NK_dim_FCGR3A)`；2026-10-23 起加入后两个，只跑新 CT 时提交 `--array=3-4`，不要重跑 0–2），
 日志 `Scripts/Model/logs/%x_%A_%a.out`；脚本内完整写 `module purge; module load ...`，再 `Rscript Scripts/Model/MR_AllPairs.R $CT`。
 
 ```bash
@@ -143,6 +143,11 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 | Bn_TCL1A | 46,190 | 40,389 | 8,166 | 2,970 | 335 | 12 min |
 | CD4_Tn_CCR7 | 109,961 | 86,204 | 10,710 | 5,364 | 372 | 24 min |
 | CD8_Tn_CCR7 | 62,136 | 51,649 | 9,443 | 3,351 | 346 | 14 min |
+| cMono_CD14（2026-10-23） | 224,678 | 201,877 | 9,339 | 17,793 | 359 | 51 min |
+| Mature_NK_dim_FCGR3A（2026-10-23） | 79,523 | 69,518 | 8,872 | 5,184 | 349 | 20 min |
+
+> cMono 的 clump 输入原文件名为 `cMono_CD14_Clumped_r2_0.99_kb_2e+05.txt.gz`（窗口标签异常，实际 cis 距离 ≤ 1 Mb、SNP 均 p < 1e-8，口径与其他 CT 相同）。
+> 2026-10-23 经用户单独批准，将其改名为 `..._kb_20000.txt.gz`（仅改名，内容不变），使 `MR_AllPairs.R` 对所有 CT 用同一文件名模式。
 
 ---
 
@@ -167,7 +172,7 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 |---|---|---|---|
 | `Valid1_Hyper` | 金标准准备 + gene 内超几何富集 | `Valid1_2_Hyper` | `Hyper1and2_v1.sh` |
 | `Valid2_SLDSC` | S-LDSC 遗传力富集 | `Valid3_SLDSC_version2/planD` | `D1_prep.R`、`D2_sldsc_slurm.sh`、`D3_merge_plot.R` |
-| `Valid3_Motif` | Motif 富集 + TF 表达检查 | `Valid4_Motif` | `run_motif_enrichment.R`(+`.slurm`)、`Motif1_step2_RunAll.sh` |
+| `Valid3_Motif` | Motif 富集 + MR 特异 motif | `Valid4_Motif` | `run_motif_enrichment.R`(+`.slurm`)、`Motif1_step2_RunAll.sh` |
 | `Valid4_AUC` | 逐 gene ROC AUC | `Valid5_AUC` | `AUC2_all.sh`、`AUC2_all_slurm.sh` |
 | `Valid5_GRN` | 与 CIMA SCENIC+ GRN 的重叠 | `Valid6_CIMA_GRN` | `GRN1_peak_gene.sh` |
 | `Valid6_GWAS` | 只被 MR 支持的强 link 的 peak 内是否有 GWAS 显著 SNP（Fig8 用） | `Valid8_matchGWAS` | `20260525_QC1/Scripts/source/G1_find_gwas.R` |
@@ -191,12 +196,13 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 | Valid2_SLDSC `3_merge` | 轻 | 1 个 job |
 | Valid3_Motif `1_enrich` | 重（AddMotifs，150G） | array 0–2，每个 CT 一个 task |
 | Valid3_Motif `2_summary` | 轻 | 1 个 job |
+| Valid3_Motif `3_table` | 轻（42 个 logo + xlsx） | 1 个 job |
 | Valid4_AUC | 重（6 个金标准 × 几千个 gene 的 ROC） | array 0–2，每个 CT 一个 task |
 | Valid5_GRN | 轻 | 1 个 job |
 | Valid6_GWAS | 轻（读 9 个 sumstats + 22 个 bim，约 3 min） | 1 个 job |
 
 - **唯一的跨模块依赖**：`Valid4_AUC` 读取 `Valid1_Hyper` 保存的金标准 → 用 `--dependency=afterok:<Valid1 的 jobid>` 提交。
-- **模块内部的先后**（同样用 `--dependency=afterok` 串起来）：Valid2 `1_prep` → `2_ldsc` → `3_merge`；Valid3 `1_enrich` → `2_summary`。
+- **模块内部的先后**（同样用 `--dependency=afterok` 串起来）：Valid2 `1_prep` → `2_ldsc` → `3_merge`；Valid3 `1_enrich` → `2_summary` →（文献表）→ `3_table`。
 - 提交示例：
   ```bash
   cd /scratch/user/tfcui2025/CIMA/Claude_project/Scripts/Validation && mkdir -p logs
@@ -207,6 +213,7 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
   sbatch --dependency=afterok:$j2b Valid2_SLDSC_3_merge_slurm.sh
   j3=$(sbatch --parsable Valid3_Motif_1_enrich_slurm.sh)
   sbatch --dependency=afterok:$j3 Valid3_Motif_2_summary_slurm.sh
+  sbatch Valid3_Motif_3_table_slurm.sh          # 需要 Motif_MR_specific_literature.tsv 已更新
   sbatch Valid5_GRN_slurm.sh
   sbatch Valid6_GWAS_slurm.sh
   ```
@@ -308,9 +315,9 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 
 ---
 
-### 3.3 Valid3_Motif：Motif 富集 + TF 表达检查
+### 3.3 Valid3_Motif：Motif 富集 + MR 特异 motif
 
-**目的**：看各方法显著 peak 中富集的 TF motif，以及这些 TF 在该细胞类型中是否表达。
+**目的**：看各方法显著 peak 中富集的 TF motif，并找出只在 MR 方法中富集的 motif。
 
 **步骤 1 `Valid3_Motif_1_enrich.R`（array 0–2；沿用 8 核、150G、12 h）**
 - 前景：每个方法 `*_fdr < 0.1` 的 peak（转成 `chr-start-end`）。
@@ -321,15 +328,20 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 - `FindMotifs(features = 前景, background = 背景)`。
 - 输出 `<CT>_motif_enrichment.tsv.gz`：Signac 的全部列 + method、rank、n_fg、n_bg、前景/背景的 GC 和 log_count 中位数。
 
-**步骤 2 `Valid3_Motif_2_summary.R`（3 个 CT 一起）**
+**步骤 2 `Valid3_Motif_2_summary.R`（3 个 CT 一起；1 核、16G）**
 - 显著 motif：`p.adjust < 0.05` 且 `fold.enrichment > 1`。
-- 每个 CT × motif 按 6 个方法是否显著分组：`Shared_all6`（4 个 MR + 2 个 marginal 全部显著）、`MR_only`、`Marginal_only`、`Partial`。
-- motif → TF：去掉 `(var.N)`，按 `::` 拆异二聚体，转大写。
-- TF 表达：RNA 对象（`rna_<CT>_qc.rds`）的 counts layer 实为 log1p(CP10k)；算每个 TF 的表达细胞比例 `pct_expr`、表达细胞中的平均 CP10k、全部细胞平均 CP10k。
-- 异二聚体取表达比例最低的亚基（limiting TF）；`expressed = 全部亚基都在 RNA 中 且 pct_expr ≥ 0.05`。
+- MR 特异 motif：IVW / MR_Egger / SMR 任一显著，且 WNN、Pseudo 都不显著（CCT 不参与筛选，只列 FDR）；`selected_by` 记录由哪些 MR 方法选中；motif → TF：去掉 `(var.N)`，按 `::` 拆异二聚体，转大写（`tfs`）。
+- 2026-10-20 起不再做 TF 表达检查和 `Shared_all6` / `MR_only` / `Marginal_only` / `Partial` 分组（`Motif_expression_motif.tsv` 已删除）。
 - 输出（`Results/Validation/Valid3_Motif/`）：
   - `Motif_sig_3ct.tsv`：显著 motif
-  - `Motif_expression_motif.tsv`：每个 CT × motif 的分组和表达
+  - `Motif_MR_specific.tsv`：MR 特异 motif，每个 CT × motif 一行（3 个 MR 方法的 pct_obs / pct_bg / fold / FDR，其余方法的 FDR，各方法前景 peak 数）；共 47 个（Bn 23、CD4 14、CD8 10）
+  - `Motif_MR_specific_literature.tsv`：上表 47 个 motif 的文献注释（`immune_relevance`、`evidence_context`、解释、参考文献、`consistency_with_old` = 与旧 16 个 motif 表的对照）；文献检索初稿在 `tmp/Valid3_Motif_lit/<CT>.tsv`，由 `tmp/Valid3_Motif_lit/curate.py` 合并并去掉限定语；86 个 PMID 均用 NCBI eutils 核对过题目、年份和摘要
+
+**步骤 3 `Valid3_Motif_3_table.R`（1 核、8G；约 2 min）**：论文 Table 2
+- Logo：42 个 motif ID，JASPAR2020 PFM → 列归一化 PPM → `ggseqlogo`（bits），输出 `Results/Validation/Valid3_Motif/logos/<ID>.{png,svg}`（3 × 1.6 in）。
+- xlsx：`Results/Figures/Figures_20261027/Table_3.xlsx`（openxlsx 新建，`insertImage` 嵌入 logo）。2026-10-23 起建表阶段再筛一次：IVW / MR_Egger / SMR 任一 FDR < 0.01（`MR_FDR_TABLE`）且 fold > 1，并去掉 `brief_interpretation` 以 “No clear” 开头的行 → 13 行（Bn 10 / CD4 2 / CD8 1）；被去掉的 34 行写进 `Excluded` sheet；步骤 2 的 `Motif_MR_specific*.tsv`（47 行，FDR < 0.05）不动
+  - `Motif_table`：Cell type | TF motif | Motif ID | Motif logo | IVW / MR-Egger / SMR 各 % obs、% bg、Fold、FDR | CCT、WNN、Pseudobulk 的 FDR | Immune relevance | Brief interpretation | Reference；FDR < 0.05 且 fold > 1 的 FDR 单元格黄底粗体（CCT/WNN/Pseudo 的 fold 从 `<CT>_motif_enrichment.tsv.gz` 取）；表下脚注写定义。
+  - `Details`：完整解释、全部参考文献及说明、与旧表的对照、各方法 `n_fg`。
 
 **与旧脚本的差异**：读新表，删掉旧代码里的 sigma2 过滤（旧代码保留了 sigma2 为 NA 的 pair，新表里已经没有这种 pair）；不画 MotifPlot；汇总部分从交互式代码改为脚本。
 
@@ -424,11 +436,11 @@ MR_only 且 peak 含 GWAS SNP 的 pair 共 27 个（Bn 7 / CD4 10 / CD8 10；21 
 - LD 参考：`data/ref_chr/hg38/chr*.{bed,bim,fam}`（ID 为 `CHR:BP:REF:ALT`）；PLINK：`$BASE/R_package/my_plink/plink`。
 
 **步骤**
-1. **LD pruning**（`QC_OneSampleMR_prune.R` + PLINK，每个 CT 一个 task）
+1. **LD pruning**（`QC1_1_OneSampleMR_prune.R` + PLINK，每个 CT 一个 task）
    - 取该 CT caQTL 的全部 unique `variant_id`，用 `A1/A2` 转成面板 ID `CHR:BP:REF:ALT`（两种等位顺序都尝试匹配，匹配不上的丢掉）。
    - 逐染色体 `plink --bfile <chr> --extract <ID 列表> --maf 0.01 --indep-pairwise 500kb 50 0.1`，合并 `.prune.in`，再换回 `variant_id`。PLINK 临时文件放 `tmp/QC_OneSampleMR/`。
    - 三个 CT 一律用 hg38 面板，不再用旧脚本的 rsID + hg19 EAS 面板。
-2. **选 null SNP 并配对**（`QC_OneSampleMR.R`）
+2. **选 null SNP 并配对**（`QC1_2_OneSampleMR.R`）
    - caQTL、eQTL 各自取 pruned 且 `pval_nominal > 0.05` 的 SNP。
    - 按 `All_GenePeak_<CT>.rds` 的 (gene, peak) 配对，再按 `variant_id` 求 caQTL 与 eQTL 的共享 SNP。
 3. **去重**：按 (peak, gene, caQTL slope, eQTL slope) 去重；按 slope 排序后，相邻 SNP 的 caQTL slope 与 eQTL slope 都相差 ≤ 1e-3 的视为重复，只留一个（旧脚本为 0.01，与 MR 步骤的 1e-3 统一）。
@@ -438,18 +450,23 @@ MR_only 且 peak 含 GWAS SNP 的 pair 共 27 个（Bn 7 / CD4 10 / CD8 10；21 
 5. **图**：按 pair 内 SNP 数分组（1–10、11–20、21–30、31–40、41–50、>50）画 ρ̂ 和 P 值的箱线图，外加 ρ̂ 分布的概览页；每个 CT 一个 3 页的 PDF。
 
 **输出**
-- `Results/QC/<CT>_pair_corr.tsv.gz`：每行一个 pair（`peak`、`gene`、`snp_count`、`rho_hat`、`t_stat`、`p_value`）。
-- `Results/QC/<CT>_global_rho.tsv`：整体 ρ、p、参与的 SNP 数和 pair 数（另附去重阈值 0.01 的对照）。
-- `Results/Figures/Sup1_OneSampleMR_<CT>.pdf`（3 页）。
+- `Results/QC/1_OneSampleMR/<CT>_pair_corr.tsv.gz`：每行一个 pair（`peak`、`gene`、`snp_count`、`rho_hat`、`t_stat`、`p_value`）。
+- `Results/QC/1_OneSampleMR/<CT>_global_rho.tsv`：整体 ρ、p、参与的 SNP 数和 pair 数（另附去重阈值 0.01 的对照）。
+- 图：`Results/Figures/Figures_20261026/Figure_S1.{pdf,svg}`（`Scripts/Visualization/Plot_Sup1_OneSampleMR.R`）。
 
-**位置**：代码 `Scripts/QC/`（`QC_OneSampleMR_prune.R`、`QC_OneSampleMR.R`、对应 `*_slurm.sh`，日志 `Scripts/QC/logs/`）；中间文件 `tmp/QC_OneSampleMR/`。
+**位置**：代码 `Scripts/QC/`（`QC1_1_OneSampleMR_prune.R`、`QC1_2_OneSampleMR.R`、对应 `*_slurm.sh`，日志 `Scripts/QC/logs/`）；中间文件 `tmp/QC_OneSampleMR/`。
 
 **运行**：prune 和相关性都是按 CT 的重计算，用 `--array=0-2`；相关性 job 用 `--dependency=afterok` 接在 prune 之后；画图是轻量步骤。
 ```bash
 cd /scratch/user/tfcui2025/CIMA/Claude_project/Scripts/QC && mkdir -p logs
-j1=$(sbatch --parsable QC_OneSampleMR_prune_slurm.sh)
-sbatch --dependency=afterok:$j1 QC_OneSampleMR_slurm.sh
+j1=$(sbatch --parsable QC1_1_OneSampleMR_prune_slurm.sh)
+sbatch --dependency=afterok:$j1 QC1_2_OneSampleMR_slurm.sh
 ```
+
+### 4.2 QC2_FlipPoints：MR-Egger 中 flip 前后的对比
+- **QC2_1 全基因组扫描**（`QC2_1_FlipScan.R` + `_slurm.sh`，array 0-2，每 CT 一个 task）：对 `Results/MR` 中全部 pair，按 `MR_AllPairs.R` 的对齐 → 去重 → PLINK LD，再拟合 GLS Egger 两次（flip：`bx`、`by`、`R` 同乘 `sign(beta_x)`；不 flip：原始编码）。IVW 对 flip 不变，所以只做 Egger。flip 版与正式表对账；不 flip 版按 gene 内 BH 得 `egger_fdr_noflip`。输出 `Results/QC/2_FlipPoints/<CT>_Egger_FlipScan.tsv.gz`；chunk 在 `tmp/QC2_FlipScan/`。
+- **挑候选**（`QC2_1_FlipScan_select.R`，登录节点）：不 flip p.adj < 0.05 且 flip 后 p.adj ≥ 0.1，按 −log10 p 落差排序 → `FlipScan_candidates.tsv`（每 CT 前 20）；另存 SNP 数 ≥ 50 的候选（Bn 187 / CD4 507 / CD8 305 个，每 CT 前 20）→ `FlipScan_candidates_nsnp50.tsv`（Figure S2 “差别大”的例子从这里挑）。
+- **QC2_2 画图**（`QC2_2_FlipPoints_plot.R` + `_slurm.sh`）：6 个 pair（每个 CT：差别小 SIDT2 / RPL11 / LCLAT1 + 差别大 PIGX 136 SNP / PDE4DIP 74 / KLRC3 134）→ `Figures_20261027/Figure_S2.pdf` + `Figure_S2.svg`（单页 3 行 × 4 panel：每行一个 CT，左半 = 差别小的 pair [原始 | flip]，右半 = 差别大的 pair [原始 | flip]，同一 pair 的两图坐标范围相同；panel 上方写 IVW P、Egger P）；每个 peak-gene pair 一个 panel 字母 A–F（按行从左到右）；数值 `FigureS2_estimates.tsv`（对账：flip 版 β 与正式 MR 表一致，Egger p 与扫描表一致）。旧版（3 页，差别大的例子为 GSTM4 / RGS12 / YBEY，SNP 数 10 / 32 / 40）备份在 `tmp/QC2_FlipPoints_test/old_20261027/`。原 18 个 example 的数值在 `FlipPoints_estimates.tsv`。
 
 ---
 
@@ -466,3 +483,8 @@ sbatch --dependency=afterok:$j1 QC_OneSampleMR_slurm.sh
 - 2026-10-13：Valid2_SLDSC 显著 peak 阈值由 FDR < 0.05 改为 < 0.1 并重跑（jobs 20138809/10/11）；pool 集合沿用旧 ldscore 和 h2；0.05 版本备份为 `SLDSC_all_FDR0.05.tsv`、`set_stats_FDR0.05.tsv`。
 - 2026-10-14：Valid2_SLDSC 的集合改为 MROnly（IVW/Egger/SMR 任一 FDR < 0.1 且 WNN、Pseudo 都不显著的 link 的 peak）+ pool；6 个方法的 FDR 0.1 结果表暂存为 `SLDSC_6methods_FDR0.1.tsv`、`set_stats_6methods_FDR0.1.tsv`，FDR 0.05 备份删除。
 - 2026-10-14：Valid2_SLDSC 新增 `Combined`（3 个 CT 的 MROnly 并集 / pool 并集）一组，原 3 个 CT 的结果不变；array 0–7，`SLDSC_all.tsv` 72 行。
+- 2026-10-19：QC 目录按任务编号：脚本改名 `QC1_1_OneSampleMR_prune.R`、`QC1_2_OneSampleMR.R`（+ slurm），结果移到 `Results/QC/1_OneSampleMR/`；新增 4.2 节 QC2_FlipPoints（flip 前后 MR 对比，18 个 Fig2 example，`FlipPoints_estimates.tsv`）。
+- 2026-10-20：QC2 改为两步：`QC2_1_FlipScan.R` 全基因组扫描（176,545 个 pair 的 Egger flip / 不 flip，flip 版与正式表一致；job 20214236）+ `QC2_1_FlipScan_select.R` 挑候选（不 flip p.adj < 0.05 且 flip 后 ≥ 0.1：Bn 700 / CD4 1,763 / CD8 1,056）；`QC2_2_FlipPoints_plot.R` 画 Figure_S2（3 页，每 CT 差别小 + 差别大各一个 pair，只出 PDF）。
+- 2026-10-20：Valid3_Motif 步骤 2 删掉 TF 表达检查和 4 组分组（`Motif_expression_motif.tsv` 删除），新增 MR 特异 motif 表 `Motif_MR_specific.tsv`（47 个）及文献注释 `Motif_MR_specific_literature.tsv`。
+- 2026-10-20：Valid3_Motif 新增步骤 3 `Valid3_Motif_3_table.R`（job 20215295）：42 个 motif logo（`Valid3_Motif/logos/`）+ 论文 Table 2 `Figures_20261026/Table_2.xlsx`（47 行，嵌入 logo，FDR 高亮 66 格）；文献表 86 个 PMID 全部核对，去掉限定语。
+- 2026-10-23：MR 主流程扩展到 `cMono_CD14`、`Mature_NK_dim_FCGR3A`（统计逻辑不变，slurm `CELLS` 加两项；job 20264078，51 / 20 min）；最终 pair cMono 200,417 / NK 68,734；NK 与旧结果对账：pair 集合相同，所有 p 值和效应量差异为 0。验证模块暂未对这两个 CT 运行。

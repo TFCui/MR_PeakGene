@@ -1,0 +1,113 @@
+[22:54:41] Fig10 pairs: 12 | GWAS SNP-pair 行: 31
+There were 24 warnings (use warnings() to see them)
+[22:55:37] EnsDb v86: 58613 genes | 2080628 exon/cds/utr 片段
+Key: <trait>
+    trait         MR-Only       All peaks
+   <fctr>          <char>          <char>
+1:     AS  17.7 (p=0.303)   3.1 (p=0.197)
+2:     CD 20.0* (p=0.084)  6.4* (p=0.000)
+3:    IBD 18.0* (p=0.050)  5.1* (p=0.000)
+4:     RA  10.1 (p=0.248)  5.7* (p=0.000)
+5:    SLE  14.0 (p=0.246)  6.5* (p=0.000)
+6:     MS 50.8* (p=0.069) 26.0* (p=0.000)
+7:    T1D 19.7* (p=0.060)  4.6* (p=0.000)
+8: Asthma   4.4 (p=0.352)  3.6* (p=0.000)
+9:    PBC   5.4 (p=0.646)  6.4* (p=0.000)
+[22:56:04]   [Bn_TCL1A] chr6:33313910-33314411__RGL2: ok, 97 SNPs
+[22:56:04]   [Bn_TCL1A] chr3:49903714-49904215__UBA7: ok, 13 SNPs
+[22:56:05]   [Bn_TCL1A] chr5:96896259-96896760__ERAP1: ok, 78 SNPs
+[22:56:05]   [Bn_TCL1A] chr6:28443269-28443770__ZSCAN16: ok, 66 SNPs
+[22:56:05] [Bn_TCL1A] 对账: SNP 数一致 4 / 4, lead SNP 找到 4 / 4
+[22:56:36]   [CD4_Tn_CCR7] chr12:56041553-56042054__ERBB3: ok, 57 SNPs
+[22:56:37]   [CD4_Tn_CCR7] chr19:1095225-1095726__POLR2E: ok, 7 SNPs
+[22:56:37]   [CD4_Tn_CCR7] chr20:59254001-59254502__GNAS: ok, 8 SNPs
+[22:56:38]   [CD4_Tn_CCR7] chr13:99375239-99375740__UBAC2: ok, 138 SNPs
+[22:56:38]   [CD4_Tn_CCR7] chr21:42425157-42425658__TMPRSS3: ok, 5 SNPs
+[22:56:38] [CD4_Tn_CCR7] 对账: SNP 数一致 5 / 5, lead SNP 找到 5 / 5
+[22:57:05]   [CD8_Tn_CCR7] chr12:56041553-56042054__GLS2: ok, 54 SNPs
+[22:57:06]   [CD8_Tn_CCR7] chr2:218287070-218287571__TMBIM1: ok, 13 SNPs
+[22:57:06]   [CD8_Tn_CCR7] chr20:59254001-59254502__GNAS: ok, 8 SNPs
+[22:57:06] [CD8_Tn_CCR7] 对账: SNP 数一致 3 / 3, lead SNP 找到 3 / 3
+[22:57:06] 线宽标尺: -log10(FDR) in [1.30, 10.09]
+[22:57:08]   page 1: Bn_TCL1A | RGL2 | chr6:33313910-33314411
+[22:57:08]     SNP 轨: 4 MR + 2 GWAS (MR instrument 共 97)
+[22:57:12]   page 1: CD4_Tn_CCR7 | ERBB3 | chr12:56041553-56042054
+[22:57:12]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 57)
+[22:57:12]   page 1: CD4_Tn_CCR7 | POLR2E | chr19:1095225-1095726
+[22:57:12]     SNP 轨: 4 MR + 2 GWAS (MR instrument 共 7)
+[22:57:12]   page 1: CD4_Tn_CCR7 | GNAS | chr20:59254001-59254502
+[22:57:12]     SNP 轨: 2 MR + 1 GWAS (MR instrument 共 8)
+[22:57:14]   page 2: CD8_Tn_CCR7 | GLS2 | chr12:56041553-56042054
+[22:57:14]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 54)
+[22:57:15]   page 2: CD4_Tn_CCR7 | UBAC2 | chr13:99375239-99375740
+[22:57:15]     SNP 轨: 4 MR + 2 GWAS (MR instrument 共 138)
+[22:57:15]   page 2: Bn_TCL1A | UBA7 | chr3:49903714-49904215
+[22:57:15]     SNP 轨: 4 MR + 1 GWAS (MR instrument 共 13)
+[22:57:16]   page 2: CD8_Tn_CCR7 | TMBIM1 | chr2:218287070-218287571
+[22:57:16]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 13)
+[22:57:17]   page 3: CD8_Tn_CCR7 | GNAS | chr20:59254001-59254502
+[22:57:17]     SNP 轨: 2 MR + 1 GWAS (MR instrument 共 8)
+[22:57:18]   page 3: Bn_TCL1A | ERAP1 | chr5:96896259-96896760
+[22:57:18]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 78)
+[22:57:18]   page 3: CD4_Tn_CCR7 | TMPRSS3 | chr21:42425157-42425658
+[22:57:18]     SNP 轨: 3 MR + 1 GWAS (MR instrument 共 5)
+[22:57:19]   page 3: Bn_TCL1A | ZSCAN16 | chr6:28443269-28443770
+[22:57:19]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 66)
+[22:57:21] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261019/Fig10_SLDSC_Link.pdf
+[22:57:36] Fig10 pairs: 12 | GWAS SNP-pair 行: 31
+There were 24 warnings (use warnings() to see them)
+[22:58:28] EnsDb v86: 58613 genes | 2080628 exon/cds/utr 片段
+Key: <trait>
+    trait         MR-Only       All peaks
+   <fctr>          <char>          <char>
+1:     AS  17.7 (p=0.303)   3.1 (p=0.197)
+2:     CD 20.0* (p=0.084)  6.4* (p=0.000)
+3:    IBD 18.0* (p=0.050)  5.1* (p=0.000)
+4:     RA  10.1 (p=0.248)  5.7* (p=0.000)
+5:    SLE  14.0 (p=0.246)  6.5* (p=0.000)
+6:     MS 50.8* (p=0.069) 26.0* (p=0.000)
+7:    T1D 19.7* (p=0.060)  4.6* (p=0.000)
+8: Asthma   4.4 (p=0.352)  3.6* (p=0.000)
+9:    PBC   5.4 (p=0.646)  6.4* (p=0.000)
+[22:58:53]   [Bn_TCL1A] chr6:33313910-33314411__RGL2: ok, 97 SNPs
+[22:58:53]   [Bn_TCL1A] chr3:49903714-49904215__UBA7: ok, 13 SNPs
+[22:58:53]   [Bn_TCL1A] chr5:96896259-96896760__ERAP1: ok, 78 SNPs
+[22:58:53]   [Bn_TCL1A] chr6:28443269-28443770__ZSCAN16: ok, 66 SNPs
+[22:58:53] [Bn_TCL1A] 对账: SNP 数一致 4 / 4, lead SNP 找到 4 / 4
+[22:59:24]   [CD4_Tn_CCR7] chr12:56041553-56042054__ERBB3: ok, 57 SNPs
+[22:59:25]   [CD4_Tn_CCR7] chr19:1095225-1095726__POLR2E: ok, 7 SNPs
+[22:59:25]   [CD4_Tn_CCR7] chr20:59254001-59254502__GNAS: ok, 8 SNPs
+[22:59:25]   [CD4_Tn_CCR7] chr13:99375239-99375740__UBAC2: ok, 138 SNPs
+[22:59:25]   [CD4_Tn_CCR7] chr21:42425157-42425658__TMPRSS3: ok, 5 SNPs
+[22:59:25] [CD4_Tn_CCR7] 对账: SNP 数一致 5 / 5, lead SNP 找到 5 / 5
+[22:59:52]   [CD8_Tn_CCR7] chr12:56041553-56042054__GLS2: ok, 54 SNPs
+[22:59:52]   [CD8_Tn_CCR7] chr2:218287070-218287571__TMBIM1: ok, 13 SNPs
+[22:59:52]   [CD8_Tn_CCR7] chr20:59254001-59254502__GNAS: ok, 8 SNPs
+[22:59:52] [CD8_Tn_CCR7] 对账: SNP 数一致 3 / 3, lead SNP 找到 3 / 3
+[22:59:52] 线宽标尺: -log10(FDR) in [1.30, 10.09]
+[22:59:53]   page 1: Bn_TCL1A | RGL2 | chr6:33313910-33314411
+[22:59:53]     SNP 轨: 4 MR + 2 GWAS (MR instrument 共 97)
+[22:59:54]   page 1: CD4_Tn_CCR7 | ERBB3 | chr12:56041553-56042054
+[22:59:54]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 57)
+[22:59:54]   page 1: CD4_Tn_CCR7 | POLR2E | chr19:1095225-1095726
+[22:59:54]     SNP 轨: 4 MR + 2 GWAS (MR instrument 共 7)
+[22:59:54]   page 1: CD4_Tn_CCR7 | GNAS | chr20:59254001-59254502
+[22:59:54]     SNP 轨: 2 MR + 1 GWAS (MR instrument 共 8)
+[22:59:56]   page 2: CD8_Tn_CCR7 | GLS2 | chr12:56041553-56042054
+[22:59:56]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 54)
+[22:59:57]   page 2: CD4_Tn_CCR7 | UBAC2 | chr13:99375239-99375740
+[22:59:57]     SNP 轨: 4 MR + 2 GWAS (MR instrument 共 138)
+[22:59:57]   page 2: Bn_TCL1A | UBA7 | chr3:49903714-49904215
+[22:59:57]     SNP 轨: 4 MR + 1 GWAS (MR instrument 共 13)
+[22:59:58]   page 2: CD8_Tn_CCR7 | TMBIM1 | chr2:218287070-218287571
+[22:59:58]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 13)
+[22:59:59]   page 3: CD8_Tn_CCR7 | GNAS | chr20:59254001-59254502
+[22:59:59]     SNP 轨: 2 MR + 1 GWAS (MR instrument 共 8)
+[23:00:00]   page 3: Bn_TCL1A | ERAP1 | chr5:96896259-96896760
+[23:00:00]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 78)
+[23:00:00]   page 3: CD4_Tn_CCR7 | TMPRSS3 | chr21:42425157-42425658
+[23:00:00]     SNP 轨: 3 MR + 1 GWAS (MR instrument 共 5)
+[23:00:01]   page 3: Bn_TCL1A | ZSCAN16 | chr6:28443269-28443770
+[23:00:01]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 66)
+[23:00:02] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261019/Fig10_SLDSC_Link.pdf
+===== OK

@@ -1,103 +1,676 @@
 \section{Materials and Methods}
 \label{sec:methods}
-\textit{Structured outline; mathematical details and complete source citations
-will be developed in subsequent revisions.}
 
 \subsection{Data sources}
-We used CIMA caQTL and eQTL summary statistics (OMIX009786), cell-type-specific
-pseudobulk matrices, and an external PBMC multiome WNN dataset. The MR LD
-reference is hg38 1000 Genomes EAS; S-LDSC uses its separate EUR reference.
-\TODO{Add study citations, donor and QTL sample sizes, published covariates,
-normalization, ancestry details, and data-access statements.}
+Our study was conducted on the the Chinese Immune Multi-Omics Atlas (CIMA)  (OMIX009786), which provided cell-type-specific caQTL and eQTL summary statistics, and single-cell RNA and ATAC count (Citation). We also used another external PBMC multiome data for the marginal multiome method. 
 
-\subsection{Candidate peak--gene pairs}
-Precomputed cell-type-specific candidate tables supplied the pair universe.
-The documented upstream search includes peaks with centers within 1 Mb of a
-gene's TSS. Current eligibility requires at least three shared QTL variants
-and feature availability in both marginal datasets.
-\TODO{Document the definitive candidate-table generation and coordinate rules.}
+\noindent CIMA provided hierarchical cell-type annotations, and we chose to focus on three major naive lymphocyte populations: Bn\_TCL1A (naive B cells, marker gene \textit{TCL1A}), CD4\_Tn\_CCR7 (naive CD4$^+$ T cells, marker gene \textit{CCR7}), and CD8\_Tn\_CCR7 (naive CD8$^+$ T cells, marker gene \textit{CCR7}). We will use Bn, CD4 Tn, and CD8 Tn throughout the paper for simplicity.
 
-\subsection{Instrument selection and LD preparation}
-The model consumes pair-indexed caQTL files documented as clumped at
-\(r^2=0.99\) within 20 Mb. QTL alleles must match exactly; approximately
-duplicated exposure/outcome slope pairs are removed at tolerance \(10^{-3}\).
-Signed PLINK LD is aligned to the retained variants, and exposure effects,
-outcome effects, and LD signs are oriented together.
-\TODO{Recover the original clumping command and initial instrument-selection
-thresholds; give the complete retained-variant rules.}
+\noindent External multiome data for WNN 
 
-\subsection{GLS-IVW}
-IVW is fitted through the origin after whitening by the outcome-effect
-covariance constructed from outcome SEs and LD. Eigenvalue truncation targets
-99.9\% variance with a five-direction minimum setting, subject to available
-positive directions. The implementation uses SNP-count-based degrees of
-freedom and inflates SEs only for overdispersion.
-\TODO{Add the GLS formulation, reference for correlated instruments, and the
-precise truncation and uncertainty conventions.}
+\input{sections/data_preprocessing}
 
-\subsection{GLS-MR Egger}
-Egger uses the same LD-aware transformation and an additional intercept
-\citep{bowden2015egger}. Final tables retain the slope, SE, and p-value.
-\TODO{Describe the intercept and assumptions, distinguishing the general
-MR-Egger reference from this project's GLS implementation.}
+
+
+\subsection{MR Framework}
+
+Mendelian randomization (MR) uses genetic variants as instrumental variables (IVs) to investigate the causal effect of an exposure on an outcome. In this study, we applied MR to investigate the effects of chromatin accessibility on gene expression for candidate peak--gene pairs. For each pair, the exposure \(X\) was chromatin accessibility at the selected ATAC-seq peak, and the outcome \(Y\) was expression of the corresponding gene.
+
+\noindent A SNP is a valid instrument if it satisfies three assumptions:
+\begin{enumerate}
+    \item \textbf{Relevance:} the SNP is associated with the exposure, here chromatin accessibility at the selected peak.
+    \item \textbf{Independence:} the SNP is independent of confounders of the exposure--outcome relationship, conditional on the covariates used in the analysis.
+    \item \textbf{Exclusion restriction:} the SNP affects the outcome only through the exposure.
+\end{enumerate}
+
+\noindent The exclusion restriction can be violated by horizontal pleiotropy, which occurs when a SNP affects gene expression through pathways other than accessibility at the selected peak. IVW and MR-Egger differ in how they accommodate such effects. IVW provides consistent estimation when instruments are valid and can also accommodate balanced pleiotropy under additional assumptions. MR-Egger allows for directional pleiotropy under the Instrument Strength Independent of Direct Effect (InSIDE) assumption, as described below.
+
+\noindent To connect individual-level associations with the summary statistics used in MR, consider a given peak--gene pair with \(J\) candidate instruments. Let \(G_{ij}\in\{0,1,2\}\) denote the number of copies of the effect allele at SNP \(j\) in individual \(i\), where \(j=1,\ldots,J\) and \(i=1,\ldots,N\). Let \(X_i\) and \(Y_i\) denote the corresponding accessibility and expression measurements. For each SNP separately, the marginal associations can be represented as
+\begin{align*}
+X_i &= \mu_{Xj} + \gamma_j G_{ij} + \varepsilon_{ij}^{X}, \\
+Y_i &= \mu_{Yj} + \Gamma_j G_{ij} + \varepsilon_{ij}^{Y},
+\end{align*}
+where \(\mu_{Xj}\) and \(\mu_{Yj}\) are intercepts, and \(\gamma_j\) and \(\Gamma_j\) are the population-level SNP--exposure and SNP--outcome associations, respectively. Covariate terms are omitted for simplicity.
+
+\noindent We performed MR using caQTL and eQTL summary statistics. For SNP \(j\), these comprise the estimated SNP--exposure association \(\hat{\gamma}_j\) with standard error \(s_{Xj}\), and the estimated SNP--outcome association \(\hat{\Gamma}_j\) with standard error \(s_{Yj}\). Both associations were aligned to the same effect allele.
+
+\noindent Under a linear model with a common causal effect \(\beta\), the population-level associations satisfy
+\begin{equation}
+    \Gamma_j = \beta\gamma_j + \alpha_j,
+\end{equation}
+where \(\beta\gamma_j\) is the component mediated through accessibility at the selected peak, and \(\alpha_j\) is the component not mediated through that exposure. For a valid instrument, \(\alpha_j=0\), and the ratio \(\Gamma_j/\gamma_j\) identifies \(\beta\). This relationship forms the basis of the IVW and MR-Egger methods introduced in the following sections.
+
+
+\subsection{Inverse-variance weighted method}
+
+For uncorrelated genetic variants, the inverse-variance weighted (IVW) method combines SNP-specific ratio estimates to estimate the exposure--outcome effect. We use the NO Measurement Error (NOME) assumption that uncertainty in the estimated SNP--exposure associations ($\hat{\gamma}_j$) is negligible. Conditional on the exposure-association estimates, IVW is formulated as a weighted linear regression through the origin \cite{burgess2017interpreting,dudbridge2025grip}:
+
+\begin{equation}
+\hat{\Gamma}_j = \beta\hat{\gamma}_j + \varepsilon_j,
+\qquad
+\varepsilon_j \stackrel{\mathrm{ind}}{\sim}
+\mathcal{N}(0,\phi s_{Yj}^{2}),
+\quad j=1,\ldots,J,
+\end{equation}
+where $s_{Yj}$ is the standard error of $\hat{\Gamma}_j$ and $\phi$ is a residual variance multiplier. The fixed-effect model sets $\phi=1$, whereas the multiplicative random-effects model estimates $\phi$ for overdispersion.  IVW can model balanced pleiotropy with $E(\alpha_j\mid\gamma_j)=0$ \cite{dudbridge2025grip}.
+
+\noindent The IVW estimate minimizes the weighted residual sum of squares
+\begin{equation}
+Q(\beta) = \sum_{j=1}^{J} \frac{(\hat{\Gamma}_j-\beta\hat{\gamma}_j)^2}{s_{Yj}^{2}},
+\end{equation}
+
+\noindent giving
+
+\begin{equation}
+\hat{\beta}_{\mathrm{IVW}} = \frac{\sum_{j=1}^{J}s_{Yj}^{-2} \hat{\gamma}_j\hat{\Gamma}_j} {\sum_{j=1}^{J}s_{Yj}^{-2}\hat{\gamma}_j^2}
+= \frac{\sum_{j=1}^{J}w_j\hat{\beta}_j} {\sum_{j=1}^{J}w_j},
+\end{equation}
+
+\noindent where $\hat{\beta}_j=\hat{\Gamma}_j/\hat{\gamma}_j$ and
+$w_j=\hat{\gamma}_j^2/s_{Yj}^{2}$. Thus, IVW is an average of
+the individual ratio estimates weighted by the inverse variances \cite{burgess2017interpreting}.
+
+\noindent The conditional variance is
+\begin{equation}
+\operatorname{Var}(\hat{\beta}_{\mathrm{IVW}} \mid\hat{\boldsymbol{\gamma}}) =
+\frac{\phi} {\sum_{j=1}^{J}s_{Yj}^{-2}\hat{\gamma}_j^2},
+\end{equation}
+
+\noindent where $\hat{\boldsymbol{\gamma}}$ is the vector of estimated
+SNP--exposure associations. Residual dispersion is estimated by
+\begin{equation}
+\hat{\phi} = \frac{Q(\hat{\beta}_{\mathrm{IVW}})}{J-1}.
+\end{equation}
+
+\noindent We choose the random-effects analysis to handle the overdispersion should  $\tilde{\phi}=\max(1,\hat{\phi})$ \cite{burgess2017interpreting}. The resulting standard error can be formally written as:   
+
+\begin{equation}
+\widehat{\mathrm{SE}}(\hat{\beta}_{\mathrm{IVW}}) =
+\left\{
+\frac{\tilde{\phi}} {\sum_{j=1}^{J}s_{Yj}^{-2}\hat{\gamma}_j^2}
+\right\}^{1/2}.
+\end{equation}
+
+
+\noindent We do the inference by: 
+
+\begin{equation}
+T_{\mathrm{IVW}} =
+\frac{\hat{\beta}_{\mathrm{IVW}}} {\widehat{\mathrm{SE}}(\hat{\beta}_{\mathrm{IVW}})}
+\end{equation}
+
+\noindent with a $t_{J-1}(0)$ reference distribution. 
+
+\subsection{MR-Egger regression}
+
+MR-Egger extends the zero-intercept IVW regression by estimating an intercept, thereby allowing for a nonzero average pleiotropic effect. For uncorrelated SNPs, and treating the estimated SNP--exposure associations as fixed under the NOME approximation, the working model is
+
+\begin{equation}
+\hat{\Gamma}_j =
+\alpha_0+\beta\hat{\gamma}_j+\varepsilon_{\mathrm{E},j},
+\qquad
+\varepsilon_{\mathrm{E},j}
+\stackrel{\mathrm{ind}}{\sim}
+\mathcal{N}(0,\phi_{\mathrm{E}}s_{Yj}^{2}),
+\end{equation}
+
+\noindent where $\alpha_0$ is the intercept and $\phi_{\mathrm{E}}$ is a
+residual variance multiplier \cite{burgess2017interpreting}.
+The intercept $\alpha_0$ summarizes average pleiotropy under the identifying
+assumptions. Both exposure and outcome associations are oriented to the
+exposure-increasing allele, so that $\hat{\gamma}_j>0$.
+
+\noindent Causal interpretation of the slope requires the Instrument
+Strength Independent of Direct Effect (InSIDE) assumption: the true SNP--exposure associations $\gamma_j$ are independent of the pleiotropic effects $\alpha_j$. InSIDE allows MR-Egger to account for directional pleiotropy \cite{burgess2017interpreting,dudbridge2025grip}.
+
+\noindent Let $v_j=s_{Yj}^{-2}$ denote the regression weights and define
+
+\begin{equation}
+\bar{\gamma}_v =
+\frac{\sum_{j=1}^{J}v_j\hat{\gamma}_j} {\sum_{j=1}^{J}v_j},
+\qquad 
+\bar{\Gamma}_v = \frac{\sum_{j=1}^{J}v_j\hat{\Gamma}_j} {\sum_{j=1}^{J}v_j}.
+\end{equation}
+
+\noindent The weighted least-squares estimates minimize
+\begin{equation}
+Q_{\mathrm{E}}(\alpha_0,\beta) =
+\sum_{j=1}^{J}v_j (\hat{\Gamma}_j-\alpha_0-\beta\hat{\gamma}_j)^2.
+\end{equation}
+
+\noindent Writing $S_{\gamma\gamma} =\sum_{j=1}^{J}v_j(\hat{\gamma}_j-\bar{\gamma}_v)^2$, the estimates are: 
+
+\begin{equation}
+\begin{aligned}
+\hat{\beta}_{\mathrm{Egger}} &=
+\frac{\sum_{j=1}^{J}v_j
+(\hat{\gamma}_j-\bar{\gamma}_v)
+(\hat{\Gamma}_j-\bar{\Gamma}_v)}
+     {S_{\gamma\gamma}},\\
+\hat{\alpha}_0
+&=\bar{\Gamma}_v-\hat{\beta}_{\mathrm{E}}\bar{\gamma}_v.
+\end{aligned}
+\end{equation}
+
+
+\noindent Under the working model, the conditional slope variance is
+\begin{equation}
+\operatorname{Var}(\hat{\beta}_{\mathrm{Egger}}
+                  \mid\hat{\boldsymbol{\gamma}})
+= \frac{\phi_{\mathrm{Egger}}}{S_{\gamma\gamma}}.
+\end{equation}
+
+\noindent Thus, slope precision depends on variation in the SNP--exposure
+associations, rather than their overall magnitude alone.
+Similar exposure associations across SNPs can yield an imprecise
+MR-Egger estimate even when the individual associations are strong
+\cite{burgess2017interpreting}.
+
+\noindent Because the regression estimates both an intercept and a slope,
+residual dispersion is estimated using $J-2$ degrees of freedom:
+\begin{equation}
+\hat{\phi}_{\mathrm{Egger}} =
+\frac{Q_{\mathrm{E}}(\hat{\alpha}_0,\hat{\beta}_{\mathrm{E}})} {J-2}.
+\end{equation}
+
+\noindent For $J>2$ and $S_{\gamma\gamma}>0$, we use
+$\tilde{\phi}_{\mathrm{E}}=\max(1,\hat{\phi}_{\mathrm{E}})$
+to prevent underdispersion. The slope and intercept standard errors are
+\begin{equation}
+\begin{aligned}
+\widehat{\mathrm{SE}}(\hat{\beta}_{\mathrm{Egger}})
+&=
+\left(
+\frac{\tilde{\phi}_{\mathrm{Egger}}}{S_{\gamma\gamma}}
+\right)^{1/2},\\
+\widehat{\mathrm{SE}}(\hat{\alpha}_0)
+&=
+\left\{
+\tilde{\phi}_{\mathrm{Egger}}
+\left[
+\frac{1}{\sum_{j=1}^{J}v_j}
++
+\frac{\bar{\gamma}_v^2}{S_{\gamma\gamma}}
+\right]
+\right\}^{1/2}.
+\end{aligned}
+\end{equation}
+
+\noindent The slope test evaluates $H_0:\beta=0$ using
+
+\begin{equation}
+T_{\mathrm{Egger}} =
+\frac{\hat{\beta}_{\mathrm{Egger}}} {\widehat{\mathrm{SE}}(\hat{\beta}_{\mathrm{Egger}})}.
+\end{equation}
+
+\noindent Two-sided $p$-values use a $t_{J-2}(0)$ reference distribution 
+
+\subsection{GLS-IVW with correlated variants}
+\label{sec:gls-ivw}
+
+SNPs within \textit{cis}-regulatory regions are often correlated due to linkage disequilibrium (LD). Stringent LD clumping to obtain independent instruments can yield too few variants per peak--gene pair, thereby limiting statistical power. We apply the generalized least squares (GLS) extension of the IVW method to account for remaining LD among instruments after clumping~\cite{burgess2016combining,burgess2017interpreting}. The final clumping threshold is pending reconciliation in the \nameref{sec:data-preprocessing} subsection.
+
+\noindent For a given peak--gene pair, define the estimated SNP-exposure, SNP-outcome assocaition as: 
+\begin{equation}
+\hat{\boldsymbol{\gamma}}
+=
+(\hat{\gamma}_1,\ldots,\hat{\gamma}_J)^{\mathsf T},
+\qquad
+\hat{\boldsymbol{\Gamma}}
+=
+(\hat{\Gamma}_1,\ldots,\hat{\Gamma}_J)^{\mathsf T}.
+\end{equation}
+
+\noindent Let $\boldsymbol R$ be the genotype-correlation matrix
+estimated from the 1000 Genomes East Asian reference panel,
+and let $\boldsymbol D_Y=\operatorname{diag}(s_{Y1},\ldots,s_{YJ})$, the standard deviation of SNP-outcome association. Using an LD-based approximation to the sampling covariance of the outcome-association estimates, we construct: 
+
+\begin{equation}
+\boldsymbol{\Sigma}
+=
+\boldsymbol D_Y\boldsymbol R\boldsymbol D_Y,
+\end{equation}
+
+\noindent The IVW model turns: 
+
+\begin{equation}
+\hat{\boldsymbol{\Gamma}}
+=
+\beta\hat{\boldsymbol{\gamma}}+\boldsymbol{\varepsilon},
+\qquad
+\boldsymbol{\varepsilon}
+\sim\mathcal{N}_J
+(\boldsymbol 0,\phi\boldsymbol{\Sigma}),
+\end{equation}
+where $\phi$ is a residual variance multiplier under random effect model. We need to minimize the object function: 
+
+\begin{equation}
+Q_{\mathrm{GLS}}(\beta)
+=
+(\hat{\boldsymbol{\Gamma}}-\beta\hat{\boldsymbol{\gamma}})
+^{\mathsf T}
+\boldsymbol{\Sigma}^{-1}
+(\hat{\boldsymbol{\Gamma}}-\beta\hat{\boldsymbol{\gamma}})
+\end{equation}
+
+gives
+
+\begin{equation}
+\hat{\beta}_{\text{GLS-IVW}}
+=
+\frac{
+\hat{\boldsymbol{\gamma}}^{\mathsf T}
+\boldsymbol{\Sigma}^{-1}\hat{\boldsymbol{\Gamma}}
+}{
+\hat{\boldsymbol{\gamma}}^{\mathsf T}
+\boldsymbol{\Sigma}^{-1}\hat{\boldsymbol{\gamma}}
+}.
+\end{equation}
+This is the correlated-variant extension of the IVW estimator
+\cite{burgess2016combining,burgess2017interpreting}.
+
+\noindent
+Strong LD can make $\boldsymbol{\Sigma}$ nearly singular,
+so that direct inversion becomes numerically unstable.
+We therefore regularize the covariance weighting using
+a truncated eigendecomposition:
+\begin{equation}
+\boldsymbol{\Sigma}
+=
+\boldsymbol V\boldsymbol{\Lambda}\boldsymbol V^{\mathsf T},
+\qquad
+\boldsymbol{\Lambda}
+=
+\operatorname{diag}(\lambda_1,\ldots,\lambda_J),
+\end{equation}
+where $\boldsymbol V$ is orthogonal and
+$\lambda_1\geq\lambda_2\geq\cdots\geq\lambda_J$.
+Let $\lambda_\ell^{+}=\max(\lambda_\ell,0)$ and define
+\begin{equation}
+m_{\eta}
+=
+\min\left\{
+m\in\{1,\ldots,J\}:
+\frac{\sum_{\ell=1}^{m}\lambda_\ell^{+}}
+     {\sum_{\ell=1}^{J}\lambda_\ell^{+}}
+\geq\eta
+\right\},
+\qquad \eta=0.999.
+\end{equation}
+The retained directions are
+\begin{equation}
+\mathcal K
+=
+\left\{
+\ell:1\leq\ell\leq m_{\eta},\
+\lambda_\ell>10^{-10}\lambda_1
+\right\},
+\qquad k=|\mathcal K|.
+\end{equation}
+The relative eigenvalue threshold excludes directions
+with very small or non-positive eigenvalues.
+
+\noindent
+We denote the truncated covariance approximation by
+\begin{equation}
+\widetilde{\boldsymbol{\Sigma}}
+=
+\boldsymbol V
+\operatorname{diag}(\widetilde{\lambda}_1,\ldots,
+                   \widetilde{\lambda}_J)
+\boldsymbol V^{\mathsf T},
+\qquad
+\widetilde{\lambda}_\ell
+=
+\begin{cases}
+\lambda_\ell, & \ell\in\mathcal K,\\
+0, & \ell\notin\mathcal K.
+\end{cases}
+\label{eq:gls-truncated-covariance}
+\end{equation}
+When $k<J$, this matrix is singular. We therefore use its
+Moore--Penrose pseudoinverse,
+\begin{equation}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+=
+\boldsymbol V
+\operatorname{diag}(d_1,\ldots,d_J)
+\boldsymbol V^{\mathsf T},
+\qquad
+d_\ell
+=
+\begin{cases}
+\lambda_\ell^{-1}, & \ell\in\mathcal K,\\
+0, & \ell\notin\mathcal K,
+\end{cases}
+\label{eq:gls-truncated-precision}
+\end{equation}
+which inverts the covariance on the retained eigenspace
+and assigns zero weight to discarded directions.
+
+\noindent
+The regularized GLS-IVW estimator minimizes
+\begin{equation}
+Q_{\mathcal K}(\beta)
+=
+(\hat{\boldsymbol{\Gamma}}
+ -\beta\hat{\boldsymbol{\gamma}})^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+(\hat{\boldsymbol{\Gamma}}
+ -\beta\hat{\boldsymbol{\gamma}}),
+\end{equation}
+giving
+\begin{equation}
+\hat{\beta}_{\text{GLS-IVW}}
+=
+\frac{
+\hat{\boldsymbol{\gamma}}^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+\hat{\boldsymbol{\Gamma}}
+}{
+\hat{\boldsymbol{\gamma}}^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+\hat{\boldsymbol{\gamma}}
+}.
+\end{equation}
+Provided that the denominator is positive, its conditional
+variance under the working covariance model is
+\begin{equation}
+\operatorname{Var}
+\left(
+\hat{\beta}_{\text{GLS-IVW}}
+\mid\hat{\boldsymbol{\gamma}},\boldsymbol{\Sigma}
+\right)
+=
+\frac{\phi}{
+\hat{\boldsymbol{\gamma}}^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+\hat{\boldsymbol{\gamma}}
+}.
+\end{equation}
+
+
+\subsection{GLS MR-Egger with correlated variants}
+\label{sec:gls-egger}
+
+GLS MR-Egger extends the correlated-variant IVW model by estimating an intercept \cite{burgess2017interpreting}.
+Using the association vectors and LD-based covariance matrix
+defined above, the MR Egger formula is
+\begin{equation}
+\hat{\boldsymbol{\Gamma}}
+=
+\alpha_0\boldsymbol 1_J
++\beta\hat{\boldsymbol{\gamma}}
++\boldsymbol{\varepsilon}_{\mathrm{Egger}},
+\qquad
+\boldsymbol{\varepsilon}_{\mathrm{Egger}}
+\sim
+\mathcal N_J
+(\boldsymbol 0,\phi_{\mathrm{Egger}}\boldsymbol{\Sigma}),
+\end{equation}
+where $\boldsymbol 1_J$ is a vector of ones,
+$\alpha_0$ is the intercept, and
+$\phi_{\mathrm{Egger}}$ is a residual variance multiplier.
+The estimated SNP--exposure associations $\hat{\gamma}$ are treated as
+fixed under the NOME approximation.
+
+\noindent
+To stabilize covariance weighting, we use the truncated
+covariance matrix $\widetilde{\boldsymbol{\Sigma}}$
+and its Moore--Penrose pseudoinverse
+$\widetilde{\boldsymbol{\Sigma}}^{+}$ defined for GLS-IVW
+[Eq.~\eqref{eq:gls-truncated-precision}].
+Define
+\begin{equation}
+\boldsymbol X
+=
+\begin{bmatrix}
+\boldsymbol 1_J & \hat{\boldsymbol{\gamma}}
+\end{bmatrix},
+\qquad
+\boldsymbol{\theta}
+=
+\begin{pmatrix}
+\alpha_0\\
+\beta
+\end{pmatrix}.
+\end{equation}
+The coefficients minimize
+\begin{equation}
+Q_{\mathrm{Egger}}(\boldsymbol{\theta})
+=
+(\hat{\boldsymbol{\Gamma}}
+ -\boldsymbol X\boldsymbol{\theta})^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+(\hat{\boldsymbol{\Gamma}}
+ -\boldsymbol X\boldsymbol{\theta}).
+\end{equation}
+Provided that
+$\boldsymbol X^{\mathsf T}
+ \widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol X$
+is nonsingular, the estimates are
+\begin{equation}
+\hat{\boldsymbol{\theta}}_{\text{GLS-Egger}}
+=
+\begin{pmatrix}
+\hat{\alpha}_0\\
+\hat{\beta}_{\text{GLS-Egger}}
+\end{pmatrix}
+=
+\left(
+\boldsymbol X^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol X
+\right)^{-1}
+\boldsymbol X^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+\hat{\boldsymbol{\Gamma}}.
+\end{equation}
+Under the working covariance model, their conditional
+covariance matrix is
+\begin{equation}
+\operatorname{Var}
+\left(
+\hat{\boldsymbol{\theta}}_{\text{GLS-Egger}}
+\mid\hat{\boldsymbol{\gamma}},\boldsymbol{\Sigma}
+\right)
+=
+\phi_{\mathrm{Egger}}
+\left(
+\boldsymbol X^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol X
+\right)^{-1}.
+\end{equation}
+The slope standard error is obtained from the second diagonal
+element, using the dispersion adjustment
+$\widetilde{\phi}_{\mathrm{Egger}}
+=\max(1,\hat{\phi}_{\mathrm{Egger}})$.
+The fitted residual quadratic form is
+$Q_{\mathrm{Egger}}
+(\hat{\boldsymbol{\theta}}_{\text{GLS-Egger}})$.
+
+\noindent ( We can explain the filteration rule here, after show MR-Egger and IVW methods. ) Pairs with any missing p-value are removed, then pairs with IVW residual variance greater than 10 are removed. BH adjustment is applied separately within each gene and method 
+\citep{benjamini1995fdr}. Discovery uses \(\q<0.1\).
+
+
 
 \subsection{Summary-data-based Mendelian randomization}
-The SMR calculation uses the retained SNP with the smallest caQTL p-value,
-its outcome/exposure effect ratio, and the implemented chi-square test based
-on p-derived z-scores \citep{zhu2016smr}.
-\TODO{Add the exact test and SE expressions. Clarify that this implementation
-does not include a HEIDI analysis.}
+Summary-data-based Mendelian randomization (SMR) uses the associations of
+a single genetic instrument with an exposure and an outcome to estimate
+their relationship from summary statistics \citep{zhu2016smr}.
+We applied this approach to chromatin accessibility and gene expression.
+For each peak--gene pair, we selected the SNP with the smallest nominal
+caQTL p-value among the variants retained after the filtering described
+above, breaking ties by the largest absolute caQTL effect-to-standard-error
+ratio. Denoting this SNP by \(*\), the effect estimate is
+\begin{equation}
+\hat\beta_{\mathrm{SMR}}=\frac{\hat\Gamma_*}{\hat\gamma_*}.
+\end{equation}
+The SMR test uses a delta-method approximation to the variance of this
+ratio, accounting for uncertainty in both associations
+\citep{zhu2016smr}. In our implementation, the sampling covariance between
+the caQTL and eQTL effect estimates was omitted from this approximation.
 
-\subsection{Cauchy combination}
-CCT combines the SMR, IVW, and Egger p-values with equal weights
-\citep{liu2020cauchy}. It supplies a combined significance measure rather than
-a combined causal effect estimate.
+For the selected SNP, we converted the two-sided nominal caQTL and eQTL
+p-values, \(p_X\) and \(p_Y\), to nonnegative normal-equivalent statistics:
+\begin{equation}
+\begin{aligned}
+z_X&=\Phi^{-1}(1-\tilde p_X/2),&
+z_Y&=\Phi^{-1}(1-\tilde p_Y/2),\\
+\tilde p_X&=\max(p_X,10^{-300}),&
+\tilde p_Y&=\max(p_Y,10^{-300}),
+\end{aligned}
+\end{equation}
+where \(\Phi\) is the standard normal cumulative distribution function.
+The numerical implementation evaluates inverse upper-tail probabilities.
+Using these p-derived statistics, we calculated
+\begin{equation}
+\begin{aligned}
+\widehat{\mathrm{SE}}(\hat\beta_{\mathrm{SMR}})
+&=|\hat\beta_{\mathrm{SMR}}|\sqrt{z_X^{-2}+z_Y^{-2}},\\
+T_{\mathrm{SMR}}&=\frac{z_X^2z_Y^2}{z_X^2+z_Y^2}.
+\end{aligned}
+\end{equation}
+The SMR p-value was the upper-tail probability of \(T_{\mathrm{SMR}}\)
+under an approximate \(\chi_1^2\) reference distribution. The effect
+direction was determined by the aligned association estimates in the
+ratio. We did not perform the HEIDI heterogeneity test; SMR significance
+alone does not distinguish mediation from horizontal pleiotropy or linkage
+between distinct causal variants \citep{zhu2016smr}.
 
-\subsection{Pseudobulk and WNN correlations}
-Pseudobulk Spearman correlations use matched donors and log-transformed CPM.
-WNN Spearman correlations use 80 external PBMC metacells shared across the
-three analyses. Neither correlation stage includes covariate residualization.
-\TODO{Complete the upstream pseudobulk and metacell construction descriptions.}
+\subsection{Marginal pseudobulk correlations}
+\label{sec:pseudobulk-correlations}
 
-\subsection{Filtering and multiple testing}
-Pairs with any missing base-method p-value are removed, then pairs with IVW
-residual variance greater than 10 are removed. CCT is calculated afterward.
-BH adjustment is applied separately within each gene and method
-\citep{benjamini1995fdr}. Discovery uses \(\q<0.1\); GRN uses \(\q<0.05\).
-The two definitions of MR-only links are stated in their Results subsections.
+We evaluated marginal peak--gene associations using pseudobulk RNA and
+ATAC profiles within each cell type. Following the quality control
+described in \nameref{sec:data-preprocessing}, counts were summed across
+cells from the same individual within each cell type to construct
+gene-by-individual and peak-by-individual pseudobulk matrices.
+We retained individuals with both RNA and ATAC profiles, yielding
+335 individuals for Bn, 372 for CD4, and 346 for CD8.
+For each modality, counts were normalized to counts per million (CPM)
+using the corresponding individual-level library size and transformed
+using \(\log(1+\mathrm{CPM})\). Library sizes were calculated across all
+input genes or peaks.
 
-\subsection{Regulatory references, enrichment, and ROC-AUC}
-Six reference datasets are mapped to genes and genomic intervals. Gene-level
-upper-tail hypergeometric tests compare significant peaks with candidate
-backgrounds; the existing global summary pools eligible gene counts and reports
-fold enrichment. ROC-AUC uses \(-\log_{10}(p)\), genes with both classes, and
-the existing automatic ROC direction. GTEx ROC labels additionally require
-overlap with validation multiome peaks.
-\TODO{Add resource citations, overlap/liftOver details, reference thresholds,
-and a precise definition of the comparison population.}
+\noindent For each candidate peak--gene pair, we calculated Spearman's
+rank correlation between peak accessibility and gene expression across
+matched individuals:
+\begin{equation}
+\widehat{\rho}^{\mathrm{PB}}_{pg}
+=
+\operatorname{Cor}_{\mathrm{S}}\left(
+\boldsymbol{A}_{p}, \boldsymbol{E}_{g}
+\right),
+\end{equation}
+where \(\boldsymbol{A}_{p}\) and \(\boldsymbol{E}_{g}\) are the
+log-transformed CPM vectors for peak \(p\) and gene \(g\), respectively,
+across matched individuals, and \(\operatorname{Cor}_{\mathrm{S}}\)
+denotes Spearman's rank correlation.
+Two-sided approximate p-values were obtained using R's
+\texttt{cor.test} with \texttt{method="spearman"} and
+\texttt{exact=FALSE}. No covariate residualization was applied at the
+correlation stage. P-values were adjusted using the
+Benjamini--Hochberg procedure within each gene, and peak--gene pairs
+with \(\mathrm{FDR} \leq 0.1\) were considered significant.
 
-\subsection{Motifs, regulatory networks, and GO}
-Motif analysis uses Signac, JASPAR2020, and backgrounds matched on GC and
-accessibility; enrichment requires BH-adjusted \(p<0.05\) and fold \(>1\).
-TF-expression checks require detection in at least 5\% of cells. GRN overlap
-uses Fisher tests against all retained tested pairs. GO BP GSEA ranks MR-only
-genes by minimum MR p-value over MR-only links; a separate 5,000-draw analysis
-samples tested genes scored using all their links and calculates empirical
-p-values from term-specific available null NES values.
-\TODO{Add resource/software citations, term-size settings, gene identifiers,
-and the intended interpretation of each GO null comparison.}
+\subsection{WNN metacell correlations}
+\label{sec:wnn-correlations}
 
-\subsection{Disease heritability and GWAS overlap}
-S-LDSC \citep{finucane2015sldsc} evaluates hg19 peak annotations extended by
-500 bp per side, each fitted with 97 baseline-LD annotations. The nine GWAS
-are listed in Figure~\ref{fig:sldsc}. A separate locus screen requires a
-genome-wide-significant GWAS variant inside an unextended peak.
-\TODO{Add each GWAS citation and cohort description, regression resources,
-uncertainty reporting, and the variant-mapping procedure.}
+We evaluated marginal peak--gene associations using an external PBMC
+multiome dataset with 80 precomputed weighted nearest-neighbor (WNN)
+metacell groups. The same RNA and ATAC metacell profiles were used
+for all three CIMA cell-type analyses, without restricting metacells
+to the corresponding cell type. WNN defined the cell groups, whereas
+peak--gene associations were quantified by correlations across
+metacells.
+\TODO{Add the external dataset description and citation, the WNN
+method citation, and details of the original metacell construction
+and RNA aggregation and normalization.}
 
-\subsection{Null-SNP diagnostic}
-An existing diagnostic LD-prunes variants, retains caQTL/eQTL associations
-with both nominal \(p>0.05\), and examines correlations of their z-scores
-(Supplementary Figure~\ref{fig:supp-qc}).
-\TODO{Describe its descriptive role and distinguish SNP--pair observations
-from unique variants in the pooled summary.}
+To align accessibility features with CIMA, external ATAC fragments
+were recounted over CIMA peak intervals in hg38 using Signac's
+\texttt{FeatureMatrix}, after excluding intervals that overlapped
+other peaks in the input set. ATAC counts were summed within each
+metacell and normalized to counts per million using the total counts
+across retained peaks in that metacell. The supplied RNA metacell
+matrix and group assignments were retained. A \(\log(1+x)\)
+transformation was then applied to both the normalized ATAC matrix
+and the supplied RNA matrix.
+
+For each candidate peak--gene pair, we calculated Spearman's rank
+correlation between peak accessibility and gene expression across
+the 80 metacells:
+\begin{equation}
+\widehat{\rho}^{\mathrm{WNN}}_{pg}
+=
+\operatorname{Cor}_{\mathrm{S}}\left(
+\boldsymbol{A}^{\mathrm{MC}}_{p},
+\boldsymbol{E}^{\mathrm{MC}}_{g}
+\right),
+\end{equation}
+where \(\boldsymbol{A}^{\mathrm{MC}}_{p}\) and
+\(\boldsymbol{E}^{\mathrm{MC}}_{g}\) denote the transformed
+accessibility and expression vectors for peak \(p\) and gene \(g\),
+respectively, across metacells, and
+\(\operatorname{Cor}_{\mathrm{S}}\) denotes Spearman's rank
+correlation. Metacells served as the units of observation.
+Two-sided approximate p-values were calculated as described in
+\nameref{sec:pseudobulk-correlations}. No covariate residualization,
+cell-type adjustment, or weighting by metacell size was applied.
+The resulting correlations therefore include variation across PBMC
+cell types and states. P-values were adjusted using the
+Benjamini--Hochberg procedure within each gene, separately for each
+CIMA cell-type analysis, and peak--gene pairs with
+\(\mathrm{FDR} \leq 0.1\) were considered significant.
+
+
+\subsection{Causal joint}
+The Cauchy combination test (CCT) is an efficient and powerful technique to combine multiple individual p-values, especially when the tests are correlated. Under the null hypothesis, for an individual p-value $p_k$, the transformed statistic follows a standard Cauchy distribution. We calculated the causal joint results by aggregating the three causal methods (IVW, MR-Egger, and SMR) using the Cauchy combination test with equal weights:
+\begin{equation*}
+T = \frac{1}{3}\left\{\tan\left[\pi(0.5 - p_{\mathrm{IVW}})\right] + \tan\left[\pi(0.5 - p_{\mathrm{Egger}})\right] + \tan\left[\pi(0.5 - p_{\mathrm{SMR}})\right]\right\},
+\end{equation*}
+where $p_{\mathrm{IVW}}$, $p_{\mathrm{Egger}}$, and $p_{\mathrm{SMR}}$ denote the nominal p-values from GLS-IVW, GLS MR-Egger, and SMR, respectively. The causal joint results can be understood as the aggregated causal evidence for the studied peak--gene links.
+
+\subsection{Motif enrichment analysis}
+We implemented the motif enrichment analysis to determine whether the transcription factor binding motifs or functional sequence patterns are statistically overrepresented in the detected peaks compared to all background peaks. For each cell types (Bn, CD4, CD8) and each method (causal IVW, causal MR-Egger, causal SMR, marginal multiomics, and marginal pseudobulk), we separately selected significant peak-gene pairs (BH p.adjust < 0.1) and further extracted those peaks as the foreground set for the motif analysis. All available peaks provided by CIMA cell-type specific xQTL data were used as the background set. Motif occurrences were annotated with AddMotifs in Signac (citation, version) using the non-redundant JASPAR2020 CORE vertebrate collection (746 motifs) (citation) and the hg38 genome (BSgenome.Hsapiens.UCSC.hg38 [version]). We use the FindMotifs function in Signac to get the p value of motifs, and the p values were  adjusted by the Benjamini–Hochberg (BH) procedure across motifs for each cell type and method. Motifs with adjusted p < 0.05 and fold enrichment > 1 were considered enriched. We were interested in the motif which were significant in at least one causal methods but were not significant by both marginal multiomics and marginal pseudobulk methods. In the table (table number), we should the most significant motifs only detected by causal methods for each cell types seperately. 
+
+\subsection{Hypergeometric test}
+
+We carried out global hypergeometric tests to the existing enhancer and chromatin interaction databases: FANTOM5 (citation) linked enhancers and genes based on enhancer RNA expression; 4DGenome (citation) linked enhancers and genes based on physical interactions using chromatin-looping data; EnhancerAtlas (citation) reported enhancers using 12 high-throughput experimental methods; a list of cis-eQTLs within the whole blood mapped in European-American subjects was downlaoded from the GTEx Consortiums (citation); CHi-C captured contacts between gene promoters and distal regions (CHiCAGO score $\geq 5$) (citation); H3K27ac HiChIP captures contacts among regions marked by active regulatory histone modification (FDR <0.1) (citation). We used liftover in R package rtracklayer (version) to map some genomics data in hg19 to hg38. We did global hypergeometric tests for each cell type and method seperately. Let k be the number of significantly linked peaks, q be the number of significantly linked peaks that overlap with annotations (e.g., annotated enhancers), m be the number of peaks that overlap with the annotations, and n be the number of peaks that do not overlap with annotations. The p-value of enrichment is derived from the hypergeometric distribution using the cumulative distribution function, coded as phyper(q-1, m, n, k, lower.tail=F) in R. 
+
+
+\subsection{Gene ontology analysis}
+We performed GO enrichment analysis for Gene Ontology (GO) Biological Process and  Gene Ontology (GO) Molecular Function terms using gene set enrichment analysis (GSEA). We collect genes from all significant peak-gene pairs significant in at least one causal method (IVW, MR Egger, SMR, p.adust < 0.1) not significant in both two marginal association method (marginal multiomics, marginal pseudobulk, p.adjust > 0.1) from each cell type. We combine selected genes from three cell types. Because one gene could be tested with multiple peaks, each gene was scored by the -log10 of the smallest P value of all tested peak-gene links from different methods. GSEA was run with gseGO in the clusterProfiler package (citation, version), using gene-symbol annotations from org.Hs.eg.db (version), gene sets of 10–500 genes, a score exponent of 1, positive-only scoring (scoreType = "pos"), and BH adjustment of p-values.
+
+\subsection{Heritability enrichment analysis from S-LDSC}
+Heritability enrichment analysis was conducted using stratified linkage disequilibrium score (S-LDSC) regression (Version later) to study whether the peaks from the peak-gene pairs only detected by MR methods have higher enrichment score compared to background peaks. We collected all peak-gene pairs which are significant in at least one causal method (IVW, MR Egger, SMR, p.adust < 0.1) but not significant in both two marginal association method (marginal multiomics, marginal pseudobulk, p.adjust > 0.1) across three cell types. Background peaks are peaks from all available peak-gene pairs provided by CIMA QTL data (reference), CIMA conduct QTL analysis for all peaks within 1MB of genes. S-LDSC calculate the heritability enrichment score by the ratio of the heritability explained versus the proportion of SNPs, based on GWAS summary data. We assessed heritability enrichment using S-LDSC with the baselineLD v2.2 annotations and 1000 Genomes Phase 3 European LD reference data, restricting regression to HapMap3 SNPs and using the standard regression weights that exclude the MHC region. Nine GWAS summary statistics used in the study were: ankylosing spondylitis(AS), crohn’s disease(CD), inflammatory bowel disease(IBD), rheumatoid arthritis(RA), systemic lupus erythematosus(SLE), multiple sclerosis(MS), Type 1 diabetes(T1B), Asthma, and Primary biliary cirrhosis (PBC). GWAS summary statistics for these dieases and traits were obtained from \url{https://zenodo.org/records/10515792/files/sumstats_indep107.tgz?download=1} (CD, IBD, RA, SLE, MS, T1B, Asthma, PBC), Pan-UK Biobank
+ \url{https://pan.ukbb.broadinstitute.org/} (AS), and MS link (Later). For dataset whose genomic location are in hg19, we use liftover in R package rtracklayer (version) to map the location to hg38.   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

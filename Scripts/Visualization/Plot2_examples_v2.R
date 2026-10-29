@@ -1,10 +1,11 @@
 #!/usr/bin/env Rscript
 # ==============================================================================
-# 2026.10.13  Fig2: 指定的示例 peak-gene pairs, 一个 PDF (Figures_20261019/Fig2_examples.pdf)
-# 选哪些 pair / 在哪一页哪一行: Example_pairs.tsv 中 pair_set == "Fig2_selected" 的行 (page, row, type, cell_type, gene_id, peak_id, category)
-#   page 1 = 4 个指定 pair; page 2-6 = 每页 Type 1-4 各一个 (行 = type)
+# 2026.10.19  Figure 2: 指定的示例 peak-gene pairs -> Figures_20261027/<set>.pdf + SVG (1 页: <set>.svg; 多页: <set>_p<k>.svg)
+# 选哪些 pair / 在哪一页哪一行: Example_pairs.tsv 中 pair_set == --set 的行 (page, row, type, cell_type, gene_id, peak_id, category)
+#   Figure_2 (默认) = 1 页 4 个 pair: SIDT2 (Bn), RPL11 / ERAP2 / ARPC1B (CD4)
+#   Fig2_selected = 上一版 6 页 (page 1 = 4 个指定 pair; page 2-6 = 每页 Type 1-4 各一个)
 #   原来每个细胞类型 24 个 example 也在 Example_pairs.tsv (pair_set = original_example; 01_example_pairs.R 仍供 Plot1 检查使用)
-# 版面: 每页 4 行, 每行一个 pair, 行内 4 个 panel:
+# 版面: 每页 4 行 (行标签 A-D), 每行一个 pair, 行内 4 个 panel (不标字母, 下面 a-d 只是说明顺序):
 #   a = 两条轨: caQTL | eQTL (共用 xlim = peak/TSS 中点 ±500 kb); 红色三角 = MR 用到的 SNP; 金色三角 = SMR lead SNP
 #       caQTL 轨不画 P < 1e-8 且不在 MR 中的 variant; 角标 = 进入 MR 的 SNP 数
 #   b = MR (flip 后散点 + Causal IVW / Egger 线; 不画 SMR 线, 但保留 SMR lead SNP 标注)
@@ -15,7 +16,7 @@
 # 历史: 由 20261006_paper/Scripts/Source_visual/Plot2_scripts_v2.R 移植 (2026-10-09); 2026-10-13 去掉位点 link 图 (panel e),
 #       改为每页 4 个 pair; 旧版图见 Results/Figures/Figures_20261012/
 #
-# 运行: sbatch Scripts/Visualization/Plot2_examples_slurm.sh   (可选: Rscript Plot2_examples_v2.R --outdir DIR --pairs TSV)
+# 运行: sbatch Scripts/Visualization/Plot2_examples_slurm.sh   (可选: Rscript Plot2_examples_v2.R --outdir DIR --pairs TSV --set PAIR_SET)
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -26,8 +27,9 @@ options(width = 300)
 # ---------------------------- 参数 (试跑 / 全量 只改这里或命令行) -------------
 args    <- commandArgs(trailingOnly = TRUE)
 get_arg <- function(name, default) { i <- match(paste0("--", name), args); if (is.na(i) || i == length(args)) default else args[i + 1] }
-FIG_DIR  <- get_arg("outdir", "/scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261019")
+FIG_DIR  <- get_arg("outdir", "/scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261027")
 SEL_FILE <- get_arg("pairs",  "/scratch/user/tfcui2025/CIMA/Claude_project/Scripts/Visualization/Example_pairs.tsv")
+PAIR_SET <- get_arg("set",    "Figure_2")
 
 msg <- function(...) cat(format(Sys.time(), "[%H:%M:%S] "), ..., "\n", sep = "")
 
@@ -57,9 +59,9 @@ MIN_SNP <- 3; DEDUP_TOL <- 1e-3; KEEP_ALLELE <- TRUE; FLIP_POINTS <- TRUE
 EIG_TRUNCATE <- TRUE; EIG_VAR_KEEP <- 0.999; EIG_MIN_KEEP <- 5; EIG_TOL <- 1e-10; P_FLOOR <- 1e-300; SIGMA_MODE <- "over"
 
 # ---------------------------- 选定的 pairs --------------------------------------
-SEL <- fread(SEL_FILE, na.strings = "")[pair_set == "Fig2_selected"]
+SEL <- fread(SEL_FILE, na.strings = "")[pair_set == PAIR_SET]
 SEL[is.na(category), category := ""]
-stopifnot(all(SEL$cell_type %in% CELLTYPES))
+stopifnot(nrow(SEL) > 0, all(SEL$cell_type %in% CELLTYPES))
 
 # ---------------------------- 配色 / 主题 (方法名 / 配色全文统一, 见 CLAUDE.md) ---
 pal_method <- c(`Causal IVW` = "#E64B35", `Causal Egger` = "#3C5488", `Causal SMR` = "#F0A14A",
@@ -268,7 +270,8 @@ build_mr_panel <- function(obj, rf) {
   lines <- data.table(series = MR_LINES,
                       slope = as.numeric(c(getv(rf, "ivw_beta"), getv(rf, "egger_beta"))),
                       intercept = as.numeric(c(0, getv(rf, "egger_int"))))[is.finite(slope) & is.finite(intercept)]
-  lines[, series := factor(series, levels = MR_LINES)]
+  LEG_LEVELS <- c(MR_LINES, "Causal SMR")             # 图例第 3 项 = SMR lead SNP (金色三角)
+  lines[, series := factor(series, levels = LEG_LEVELS)]
   sub_txt <- join_lines(c(paste0(pq_txt(rf, "Causal SMR", "smr"),   "  |  ", pq_txt(rf, "Causal IVW", "ivw")),
                           paste0(pq_txt(rf, "Causal Egger", "egger"), "  |  ", pq_txt(rf, "Causal Joint", "cct"))))
 
@@ -279,10 +282,11 @@ build_mr_panel <- function(obj, rf) {
     geom_errorbar(aes(xmin = xmin, xmax = xmax), orientation = "y", color = COL_ERR, width = 0, linewidth = 0.45) +
     geom_abline(data = lines, aes(slope = slope, intercept = intercept, color = series), linewidth = LWD, alpha = LINE_ALPHA) +
     geom_point(data = pts[!pts$is_lead, ], shape = 24, fill = COL_MRSNP, color = "white", size = PT_MR, stroke = 0.4) +
-    geom_point(data = pts[pts$is_lead, ], shape = 24, fill = LEAD_FILL, color = LEAD_BORDER, size = PT_LEAD, stroke = 0.5) +
+    geom_point(data = pts[pts$is_lead, ], aes(color = factor("Causal SMR", levels = LEG_LEVELS)), shape = 24, fill = LEAD_FILL, size = PT_LEAD, stroke = 0.5) +
     geom_text_repel(data = pts[pts$is_lead, ], aes(label = label), size = ANNOT, fontface = "bold", color = LEAD_BORDER,
                     box.padding = 0.6, min.segment.length = 0, segment.size = 0.3, seed = 1) +
-    scale_color_manual(values = pal_method, breaks = levels(lines$series)) +
+    scale_color_manual(values = c(pal_method[MR_LINES], `Causal SMR` = LEAD_BORDER), breaks = LEG_LEVELS, drop = FALSE) +
+    guides(color = guide_legend(override.aes = list(linetype = c(1, 1, 0), shape = c(NA, NA, 24), fill = c(NA, NA, LEAD_FILL), size = c(NA, NA, 3), alpha = c(LINE_ALPHA, LINE_ALPHA, 1)))) +
     scale_y_continuous(expand = expansion(mult = c(0.05, 0.25))) + expand_limits(x = 0) +
     labs(title = ttl, subtitle = sub_txt, x = "caQTL effect size (aligned)", y = "eQTL effect size (aligned)") +
     theme_fig + legend_inside(c(0.02, 0.98))
@@ -404,29 +408,40 @@ make_row <- function(s) {
   if (is.null(r)) return(wrap_elements(full = empty_plot(sprintf("%s | %s (%s)", s$gene_id, s$peak_id, s$cell_type), "Plot failed")))
   sub <- c(if (nzchar(s$category)) sprintf("Type %d: %s", s$type, s$category), sprintf("peak-TSS distance: %s", r$lab), sprintf("%d SNPs in MR", r$n_snp))
   row <- (r$pA | r$pB | r$pC | r$pD) + plot_layout(widths = c(1.3, 1, 1, 1)) +
-    plot_annotation(tag_levels = "a", title = sprintf("%s  |  %s  (%s)", s$gene_id, s$peak_id, s$cell_type), subtitle = paste(sub, collapse = "   |   "),
+    plot_annotation(title = sprintf("%s  |  %s  (%s)", s$gene_id, s$peak_id, s$cell_type), subtitle = paste(sub, collapse = "   |   "),
       theme = theme(plot.title = element_text(size = BASE + 3, face = "bold", hjust = 0),
                     plot.subtitle = element_text(size = BASE, color = "grey30", hjust = 0, margin = margin(b = 4)),
-                    plot.margin = margin(6, 4, 10, 4))) &
-    theme(plot.tag = element_text(face = "bold", size = BASE + 3))
+                    plot.margin = margin(6, 4, 10, 26)))   # 左边距留给行标签 A-D, 不压行标题
   wrap_elements(full = row)
 }
 
 open_pdf <- function(f) if (capabilities("cairo")) cairo_pdf(f, width = PAGE_W, height = PAGE_H, onefile = TRUE) else pdf(f, width = PAGE_W, height = PAGE_H, useDingbats = FALSE)
-pdf_file <- file.path(FIG_DIR, "Fig2_examples.pdf")
-open_pdf(pdf_file)
 pages <- sort(unique(SEL$page))
-for (pg in pages) {
+build_page <- function(pg) {
   s_pg <- SEL[page == pg][order(row)]
   msg(sprintf("page %d: %s", pg, paste(s_pg$gene_id, collapse = ", ")))
   rows <- lapply(seq_len(nrow(s_pg)), function(j) make_row(s_pg[j]))
   if (length(rows) < ROWS_PER_PAGE) rows <- c(rows, rep(list(plot_spacer()), ROWS_PER_PAGE - length(rows)))   # 行高保持一致
   ttl <- if (all(is.na(s_pg$type))) "Example peak-gene pairs" else sprintf("Example peak-gene pairs by type (set %d)", match(pg, pages[pages != 1]))
-  print(wrap_plots(rows, ncol = 1) +
-        plot_annotation(title = ttl, theme = theme(plot.title = element_text(size = BASE + 6, face = "bold", hjust = 0))))
+  wrap_plots(rows, ncol = 1) +   # 每行 (一个 pair) 一个大写标签 A-D; 行内 panel 不再标 a-d
+    plot_annotation(title = ttl, tag_levels = "A", theme = theme(plot.title = element_text(size = BASE + 6, face = "bold", hjust = 0))) &
+    theme(plot.tag = element_text(face = "bold", size = BASE + 8))
 }
-dev.off()
+PAGES <- lapply(pages, build_page)
+
+pdf_file <- file.path(FIG_DIR, paste0(PAIR_SET, ".pdf"))
+open_pdf(pdf_file)
+for (p in PAGES) print(p)
+invisible(dev.off())
 msg("Saved: ", pdf_file)
+# SVG (svglite: 文字保留为可编辑文本, 便于拼图); SVG 不支持多页, 每页一个文件
+for (k in seq_along(PAGES)) {
+  svg_file <- file.path(FIG_DIR, if (length(PAGES) == 1) paste0(PAIR_SET, ".svg") else sprintf("%s_p%d.svg", PAIR_SET, k))
+  svglite::svglite(svg_file, width = PAGE_W, height = PAGE_H)
+  print(PAGES[[k]])
+  invisible(dev.off())
+  msg("Saved: ", svg_file)
+}
 
 unlink(LD_DIR, recursive = TRUE)
 msg("All done.")

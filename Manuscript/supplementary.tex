@@ -1,0 +1,187 @@
+% Supporting Information for the manuscript in main.tex (compiled separately).
+% Numbering follows PLOS item names: S1--S5 Fig, S1--S4 Table.
+% References to the main text (Fig 1B--C, Fig 4A) are fixed text; update them
+% if the main-text figure numbers change (see Notes_Claude_Code.md, section C).
+\documentclass[10pt,letterpaper]{article}
+\ifdefined\pdfminorversion\pdfminorversion=7\fi
+\ifdefined\pdfsuppresswarningpagegroup\pdfsuppresswarningpagegroup=1\fi
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[letterpaper,top=0.85in,bottom=1in,left=1in,right=1in,footskip=0.5in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{parskip}
+\usepackage{textcomp,marvosym}
+\usepackage[nopatch={eqnum,footnote}]{microtype}
+\ifPDFTeX
+  \DisableLigatures[f]{encoding = *, family = * }
+\fi
+\usepackage[table]{xcolor}
+\usepackage{array,booktabs,longtable,placeins}
+\usepackage{setspace}
+\singlespacing
+\raggedright
+\setcounter{secnumdepth}{0}
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,
+  justification=raggedright,singlelinecheck=off,font=small]{caption}
+\renewcommand{\figurename}{Fig}
+\DeclareCaptionLabelFormat{plossupport}{#2 Fig}
+\DeclareCaptionLabelFormat{plossupporttable}{#2 Table}
+\usepackage{graphicx}
+\usepackage{lastpage,fancyhdr}
+\usepackage{nameref,hyperref}
+\hypersetup{hidelinks}
+\pagestyle{fancy}
+\fancyhf{}
+\chead{\small Supporting Information}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\lfoot{\today}
+% Allow figures and tables to share a fixed portrait Letter page.
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.75}
+\raggedbottom
+
+\graphicspath{{figures/}{figures/motif_logos/}}
+\setlength{\emergencystretch}{2em}
+\newif\ifshowtodos
+\showtodostrue % Change to \showtodosfalse to hide editorial TODO paragraphs.
+\newcommand{\TODO}[1]{\ifshowtodos\par\smallskip
+  {\small\textbf{TODO:} #1}\par\smallskip\fi}
+\newcommand{\q}{q}
+% Keep research graphics visible for drafting (hides images only).
+\newif\ifdraftfigures
+\draftfigurestrue
+\let\PLOSincludegraphics\includegraphics
+\renewcommand{\includegraphics}[2][]{%
+  \ifdraftfigures\PLOSincludegraphics[#1]{#2}\fi}
+
+\newcommand{\ManuscriptTitle}{Mendelian randomization and multi-omic evidence for regulatory
+peak--gene links in human immune cells}
+
+% Supporting item numbering: S1 Fig, S1 Table, ...
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\theHfigure}{supp.\arabic{figure}}
+\captionsetup[figure]{labelformat=plossupport}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theHtable}{supp.\arabic{table}}
+\captionsetup[table]{labelformat=plossupporttable}
+\renewcommand{\listfigurename}{Supporting figures}
+\renewcommand{\listtablename}{Supporting tables}
+
+\begin{document}
+
+\begin{center}
+{\Large\textbf{Supporting Information}\par}
+\medskip
+{\large\textbf{\ManuscriptTitle}\par}
+\end{center}
+
+\noindent S1--S5 Figs and S1--S4 Tables accompany the main manuscript
+(\texttt{main.tex}).
+
+\listoffigures
+\listoftables
+\clearpage
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{Figure_S1.pdf}
+\caption[Null-SNP diagnostics in Bn, CD4, and CD8 cells]{Null-SNP diagnostics in Bn, CD4, and CD8 cells.
+\textbf{A,} Pair-level correlations of caQTL and eQTL z-scores,
+grouped by the number of shared pruned null SNPs; boxes show the three cell
+types side by side (Bn, purple; CD4, green; CD8, orange). The legend gives the
+global correlation \(\rho\) and its p-value for each cell type.
+\textbf{B,} Corresponding p-values of the pair-level correlation tests.
+The dashed lines mark zero correlation in A and a p-value of 0.5 in B, the
+values expected under the null. The analyses included 547,452 (Bn), 1,051,953
+(CD4), and 686,829 (CD8) peak--gene pairs, based on 17,074,938, 33,263,695, and
+21,537,822 SNP--pair observations, respectively.
+Global summaries pool SNP--pair observations, so a variant may occur
+in multiple pairs. This diagnostic does not itself establish MR calibration.}
+\label{fig:supp-qc}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{Figure_S2.pdf}
+\caption[MR-Egger estimates with and without allele orientation in Bn, CD4, and CD8 cells]{MR-Egger estimates with and without allele orientation in Bn, CD4, and CD8 cells.
+Rows show Bn, CD4, and CD8 cells, and each lettered pair of plots is one
+peak--gene pair. In each row, the left pair of plots shows a pair whose
+estimates change little with orientation (A, SIDT2 in Bn, 194 SNPs; C, RPL11 in
+CD4, 25 SNPs; E, LCLAT1 in CD8, 195 SNPs) and the right pair shows a pair whose
+MR-Egger estimate changes markedly (B, PIGX in Bn, 136 SNPs; D, PDE4DIP in CD4,
+74 SNPs; F, KLRC3 in CD8, 134 SNPs). For each pair, the left plot
+uses the original allele coding and the right plot orients the pair so that the
+caQTL effect is positive, as in the MR analysis; both plots share axis ranges.
+Red and blue lines are the IVW and MR-Egger fits, and the P values above each
+plot are the corresponding IVW and MR-Egger P values. Gold triangles mark the
+SMR lead SNP and gray bars are 95\% confidence intervals. IVW is unchanged by
+orientation.}
+\label{fig:supp-flip}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{Figure_S3.pdf}
+\caption[Overlap and effect directions of significant links in Bn and CD8 cells]{Overlap and effect directions of significant links in Bn and CD8 cells.
+\textbf{A,} Bn; \textbf{B,} CD8. In each, left: the 25 largest distinct significance combinations
+across six methods at within-gene BH-adjusted \(\q<0.1\); right: IVW direction
+relative to the two marginal correlation signs among links significant in all
+six methods; the center reports SMR/IVW/Egger agreement. ``Causal Joint''
+denotes CCT. The corresponding CD4 comparison is shown in Fig~1B--C.}
+\label{fig:supp-bn-cd8}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{Figure_S4.pdf}
+\caption[Additional GWAS-overlapping regulatory links]{Additional GWAS-overlapping regulatory links.
+\textbf{A,} The combined S-LDSC summary repeated from Fig~4A.
+\textbf{B,} Eight further loci in two rows. First row: GLS2 in CD8, GNAS in CD4,
+UBA7 in Bn, and TMBIM1 in CD8, with displayed GWAS overlaps T1D/asthma,
+IBD/Crohn's disease, IBD, and Crohn's disease, respectively. Second row: GNAS
+in CD8, ERAP1 in Bn, TMPRSS3 in CD4, and ZSCAN16 in Bn, with displayed GWAS
+overlaps IBD/Crohn's disease, Crohn's disease, T1D, and rheumatoid arthritis,
+respectively. Panel B follows the conventions of Fig~4B: each locus is titled
+with the gene and the hg38 peak coordinates and labeled below with the cell
+type and GWAS trait(s); purple diamonds mark GWAS variants; red/blue links
+indicate positive/negative effects, with line width increasing with
+\(-\log_{10}\) adjusted \(p\); gray dashed links are nonsignificant; link
+stars denote adjusted \(p<0.05\), \(0.01\), and \(0.001\); the axis break (//)
+compresses genomic distance.}
+\label{fig:supp-disease-2}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{Figure_S5.pdf}
+\caption[Overlap of significant links with the CIMA regulatory network]{Overlap of significant links with the CIMA regulatory network.
+\textbf{A,} Number of links significant for each method (within-gene BH-adjusted
+\(p<0.05\), a stricter threshold than the \(\q<0.1\) used elsewhere) that are also
+present in the CIMA SCENIC+ regulatory network. Rows show eRegulons active in
+the cell type (cell-type eRegulons) and the subset of these that belong to the
+high-quality eRegulons of the corresponding lineage (high-quality eRegulons);
+columns show Bn, CD4, and CD8 cells.
+\textbf{B,} Odds ratio for a significant link being present in the network,
+compared with links not in the network (\(2\times2\) table; all tested pairs in
+the cell type as background). Fisher's exact test \(P<10^{-30}\) for every bar,
+and the dashed line marks an odds ratio of 1. The cell-type eRegulons contained
+864, 2,520, and 1,364 tested pairs in Bn, CD4, and CD8 cells, and the high-quality
+eRegulons 817, 458, and 382. ``Causal Joint'' denotes CCT.}
+\label{fig:supp-grn}
+\end{figure}
+
+\input{tables/supplementary_hyper_p}
+\input{tables/supplementary_hyper_fold}
+\clearpage
+\input{tables/supplementary_motif}
+\clearpage
+\input{tables/supplementary_data_overview}
+\end{document}

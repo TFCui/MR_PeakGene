@@ -14,7 +14,7 @@
 | Example pairs 表 | `Scripts/Visualization/Example_pairs.tsv`：`pair_set = original_example`（paper 的 24×3 个，`ord/type/category`）/ `Fig2_selected`（Fig2 实际画的 pair，`page/row/type`） |
 | Example pairs 检查 | `Scripts/Visualization/01_example_pairs.R`（`check_examples()`，Fig1 用） |
 | SLURM 日志 | `Scripts/Visualization/logs/` |
-| 图 / 表 | 当前版 `Results/Figures/Figures_20261019/`；上一版 `Results/Figures/Figures_20261012/`（只作对比） |
+| 图 / 表 | 论文图表当前版 `Results/Figures/Figures_20261027/`（含 Figma 手工拼的 `Figure_1.pdf`）；Fig5–Fig8 等旧图在 `Figures_20261019/`；更早一版 `Figures_20261012/`（只作对比） |
 | 临时文件（PLINK LD 等） | `tmp/` |
 
 ## 2. 共同约定
@@ -51,21 +51,24 @@
 | Fig6 Motif | `Plot6_Motif.R` | `Plot6_val_Motif.sh` | ✅（只出 `Motif_all.tsv` + 复制 xlsx） |
 | Fig7 CIMA GRN | `Plot7_GRN.R` | `Plot7_val_GRN.sh` 第 6 节 | ✅ |
 | Fig8 Link + GWAS | `Plot8_Link.R` | `Plot8_val_Link.sh`（已重新设计） | ✅（依赖 Valid6_GWAS） |
+| Fig10 S-LDSC + Link 合成 | `Plot10_Combined.R` | —（Fig5 第 2 页 + Fig8 的代码合并） | ✅（初版，版面已定，pair 可换） |
 
 Fig1、Fig2、Fig3（改为表）、Fig8 为 2026-10-13 新版（`Figures_20261019/`）；Fig5 已于 2026-10-13 重跑（`Figures_20261019/`）；Fig4、Fig7 本轮未重跑，现有图在 `Figures_20261012/`，重跑后写到 `Figures_20261019/`。
 
 ### 3.1 Fig1 — MR 总体结果 ✅
-- **脚本**：`Plot1_MRresults.R`（登录节点）；输入 `Results/MR/<CT>_AllPairs_results.tsv.gz`，FDR < 0.1 判显著。
-- **输出**：`Fig1_MR_overview.pdf`，4 页，11×5.2 in。
-  - 第 1–3 页：每个 CT 一张 UpSet（前 25 个组合）；右侧条形图标题 "Significant pairs"（`upset_right_annotation` 把 "Set size" 写死，生成后改 `@anno_list[[1]]@label`）。各方法显著数只打印到日志。
-  - 第 4 页：六方法全显著的 pair，每个 CT 一个环形图——扇区 = Causal IVW 与 Marginal Multiomics / Pseudobulk 的方向关系（都一致 / 只与 Multiomics 不一致 / 只与 Pseudobulk 不一致 / 都不一致），中心 = n 和 SMR/IVW/Egger 内部方向一致比例。
+- **脚本**：`Plot1_MRresults.R` + `Plot1_MRresults_slurm.sh`（约 1 分钟）；输入 `Results/MR/<CT>_AllPairs_results.tsv.gz`，FDR < 0.1 判显著（图中写作 p.adj < 0.1）。
+- **输出**（`Figures_20261027/`，PDF + `svglite` SVG，文字可编辑）：`Figure_1B_C.{pdf,svg}`（CD4，1 页，9×3.6 in，正文用；Figma 拼 `Figure_1` 用，脚本默认不重写，设 `PLOT1_WRITE_1BC=1`（slurm 脚本已设）才重出）+ `Figure_S3.{pdf,svg}`（Bn 在上、CD8 在下，同一页，9×7.2 in，补充用；每个细胞类型一个 panel 字母 A / B，画在每行左上角）。每个 CT 一行，左 UpSet（1B）、右环形图（1C）：
+  - 左：UpSet（前 15 个组合，标题只写细胞类型）；右侧条形图标题 "Significant pairs"（`upset_right_annotation` 把 "Set size" 写死，生成后改 `@anno_list[[1]]@label`）。各方法显著数只打印到日志。
+  - 右：六方法全显著的 pair 的环形图——扇区 = Causal IVW 与 Marginal Multiomics / Pseudobulk 的方向关系（都一致 / 只与 Multiomics 不一致 / 只与 Pseudobulk 不一致 / 都不一致），图内无图例、无中心文字、只标 ≥3% 扇区的百分比，标题 "Effect direction (all six significant)"；颜色含义、n、SMR/IVW/Egger 内部一致比例写在论文 caption。
+- **Figure_1A**：手工示意图（`Figures_20261019/Fig0_Schematics.pdf` 的修改版），`Figures_20261027/Figure_1A.{pdf,svg}`。
+- **Figure_1**：论文 Fig 1 = 在 Figma 中把 `Figure_1A` 与 `Figure_1B_C`（CD4）拼接排版的结果，`Figures_20261027/Figure_1.pdf`（手工，非脚本生成，图内已有 A / B / C 标签）。
 - **Example pairs 检查**：`check_examples()` 检查 72 个 original example 在新旧 FDR 下是否满足类别，写 `tmp/example_pairs_check.tsv`（2026-10-09：全部满足）。
 
 ### 3.2 Fig2 — Example pairs ✅
 - **脚本**：`Plot2_examples_v2.R` + `Plot2_examples_slurm.sh`（单个作业，约 7 分钟）。
-- **选 pair**：`Example_pairs.tsv` 中 `pair_set = Fig2_selected` 的行（`page`、`row`、`type`）。第 1 页 = 4 个指定 pair；第 2–6 页 = 每页 Type 1–4 各一个。改 pair 只需改这张表再重跑。
+- **选 pair**：`Example_pairs.tsv` 中 `pair_set = --set` 的行（`page`、`row`、`type`，默认 `Figure_2`）。`Figure_2` = 1 页：SIDT2 (Bn)、RPL11、ERAP2、ARPC1B (CD4)；`Fig2_selected` = 上一版 6 页。改 pair 只需改这张表再重跑。
 - **方法**：对每个 pair 重跑 QTL 对齐 → 去重 → PLINK LD → GLS IVW/Egger + SMR 取 SNP 层数据；p/FDR/beta 取 MR 表（新 MR 表没有 Egger 截距，用重跑的截距画 Egger 线）。日志对账 IVW/Egger 斜率和 SMR lead SNP。
-- **输出**：`Fig2_examples.pdf`，6 页，22×20 in；每页 4 行，每行一个 pair（标题 = gene | peak (CT)，副标题 = Type、peak–TSS 距离、MR SNP 数），行内 4 个 panel：
+- **输出**：`Figures_20261027/Figure_2.pdf` + `Figure_2.svg`（svglite），1 页，22×20 in；每页 4 行（行标签 A–D，行内 panel 不标字母），每行一个 pair（标题 = gene | peak (CT)，副标题 = Type、peak–TSS 距离、MR SNP 数），行内 4 个 panel：
   - a：caQTL / eQTL −log10 P（peak/TSS 中点 ±500 kb；红三角 = MR SNP，金三角 = SMR lead；caQTL 轨不画 P < 1e-8 且不在 MR 中的 variant；角标 = SNPs in MR）；
   - b：MR 散点 + Causal IVW / Egger 线（alpha 0.75、线宽 1.6；不画 SMR 线，保留 lead SNP 标注）；
   - c：Marginal Multiomics (across metacells / cell types)，WNN metacell Spearman；
@@ -85,9 +88,9 @@ Fig1、Fig2、Fig3（改为表）、Fig8 为 2026-10-13 新版（`Figures_202610
   - n_sig = 0（该方法在此 gene 无显著 peak）、K = 0（金标准无覆盖）或 N = K 的 gene 不参与；
   - 显著 peak 越多的方法，global P 越容易极小，但 fold 往往更低（如 Bn 的 Marginal Multiomics：P 最小、fold 最低），所以 P 和 fold 要一起看，不同方法的 fold 也不要脱离各自的显著 peak 数来比较；
   - fold 没有置信区间（未做 bootstrap）。
-- **输出**（`Figures_20261019/`）：
-  - `Fig3_Hyper_table.xlsx`：每个 CT 一个 sheet；上块 Global P（文本科学计数，行 = 6 方法，列 = 6 金标准），下块 pooled fold（每列最高 fold 的方法高亮），底部有脚注；
-  - `Fig3_Hyper_global.tsv`：长表，108 行（3 CT × 6 方法 × 6 金标准），列 `n_gene, sum_N, sum_K, sum_nsig, sum_k, fold, log10_gp, gp, p_txt`（`gp` 在 < 1e-300 时下溢为 0，以 `log10_gp` 为准）。
+- **输出**（`Figures_20261027/`；2026-10-20 前在 `Figures_20261019/`，文件名 `Fig3_Hyper_table.xlsx` / `Fig3_Hyper_global.tsv`）：
+  - `Table_1_2.xlsx`（论文 S1 Table = Global P，S2 Table = pooled fold）：3 个 CT 合并在**单个 sheet**（2026-10-23 起）；上块 Global P（文本科学计数，行 = 3 CT × 6 方法，列 = 6 金标准），下块 pooled fold（每个 CT 内每列最高 fold 的方法高亮），底部有脚注；
+  - `Table_1_2_global.tsv`：长表，108 行（3 CT × 6 方法 × 6 金标准），列 `n_gene, sum_N, sum_K, sum_nsig, sum_k, fold, log10_gp, gp, p_txt`（`gp` 在 < 1e-300 时下溢为 0，以 `log10_gp` 为准）。
   - 旧版直方图 `Figures_20261012/Fig3_Hyper.pdf` 保留作对比。
 
 ### 3.4 Fig4 — ROC AUC ✅
@@ -111,12 +114,13 @@ Fig1、Fig2、Fig3（改为表）、Fig8 为 2026-10-13 新版（`Figures_202610
 - **2026-10-09 对照结果**：6 个 CT×方法组合（如 Bn 的 IVW/SMR/CCT）与旧结果完全相同，其余前景 peak 数差 1–27 个，p 值随之变化（每组 2–12 个 motif 的显著性翻转）；原因应是旧 Motif 代码的前景用的是旧 FDR 且保留了 sigma2 为 NA 的 pair，前景变了，按 GC/可及性匹配的背景也跟着变（未逐一核实）。
   16 个目标 motif 中 14 个结论不变；**CD4 JUND（MA0492.1）在 IVW 下不再显著**（SMR 下仍显著）；**CD8 FOSL2::JUND（MA1145.1）在 MR_Egger 下不再显著**（新结果中 6 个方法都不显著）；Bn ELF2 在 MR_Egger 下新变为显著。复制过来的 xlsx 仍是旧数字，用时需注意这两行。
 - **输出**：`Motif_all.tsv`；另把 paper 目录的 `Materials/Fig6_Motif_table.xlsx` 原样复制到图目录（该 xlsx 是本地 Claude Code 结合外部知识手工整理的，数字来自旧结果）。
+- **MR 特异 motif 表**：Valid3 步骤 2 现在直接输出 `Results/Validation/Valid3_Motif/Motif_MR_specific.tsv`（47 个）和文献注释 `Motif_MR_specific_literature.tsv`（见 `Pipeline.md` 3.3）；上面的旧 xlsx（16 个 motif，旧数字）只作对照。
 
-### 3.7 Fig7 — CIMA GRN ✅
-- **输入**：`Results/Validation/Valid5_GRN/GRN_sig_counts_by_method.tsv`（统计量在 Valid5 中已算好：FDR < 0.05，2×2 Fisher）。
-- **脚本**：`Scripts/Visualization/Plot7_GRN.R`
-- **方法**：上图 = 每个方法显著且与 GRN 重叠的 pair 数（行 = CT / CT_HQ，列 = 细胞类型）；下图 = OR（GRN vs 非 GRN），CT 与 CT_HQ 并排。
-- **输出**：`Fig7_GRN.pdf`，1 页，14×11 in。
+### 3.7 Fig7 — CIMA GRN ✅（论文 Figure S5）
+- **输入**：`Results/Validation/Valid5_GRN/GRN_sig_counts_by_method.tsv`、`GRN_summary.tsv`（统计量在 Valid5 中已算好：p.adj（FDR）< 0.05，2×2 Fisher）。
+- **脚本**：旧版 `Plot7_GRN.R`（输出 `Fig7_GRN.pdf`，14×11 in，不再维护）；论文图用 `Plot_Sup2_GRN.R`（登录节点，几秒）。
+- **方法**：A = 每个方法显著且与 GRN 重叠的 pair 数（行 = Cell-type / High-quality eRegulons（`CT` / `CT_HQ`），列 = Bn / CD4 / CD8，柱 = 6 个方法，统一配色）；B = OR（GRN vs 非 GRN），CT 与 CT_HQ 并排（浅 / 深灰蓝 `#A9B8C8` / `#44546A`），虚线 OR = 1。panel 字母 A / B。日志打印 eRegulon 数、与 MR 重叠的 GRN pair 数、计数表、OR 表和最大 Fisher P（1.2e-31，所有比较 P < 1e-30）。阈值、GRN 集合和 pair 数写在论文 caption。
+- **输出**：`Figures_20261027/Figure_S5.pdf` + `Figure_S5.svg`，10×9.5 in。
 
 ### 3.8 Fig8 — Link + GWAS ✅
 - **脚本**：`Plot8_Link.R` + `Plot8_Link_slurm.sh`（约 3 分钟）。
@@ -127,6 +131,30 @@ Fig1、Fig2、Fig3（改为表）、Fig8 为 2026-10-13 新版（`Figures_202610
   - 分段 x 轴：peak 中点 ± 1 kb 放大到 35% 宽（灰底），两侧按 bp 线性压缩，刻度写真实位置；peak–TSS < 2 kb 时不压缩。参数 `ZOOM_HALF`、`ZOOM_FRAC`。
   - SNPs 轨只画放大区内：蓝竖线 = MR instrument（重跑，与 `ivw_n_snp` / SMR lead 对账），金三角 = SMR lead，紫菱形 + rsID = GWAS SNP；副标题写 MR SNP 在窗口内/总数和 GWAS SNP 的 trait、P。
   - 部分 pair（如 DR1）MR SNP 都在 ±1 kb 外，SNPs 轨只有 GWAS SNP。
+
+### 3.9 Fig10 — S-LDSC（Combined）+ Link/GWAS 合成图 ✅
+- **脚本**：`Plot10_Combined.R` + `Plot10_Combined_slurm.sh`（约 3–5 分钟，需要 PLINK + EnsDb，用 sbatch）。由 `Plot5_SLDSC.R`（Combined 页）和 `Plot8_Link.R`（单 pair 位点图）的代码合并拷贝而成，**Fig5、Fig8 及其脚本不动**。
+- **输出**：`Figures_20261027/Figure_4.{pdf,svg}`（正文用，panel B 1 行 × 4 个 pair，24×11 in）+ `Figure_S4.{pdf,svg}`（补充用，单页，panel A 同 Fig 4A，panel B 两行 × 4 = 8 个 pair，24×18.7 in；页高 = 3.3 + 7.7 × 行数，`PAGE_H_A` / `PAGE_H_ROW`）。每行都有自己的行名列。panel B 的行名（Gene / SNPs / Peak / 5 个方法）只在最左列写一次（`label_column()`）；显著 link 在弧线旁标 `*`/`**`/`***`（p.adj < 0.05/0.01/0.001）；图里不再放说明文字（星号、红 / 蓝、线宽、灰虚线等写在论文 caption）。PLINK 临时文件在 `tmp/plink_fig10/`。
+- **panel a**：S-LDSC Combined（3 个 CT 并集）的 MR-Only vs All peaks；单个面板，9 个 GWAS 共用同一个 y 轴，GWAS 名写在 x 轴，每个 GWAS 的两根柱紧贴（2026-10-23 起；原为 9 个独立 y 轴的小面板）；不放标题和解释文字，只留图例、y 轴标题和 enrichment P < 0.1 的 `*`。MR-Only 柱为紫红 `#B07AA1`（避开下方蓝色 link / SNP 轨的蓝色）。数据 `Valid2_SLDSC/SLDSC_all.tsv`。
+- **panel b**：1 × 4 并排，内容同 Fig8（Gene / SNPs / Peak / 5 个方法 link / 分段 x 轴），无边框，相邻 pair 之间一条浅灰细竖线（`SEP_COL`）；每个 pair 顶部 `Gene: XXX  Peak: chr:start-end`（hg38，取 `peak_id`），底部 `细胞类型短名 | GWAS trait`（trait 去重）；左侧行名字号 `LABEL_SIZE`；x 轴标题缩成 `chrN (Mb)`，`N_SNP_TARGET = 6`，`BASE_SIZE = 12`。
+- **选 pair**：脚本里的 `PAGES`（每页若干个 `c(cell_type, gene)`，来自 `GWAS_MRonly_overlap.tsv`）。当前：第 1 页（Figure_4）Bn RGL2 / CD4 ERBB3 / CD4 POLR2E / CD4 UBAC2（UBAC2 的 peak 内有 2 个 GWAS SNP，均为 Asthma）；第 2 页（Figure_S4，两行）CD8 GLS2 / CD4 GNAS / Bn UBA7 / CD8 TMBIM1，CD8 GNAS / Bn ERAP1 / CD4 TMPRSS3 / Bn ZSCAN16。优先选多 GWAS / 多 trait 的 pair。
+- **注意**：
+  - 先开 PDF 设备再构建图会让设备自动开出一张空白第 1 页（patchworkGrob 量布局时在设备上画东西）；第一页 `print(newpage = FALSE)` 解决。
+  - 设环境变量 `FIG10_PNG_DIR` 时改输出 PNG（`pg1.png`…，每页一张），用于检查版面，不写 Figures；预览脚本在 `tmp/Plot10_test/`。
+  - peak 离 TSS 很近的 pair（如 POLR2E）link 弧线窄成一条线，是 Fig8 就有的特点。
+
+### 3.10 Figure 3 — GO 富集（DAVID）✅
+- **脚本**：`Plot9_GO.R`（登录节点，几秒）。输入 3 个 CT 合并的 MR-Only gene（`Valid7_GO/DAVID_input/MROnly_genes_all.txt`，4,509 个）在 DAVID 网站的结果 `DAVID_output/DAVIDChartReport_A1BG_2026-10-19.csv`（只含 GO BP / MF）。
+- **输出**：`Figures_20261027/Figure_3.pdf` + `.svg`，13×5.5 in；A = GO BP、B = GO MF 并排，dotplot，每个 panel 按 DAVID FDR 取前 10 个 term（x = GeneRatio，大小 = Count，颜色 = DAVID FDR，图例写作 p.adj，< 1e-10 截为最深色）。
+
+### 3.11 Figure S1 — One-sample MR QC ✅
+- **脚本**：`Plot_Sup1_OneSampleMR.R`（登录节点）；输入 `Results/QC/1_OneSampleMR/<CT>_pair_corr.tsv.gz`、`<CT>_global_rho.tsv`。
+- **输出**：`Figures_20261027/Figure_S1.pdf` + `.svg`，1 页，9.5×4.8 in；2 个 panel：A = pair 内相关 ρ̂，B = 相关性检验的 P 值；x 轴 = pair 内共享 null SNP 数分组，每组 3 根并排箱子 = Bn / CD4 / CD8（ColorBrewer Dark2：紫 `#7570B3` / 绿 `#1B9E77` / 橙 `#D95F02`，箱体半透明、描边同色加深）；图例写各 CT 的全局 ρ 和 P；图内不放 n 和虚线说明（pair 数、SNP 数、虚线含义写在论文 caption）。日志打印各 CT 的 pair 数 / SNP 数 / 全局 ρ、P 和每组中位数。
+
+### 3.12 Table 4 — 三个细胞类型的数据概览 ✅（论文 S4 Table）
+- **脚本**：`Table4_DataOverview.R`（`Table4_DataOverview_slurm.sh`，约 25 分钟，主要是 QTL 汇总统计的全文件扫描）；输入：`libsize_<CT>.csv`、pseudobulk 矩阵、eQTL / caQTL 汇总统计的 `sample_sizes` 列、`caQTL_sig/<CT>_Significant.txt.gz`、`Scripts/Model/logs/MR_AllPairs_20074030_{0,1,2}.out`（漏斗）、`Results/MR/<CT>_AllPairs_results.tsv.gz`（核对和 `ivw_n_snp`）。
+- **输出**：`Figures_20261027/Table_4.xlsx`（单 sheet，4 块：单细胞 / cis-QTL / 候选 pair 与 MR 分析集 / 边际方法样本）+ `Table_4.tsv`（长表）。漏斗末行的 pair / 基因 / peak 数与 MR 结果表用 `stopifnot` 核对。
+- **口径**：caQTL peak 数 = 名义 P < 1e-8（选工具变量的阈值），不是 CIMA 的 FDR caPeak；没有 eGene 数。论文 tex 由 `Manuscript` 侧 `tmp/Manuscript_tables/make_data_table.py` 从 `Table_4.tsv` 生成。
 
 ## 4. Update History
 - 2026-10-09：建立本文件和 `Scripts/Visualization/`；写好 `00_common.R`、`Plot3_Hyper.R`、`Plot7_GRN.R` 并运行，输出 `Results/Figures/Fig3_Hyper.pdf`、`Fig7_GRN.pdf`。确定：Fig2 出 v1 和 v2；Fig5 只做第 1 页；Fig6 只出 `Motif_all.tsv` 并复制旧 xlsx；Fig8 暂不做。
@@ -139,3 +167,6 @@ Fig1、Fig2、Fig3（改为表）、Fig8 为 2026-10-13 新版（`Figures_202610
 - 2026-10-13：Valid2_SLDSC 改为 FDR < 0.1 的显著 peak 重跑；Fig5 去掉 s.e. 误差棒，raw enrichment P < 0.1 标粗体 `*`，输出到 `Figures_20261019/`。
 - 2026-10-14：Fig5 改为 MR-Only vs All peaks（每面板 2 根柱，MR-Only 浅天蓝），不再画 6 个方法；12×7.5 in。
 - 2026-10-14：Fig5 加第 2 页 Combined（Bn + CD4 + CD8 合并的 MR-Only vs All peaks）；画图部分抽成 `page_dt()` / `plot_page()`。
+- 2026-10-16：新增 Fig10（`Plot10_Combined.R`）：Fig5 Combined 柱状图（panel a）+ Fig8 单 pair 位点图 1×4（panel b），3 页，24×11 in，输出 `Figures_20261019/Fig10_SLDSC_Link.pdf`；MR-Only 柱改紫红色；修复第 1 页空白。
+- 2026-10-19：论文图整理到 `Results/Figures/Figures_20261026/`，每张图 PDF + SVG（`svglite`，文字可编辑），图中 FDR 一律写作 p.adj：Figure_1A（复制 Fig0）、Figure_1B_C（每 CT 一页 UpSet + 环形图）、Figure_2（4 个 pair，行标签 A–D）、Figure_3（DAVID GO BP / MF dotplot，3 CT 合并 gene list）、Figure_4（原 Fig10，panel B 行名只写一次、弧线标星号）、Figure_S1（OneSampleMR 3 CT 合并为 1 页）、Table_1（复制 Fig3 xlsx）。Table_2（MR 特异 motif + logo + 文献注释）由 `Scripts/Validation/Valid3_Motif_3_table.R` 生成，见 `Pipeline.md` 3.3。
+- 2026-10-20：Figure_S2（QC2 flip 前后对比，`Scripts/QC/QC2_2_FlipPoints_plot.R`，只出 PDF）；Fig6 说明加上 Valid3 新的 MR 特异 motif 表。

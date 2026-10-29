@@ -1,0 +1,33 @@
+===== Plot2_examples_v2 Mon Oct 19 15:37:20 CDT 2026
+[15:37:33] 提示: 未安装 ggtext, subtitle 不做颜色高亮
+[15:38:50] WNN: 80 metacells | cell-type colours: TRUE
+[15:38:50] ==================== Bn_TCL1A ====================
+[15:38:51] 作图 pairs: 1
+                               pair status ivw_beta_rerun ivw_beta_formal smr_snp_match
+                             <char> <char>          <num>           <num>        <lgcl>
+1: chr11:117185715-117186216__SIDT2     ok       1.023635        1.023635          TRUE
+   gene_id                   peak_id egger_beta egger_beta_rerun   egger_int     abs_diff
+    <char>                    <char>      <num>            <num>       <num>        <num>
+1:   SIDT2 chr11:117185715-117186216   1.026297         1.026297 -0.02336343 3.774758e-15
+[15:40:36]   [1/1] chr11:117185715-117186216__SIDT2
+[15:40:37] ==================== CD4_Tn_CCR7 ====================
+[15:40:38] 作图 pairs: 3
+                             pair status ivw_beta_rerun ivw_beta_formal smr_snp_match
+                           <char> <char>          <num>           <num>        <lgcl>
+1:  chr1:23691494-23691995__RPL11     ok      1.1268058       1.1268058          TRUE
+2:  chr5:96885894-96886395__ERAP2     ok     -1.5252670      -1.5252670          TRUE
+3: chr7:99376204-99376705__ARPC1B     ok      0.7396386       0.7396386          TRUE
+   gene_id                peak_id egger_beta egger_beta_rerun    egger_int     abs_diff
+    <char>                 <char>      <num>            <num>        <num>        <num>
+1:   RPL11 chr1:23691494-23691995  1.1350649        1.1350649 -0.003402648 4.218847e-15
+2:   ERAP2 chr5:96885894-96886395 -1.5104584       -1.5104584 -0.024818108 1.110223e-15
+3:  ARPC1B chr7:99376204-99376705  0.7194144        0.7194144  0.026992825 3.330669e-16
+[15:43:00]   [1/3] chr1:23691494-23691995__RPL11
+[15:43:02]   [2/3] chr5:96885894-96886395__ERAP2
+[15:43:02]   [3/3] chr7:99376204-99376705__ARPC1B
+[15:43:02] page 1: SIDT2, RPL11, ERAP2, ARPC1B
+[15:43:14] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261026/Figure_2.pdf
+[15:43:19] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261026/Figure_2.svg
+[15:43:19] All done.
+===== OK
+===== DONE Mon Oct 19 15:43:21 CDT 2026

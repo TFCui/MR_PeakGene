@@ -1,0 +1,28 @@
+job = 20268218 | cores = 1 | node = c135
+[15:11:58] Rows: 47 | unique motifs: 42
+
+===== MR FDR < 0.01 (any of IVW / MR_Egger / SMR, fold > 1): 14 of 47; with clear interpretation: 13
+      celltype     N
+        <char> <int>
+1:    Bn_TCL1A    10
+2: CD4_Tn_CCR7     2
+3: CD8_Tn_CCR7     1
+[15:11:58] Kept: 13 | excluded: 34
+Warning message:
+The `<scale>` argument of `guides()` cannot be `FALSE`. Use "none" instead as
+of ggplot2 3.3.4.
+ℹ The deprecated feature was likely used in the ggseqlogo package.
+  Please report the issue at <https://github.com/omarwagih/ggseqlogo/issues>. 
+[15:12:06] Logos: 13 PNG + SVG in /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid3_Motif/logos
+[15:12:07] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261027/Table_3.xlsx
+[15:12:07] Embedded images: 13 | highlighted FDR cells: 13 | rows by CT: Bn_TCL1A 10, CD4_Tn_CCR7 2, CD8_Tn_CCR7 1
+Key: <celltype, immune_relevance>
+      celltype immune_relevance     N
+        <char>           <char> <int>
+1:    Bn_TCL1A         Moderate     6
+2:    Bn_TCL1A           Strong     3
+3:    Bn_TCL1A             Weak     1
+4: CD4_Tn_CCR7           Strong     1
+5: CD4_Tn_CCR7             Weak     1
+6: CD8_Tn_CCR7             Weak     1
+[15:12:07] Done.

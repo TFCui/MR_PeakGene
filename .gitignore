@@ -13,6 +13,9 @@ Manuscript/*.bbl
 Manuscript/*.blg
 Manuscript/*.log
 Manuscript/*.out
+Manuscript/*.lof
+Manuscript/*.lot
+Manuscript/*.toc
 Manuscript/plos_draft.*
 Manuscript/overleaf_project.zip
 Manuscript/*.before

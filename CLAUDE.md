@@ -30,6 +30,8 @@
 | `Results/` | 新结果 |
 | `tmp/` | 中间文件、缓存、临时文件 |
 | `data/ref_chr/hg38` | LD 参考面板（软链接，只读） |
+| `Manuscript/` | 论文 LaTeX 源；笔记见 `Notes_Claude_Code.md`（Claude Code）和 `CODEX_METHODS_NOTES.md`（CodeX），规则见 `AGENTS.md`（见第 11 节） |
+| `paper_reference/` | 核心参考论文 PDF（MR-Egger：Burgess & Thompson 2017 + 附录、GRIP、SMR：Zhu 2016、CIMA Science）；**只读**，Claude Code 和 CodeX 写论文 / 核对方法时可查阅 |
 
 外部数据直接从 `/scratch/user/tfcui2025/CIMA/` 读取，不复制。
 
@@ -93,7 +95,7 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 |---|---|
 | V1+V2 | 每个 gene 内做超几何检验：显著 peak 与 6 个金标准（EnhancerAtlas、FANTOM5、4DGenome、GTEx、HiChIP、PCHiC）的重叠；Fig3 汇总为 global test 表（各 gene 的 N/K/n_sig/k 求和后给 global P 和 pooled fold enrichment，定义见 `Scripts/Visualization.md` 3.3 节） |
 | V3 | S-LDSC：MR-Only peak（IVW/Egger/SMR 任一 FDR < 0.1 且 WNN、Pseudo 都不显著的 link；hg19，±500 bp）+ baselineLD，9 个 GWAS，pool（全部候选 peak）作对照；另加 3 个 CT 合并（Combined，MR-Only 和 pool 各取并集）一组；看 enrichment |
-| V4 | Motif 富集：Signac + JASPAR2020，背景按 GC 和可及性匹配；检查对应 TF 是否表达 |
+| V4 | Motif 富集：Signac + JASPAR2020，背景按 GC 和可及性匹配；提取 MR 特异 motif（IVW/Egger/SMR 任一 BH < 0.05 且 fold > 1，WNN/Pseudo 都不显著），记录 % obs / % bg / fold；文献注释（PMID 已核对）+ logo 汇总为 `Results/Figures/Figures_20261026/Table_2.xlsx`；不再检查 TF 表达 |
 | V5 | 逐 gene ROC AUC，用同样的 6 个金标准 |
 | V6 | 与 CIMA SCENIC+ GRN 的重叠，做 Fisher 检验 |
 | Valid6_GWAS | MR-only 强 link（MR 任一 FDR < 0.001，WNN/Pseudo 不显著）的 peak 内是否有 GWAS P < 5e-8 的 SNP（9 个 GWAS）；Fig8 用 |
@@ -102,7 +104,27 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 - 不好归到前面章节的小知识点放这里。
 - 登录节点上用 `bash -lc` 加 `module load` 加载 R 后可以运行 `Rscript`，适合轻量检查（例如查看某个 rds 的列名）。
 
-## 10. Update History（更新备忘）
+## 10. Git 规则
+- 只提交 `Scripts/`、`Results/`、`Manuscript/`（排除规则见 `.gitignore`）、`CLAUDE.md`（外加白名单 `.gitignore` 本身）；`data/`、`tmp/`、`Scripts_reference/` 不提交。
+- 提交前先检查 `git status`（以及是否有超过 50MB 的大文件）。
+- 不 force push。
+- `paper_reference/` 不在提交白名单内（PDF 共约 14 MB，不提交）。
+
+
+## 11. Manuscript 论文稿件
+- 目录 `Manuscript/`：论文 LaTeX 源（主入口 `main.tex`，与 Overleaf 同步）。本地编译：`bash -l tmp/build_ms.sh`（同时编译 `main.tex` 正文和独立的 `supplementary.tex` 补充文件）。
+- **Claude Code 与 CodeX 协同工作**，各有分工和各自的笔记文件（共同规则见 `Manuscript/AGENTS.md`，CodeX 的入口是它）：
+  - **Claude Code**：整理 LaTeX、修改格式、检查交叉引用、编译论文；维护 `Manuscript/Notes_Claude_Code.md`。它记录论文里每个 figure / table 的来源、进入论文前的修改、含义（C 节），每个 section 的 LaTeX 现状和 TODO（D 节），Claude Code 的更新记录（E 节）。
+  - **CodeX**：阅读 Methods、检查公式、讨论科学逻辑、拟定段落结构；记录在 `Manuscript/CODEX_METHODS_NOTES.md`（按论文章节组织）。
+  - 两边互相读对方的文件，各自只写自己的；开始论文工作前先读这两个文件。
+- 规则：
+  1. 论文里任何图表新增 / 替换 / 修改，必须同步更新 `Notes_Claude_Code.md` 的 C 节台账（来源、改动、含义、hash）。
+  2. LaTeX 的某个 section 有改动（包括 CodeX 改的段落），核对实际 `.tex` 后更新 D 节；每次 Claude Code 的工作在 E 节记一行：日期 | 工具 | 内容。
+  3. 科学判断、公式核对、段落结构的讨论记在 `CODEX_METHODS_NOTES.md`，不记在 Notes_Claude_Code.md。
+  4. 论文工作只改 `Manuscript/`（生成表格的辅助脚本放 `tmp/Manuscript_tables/`）；`Scripts/`、`Results/`、`paper_reference/` 只读。
+  5. 不 commit / push，除非用户明确要求；编译中间文件已在 `.gitignore` 中排除。
+
+## 12. Update History（更新备忘）
 每次对脚本或整体代码做了更新，在这里用一句话记录：日期 + 改了什么。
 - 2026-10-09：建立 `CLAUDE.md` 和 `Scripts_reference/00_README_Pipeline_Summary.md`；确定只做 3 个细胞类型、S-LDSC 只用 9 个 GWAS；MR 合并步骤改为先删 NA、再过滤 `ivw_sigma2 <= 10`，然后算 CCT 和按 gene 的 BH；只写 `Claude_project/` 内的文件。
 - 2026-10-09：开始可视化：按 `20261006_paper` 的思路复现论文图，代码在 `Scripts/Visualization/`，说明在 `Scripts/Visualization.md`，图在 `Results/Figures/`；已完成 Fig1、Fig2（v1 + v2）、Fig3、Fig4、Fig5（第 1 页）、Fig6（Motif_all.tsv + 复制 xlsx）、Fig7、Fig8（GWAS 模式，基于 Valid6_GWAS）。
@@ -114,8 +136,8 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 - 2026-10-14：Valid2_SLDSC 改为只跑 MR-Only + pool（6 方法 FDR 0.1 结果表暂存为 `SLDSC_6methods_FDR0.1.tsv`，FDR 0.05 备份已删）；Fig5 改为 MR-Only vs All peaks。
 - 2026-10-14：Valid2_SLDSC 新增 Combined（3 个 CT 合并）一组；Fig5 加第 2 页。
 - 2026-10-15：论文稿件目录 `Manuscript/`（CodeX 生成）纳入 git 备份；`.gitignore` 放行该目录，排除编译中间文件（aux/bbl/blg/log/out）、`plos_draft.*` 重复文件、`overleaf_project.zip`、`.plos-review/` 和 `*.before` 备份。
-
-## 11. Git 规则
-- 只提交 `Scripts/`、`Results/`、`Manuscript/`（排除规则见 `.gitignore`）、`CLAUDE.md`（外加白名单 `.gitignore` 本身）；`data/`、`tmp/`、`Scripts_reference/` 不提交。
-- 提交前先检查 `git status`（以及是否有超过 50MB 的大文件）。
-- 不 force push。
+- 2026-10-20：Valid3_Motif 去掉 TF 表达检查；新增 MR 特异 motif 表（47 个）、文献注释和带 logo 的论文 Table 2（`Valid3_Motif_3_table.R` → `Figures_20261026/Table_2.xlsx`），详见 `Scripts/Pipeline.md` 3.3。
+- 2026-10-20：Manuscript 记录文档由 6 个合并为 `AGENTS.md` + 笔记文件（含逐图表的来源 / 修改台账）；论文加入 Figure_S2（S2–S4 Fig）和 S3 Table（MR 特异 motif）。
+- 2026-10-20：新增 `paper_reference/`（核心参考论文）；`CLAUDE.md` 增加第 11 节 Manuscript，Git 规则改为第 10 节，Update History 移到最后（第 12 节）。
+- 2026-10-20：`Manuscript/MANUSCRIPT_CONTEXT.md` 改名为 `Notes_Claude_Code.md`；明确 Claude Code 与 CodeX 协同分工，CodeX 的笔记在 `Manuscript/CODEX_METHODS_NOTES.md`。
+- 2026-10-20：论文补充图表拆成独立文件 `Manuscript/supplementary.tex`（`supplementary.pdf`）；正文末尾只保留 Supporting information 标题列表，用 `\nameref` 引用；补充表格统一编号为 S1 / S2 / S3 Table。

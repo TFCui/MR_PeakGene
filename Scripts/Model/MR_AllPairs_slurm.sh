@@ -5,7 +5,7 @@
 #SBATCH --cpus-per-task=36
 #SBATCH --mem=360G
 #SBATCH --time=04:00:00
-#SBATCH --array=0-2
+#SBATCH --array=0-4
 #SBATCH --output=/scratch/user/tfcui2025/CIMA/Claude_project/Scripts/Model/logs/%x_%A_%a.out
 
 # 全量 peak-gene pairs 的 MR / SMR / 边际相关, 一个 array task 一个细胞类型 (流程见 Scripts/Pipeline.md 第 2 节)
@@ -14,7 +14,8 @@
 #   cd /scratch/user/tfcui2025/CIMA/Claude_project && mkdir -p Scripts/Model/logs Results/MR tmp
 #
 # 冒烟测试 (只跑 Bn 前 200 个 pair): sbatch --array=0 --export=ALL,TEST_N=200 --time=01:00:00 Scripts/Model/MR_AllPairs_slurm.sh
-# 正式运行 (3 个 CT):                sbatch Scripts/Model/MR_AllPairs_slurm.sh
+# 正式运行 (5 个 CT):                sbatch Scripts/Model/MR_AllPairs_slurm.sh
+# 只跑新增的 cMono / NK:             sbatch --array=3-4 Scripts/Model/MR_AllPairs_slurm.sh   (不要重跑 0-2, 会覆盖已定稿结果)
 # 中断后续跑: 重投同一命令即可 (已完成的 chunk 会跳过)
 
 set -euo pipefail
@@ -22,7 +23,7 @@ module purge
 module load GCC/13.3.0 OpenMPI/5.0.3 ArchR/1.0.3-R-4.4.2 SeuratDisk/20231104-R-4.4.2 R_tamu/4.4.2
 
 PROJ=/scratch/user/tfcui2025/CIMA/Claude_project
-CELLS=(Bn_TCL1A CD4_Tn_CCR7 CD8_Tn_CCR7)
+CELLS=(Bn_TCL1A CD4_Tn_CCR7 CD8_Tn_CCR7 cMono_CD14 Mature_NK_dim_FCGR3A)   # 下标 3、4 为 2026-10-23 新增; 只跑新 CT 时提交 --array=3-4
 CT=${CELLS[$SLURM_ARRAY_TASK_ID]}
 export TEST_N=${TEST_N:-0}
 

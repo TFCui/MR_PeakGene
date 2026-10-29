@@ -1,0 +1,172 @@
+cell_type = Bn_TCL1A | TEST_N = 0 | cores = 36 | job = 20214236_0
+===== Bn_TCL1A | cores = 36 | chunks = 144 | TEST_N = 0 =====
+pairs: 40087
+           used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells   578393 30.9    1044160  55.8   692365  37.0
+Vcells 11112827 84.8   44697310 341.1 55377953 422.6
+           used  (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   581121  31.1    4036708  215.6   4855705  259.4
+Vcells 21717214 165.7  298440487 2277.0 372412434 2841.3
+caQTL 子集: 1369511 行 | eQTL 子集: 1075016 行
+待跑 chunks: 144 / 144
+  chunk 014: 279 pairs, 4.5 min
+  chunk 017: 279 pairs, 4.5 min
+  chunk 026: 279 pairs, 4.5 min
+  chunk 004: 279 pairs, 4.5 min
+  chunk 019: 279 pairs, 4.5 min
+  chunk 015: 279 pairs, 4.5 min
+  chunk 012: 279 pairs, 4.5 min
+  chunk 031: 279 pairs, 4.5 min
+  chunk 006: 279 pairs, 4.5 min
+  chunk 011: 279 pairs, 4.5 min
+  chunk 020: 279 pairs, 4.5 min
+  chunk 003: 279 pairs, 4.5 min
+  chunk 022: 279 pairs, 4.5 min
+  chunk 007: 279 pairs, 4.5 min
+  chunk 016: 279 pairs, 4.5 min
+  chunk 024: 279 pairs, 4.5 min
+  chunk 001: 279 pairs, 4.5 min
+  chunk 002: 279 pairs, 4.5 min
+  chunk 005: 279 pairs, 4.5 min
+  chunk 035: 279 pairs, 4.5 min
+  chunk 036: 279 pairs, 4.5 min
+  chunk 021: 279 pairs, 4.5 min
+  chunk 009: 279 pairs, 4.5 min
+  chunk 010: 279 pairs, 4.5 min
+  chunk 032: 279 pairs, 4.5 min
+  chunk 008: 279 pairs, 4.5 min
+  chunk 034: 279 pairs, 4.5 min
+  chunk 028: 279 pairs, 4.5 min
+  chunk 018: 279 pairs, 4.5 min
+  chunk 025: 279 pairs, 4.5 min
+  chunk 029: 279 pairs, 4.5 min
+  chunk 027: 279 pairs, 4.5 min
+  chunk 013: 279 pairs, 4.6 min
+  chunk 030: 279 pairs, 4.5 min
+  chunk 023: 279 pairs, 4.6 min
+  chunk 033: 279 pairs, 4.6 min
+  chunk 071: 278 pairs, 3.2 min
+  chunk 070: 278 pairs, 3.2 min
+  chunk 038: 279 pairs, 3.2 min
+  chunk 061: 278 pairs, 3.2 min
+  chunk 059: 278 pairs, 3.2 min
+  chunk 052: 279 pairs, 3.2 min
+  chunk 039: 279 pairs, 3.2 min
+  chunk 053: 279 pairs, 3.2 min
+  chunk 046: 279 pairs, 3.2 min
+  chunk 042: 279 pairs, 3.2 min
+  chunk 054: 279 pairs, 3.2 min
+  chunk 069: 278 pairs, 3.2 min
+  chunk 056: 278 pairs, 3.2 min
+  chunk 072: 278 pairs, 3.2 min
+  chunk 068: 278 pairs, 3.2 min
+  chunk 040: 279 pairs, 3.2 min
+  chunk 055: 279 pairs, 3.2 min
+  chunk 049: 279 pairs, 3.2 min
+  chunk 060: 278 pairs, 3.2 min
+  chunk 065: 278 pairs, 3.2 min
+  chunk 037: 279 pairs, 3.2 min
+  chunk 067: 278 pairs, 3.2 min
+  chunk 051: 279 pairs, 3.2 min
+  chunk 064: 278 pairs, 3.2 min
+  chunk 045: 279 pairs, 3.2 min
+  chunk 043: 279 pairs, 3.2 min
+  chunk 063: 278 pairs, 3.2 min
+  chunk 041: 279 pairs, 3.2 min
+  chunk 062: 278 pairs, 3.2 min
+  chunk 044: 279 pairs, 3.2 min
+  chunk 057: 278 pairs, 3.2 min
+  chunk 050: 279 pairs, 3.2 min
+  chunk 058: 278 pairs, 3.2 min
+  chunk 047: 279 pairs, 3.2 min
+  chunk 048: 279 pairs, 3.2 min
+  chunk 066: 278 pairs, 3.2 min
+  chunk 076: 278 pairs, 2.8 min
+  chunk 074: 278 pairs, 2.8 min
+  chunk 073: 278 pairs, 2.8 min
+  chunk 075: 278 pairs, 2.8 min
+  chunk 080: 278 pairs, 2.8 min
+  chunk 081: 278 pairs, 2.8 min
+  chunk 082: 278 pairs, 2.8 min
+  chunk 079: 278 pairs, 2.8 min
+  chunk 095: 278 pairs, 2.8 min
+  chunk 083: 278 pairs, 2.8 min
+  chunk 098: 278 pairs, 2.8 min
+  chunk 085: 278 pairs, 2.8 min
+  chunk 087: 278 pairs, 2.8 min
+  chunk 088: 278 pairs, 2.8 min
+  chunk 077: 278 pairs, 2.8 min
+  chunk 099: 278 pairs, 2.8 min
+  chunk 089: 278 pairs, 2.8 min
+  chunk 093: 278 pairs, 2.8 min
+  chunk 084: 278 pairs, 2.8 min
+  chunk 078: 278 pairs, 2.8 min
+  chunk 100: 278 pairs, 2.8 min
+  chunk 097: 278 pairs, 2.8 min
+  chunk 090: 278 pairs, 2.8 min
+  chunk 101: 278 pairs, 2.8 min
+  chunk 091: 278 pairs, 2.8 min
+  chunk 096: 278 pairs, 2.8 min
+  chunk 103: 278 pairs, 2.8 min
+  chunk 092: 278 pairs, 2.8 min
+  chunk 104: 278 pairs, 2.8 min
+  chunk 105: 278 pairs, 2.8 min
+  chunk 094: 278 pairs, 2.8 min
+  chunk 102: 278 pairs, 2.8 min
+  chunk 106: 278 pairs, 2.8 min
+  chunk 086: 278 pairs, 2.8 min
+  chunk 107: 278 pairs, 2.8 min
+  chunk 108: 278 pairs, 2.8 min
+  chunk 115: 278 pairs, 2.4 min
+  chunk 126: 278 pairs, 2.4 min
+  chunk 122: 278 pairs, 2.4 min
+  chunk 118: 278 pairs, 2.4 min
+  chunk 114: 278 pairs, 2.5 min
+  chunk 112: 278 pairs, 2.5 min
+  chunk 111: 278 pairs, 2.5 min
+  chunk 132: 278 pairs, 2.4 min
+  chunk 116: 278 pairs, 2.5 min
+  chunk 123: 278 pairs, 2.4 min
+  chunk 124: 278 pairs, 2.4 min
+  chunk 128: 278 pairs, 2.4 min
+  chunk 110: 278 pairs, 2.5 min
+  chunk 113: 278 pairs, 2.5 min
+  chunk 120: 278 pairs, 2.5 min
+  chunk 127: 278 pairs, 2.5 min
+  chunk 109: 278 pairs, 2.5 min
+  chunk 131: 278 pairs, 2.4 min
+  chunk 119: 278 pairs, 2.5 min
+  chunk 117: 278 pairs, 2.5 min
+  chunk 133: 278 pairs, 2.4 min
+  chunk 134: 278 pairs, 2.4 min
+  chunk 125: 278 pairs, 2.5 min
+  chunk 135: 278 pairs, 2.4 min
+  chunk 141: 278 pairs, 2.4 min
+  chunk 142: 278 pairs, 2.4 min
+  chunk 136: 278 pairs, 2.4 min
+  chunk 130: 278 pairs, 2.5 min
+  chunk 129: 278 pairs, 2.5 min
+  chunk 137: 278 pairs, 2.4 min
+  chunk 138: 278 pairs, 2.4 min
+  chunk 140: 278 pairs, 2.4 min
+  chunk 121: 278 pairs, 2.5 min
+  chunk 139: 278 pairs, 2.5 min
+  chunk 144: 278 pairs, 2.4 min
+  chunk 143: 278 pairs, 2.4 min
+pair status 分布:
+   status     N
+   <char> <int>
+1:     ok 40087
+
+===== 对账: flip 版 Egger 与正式表
+       n n_snp_match max_abs_d_beta max_abs_d_log10p
+   <int>       <int>          <num>            <num>
+1: 40087       40087   4.973799e-14     3.552714e-15
+
+===== Egger 显著 (p.adj < 0.05): 不 flip (行) x flip (列)
+          flip_sig
+noflip_sig FALSE  TRUE
+     FALSE 36849   573
+     TRUE    927  1738
+
+Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/QC/2_FlipPoints/Bn_TCL1A_Egger_FlipScan.tsv.gz (40087 pairs) | 14.0 min

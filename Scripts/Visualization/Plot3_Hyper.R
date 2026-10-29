@@ -1,8 +1,8 @@
-# Fig3: gene 内超几何富集的 global test 表 (6 方法 x 6 金标准), 每个细胞类型一个 sheet; 不再画 p 值直方图
+# Fig3: gene 内超几何富集的 global test 表 (6 方法 x 6 金标准), 3 个细胞类型合并在同一个 sheet; 不再画 p 值直方图
 # 移植自 20261006_paper/Scripts/Plot3_val_Hyper.sh, global P 的算法不变 (各 gene 的 N/K/n_sig/k 求和后做一次超几何检验)
 # 新增: 合并 fold enrichment; global P 用 log.p 计算, 极小的 P 也不下溢
 # 输入: Results/Validation/Valid1_Hyper/<CT>_hyper_long.tsv
-# 输出: FIG_DIR/Fig3_Hyper_global.tsv (长表), FIG_DIR/Fig3_Hyper_table.xlsx (每个 CT 一个 sheet: Global P + Fold enrichment)
+# 输出: Results/Figures/Figures_20261027/Table_1_2_global.tsv (长表), Table_1_2.xlsx (单个 sheet: 上块 Global P = 论文 S1 Table, 下块 pooled fold = S2 Table; 每块 3 个 CT x 6 方法)
 # 运行: Rscript Scripts/Visualization/Plot3_Hyper.R
 
 source("/scratch/user/tfcui2025/CIMA/Claude_project/Scripts/Visualization/00_common.R")
@@ -53,7 +53,9 @@ for (ct in CELLS) {
 }
 
 # ---------- tsv ----------
-out_tsv <- file.path(FIG_DIR, "Fig3_Hyper_global.tsv")
+OUT_DIR <- file.path(PROJ, "Results/Figures/Figures_20261027")
+dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
+out_tsv <- file.path(OUT_DIR, "Table_1_2_global.tsv")
 fwrite(res[, .(celltype, method = method_lbl, database, n_gene, sum_N, sum_K, sum_nsig, sum_k, fold, log10_gp, gp, p_txt)],
        out_tsv, sep = "\t", quote = FALSE)
 msg("Saved: ", out_tsv)
@@ -73,31 +75,42 @@ foot <- c("Global P: for each method x gold standard, N, K, n_sig and k are summ
           "Fold enrichment (pooled) = (sum k / sum n_sig) / (sum K / sum N), i.e. the fraction of significant peaks overlapping the gold standard divided by the fraction of background peaks overlapping it. Shaded bold = highest fold in that column.",
           "N = background peaks of the gene; K = background peaks in the gold standard; n_sig = significant peaks; k = significant peaks in the gold standard.")
 
-wb <- createWorkbook()
-for (ct in CELLS) {
-  x <- res[celltype == ct]
-  sh <- ct; addWorksheet(wb, sh)
-  mp <- dcast(x, method_lbl ~ database, value.var = "p_txt")[match(METHODS, method_lbl)]
-  mf <- dcast(x, method_lbl ~ database, value.var = "fold")[match(METHODS, method_lbl)]
-  mk_block <- function(m) { b <- as.data.frame(m[, c("method_lbl", db_names), with = FALSE]); names(b) <- c("Method", db_lbls[db_names]); b }
-  writeData(wb, sh, sprintf("Hypergeometric enrichment of method-specific significant peaks in gold-standard links (%s)", ct), startRow = 1, startCol = 1)
-  addStyle(wb, sh, st_title, rows = 1, cols = 1)
-  # 上块: Global P
-  writeData(wb, sh, "Global hypergeometric P", startRow = 3, startCol = 1); addStyle(wb, sh, st_sect, rows = 3, cols = 1)
-  writeData(wb, sh, mk_block(mp), startRow = 4, startCol = 1, headerStyle = st_head)
-  addStyle(wb, sh, st_row,  rows = 5:10, cols = 1, gridExpand = TRUE)
-  addStyle(wb, sh, st_cell, rows = 5:10, cols = 2:7, gridExpand = TRUE)
-  # 下块: pooled fold enrichment
-  writeData(wb, sh, "Fold enrichment (pooled)", startRow = 12, startCol = 1); addStyle(wb, sh, st_sect, rows = 12, cols = 1)
-  writeData(wb, sh, mk_block(mf), startRow = 13, startCol = 1, headerStyle = st_head)
-  addStyle(wb, sh, st_row,  rows = 14:19, cols = 1, gridExpand = TRUE)
-  addStyle(wb, sh, st_fold, rows = 14:19, cols = 2:7, gridExpand = TRUE)
-  for (j in seq_along(db_names)) addStyle(wb, sh, st_best, rows = 13 + which.max(mf[[db_names[j]]]), cols = 1 + j)
-  writeData(wb, sh, foot, startRow = 21, startCol = 1)
-  setColWidths(wb, sh, cols = 1:7, widths = c(24, rep(16, 6)))
-  setRowHeights(wb, sh, rows = c(4, 13), heights = 24)
-  freezePane(wb, sh, firstCol = TRUE)
+# 一个 sheet: 上块 = Global P (论文 S1 Table), 下块 = pooled fold (论文 S2 Table); 每块 18 行 = 3 个 CT x 6 方法, CT 单元格纵向合并; 每个 CT 内每列最高 fold 高亮
+wb <- createWorkbook(); sh <- "Table_1_2"; addWorksheet(wb, sh)
+CT_LBL  <- c(Bn_TCL1A = "Bn", CD4_Tn_CCR7 = "CD4", CD8_Tn_CCR7 = "CD8")
+M_SHOW  <- setNames(METHODS, METHODS); M_SHOW[c("Causal Joint", "Marginal Multiomics")] <- c("Causal Joint (CCT)", "Marginal Multiomics (WNN)")
+NM <- length(METHODS); ND <- length(db_names); NC <- 2 + ND
+mk_long <- function(val) {   # 18 行 x (Cell type, Method, 6 个数据库)
+  rbindlist(lapply(CELLS, function(ct) {
+    m <- dcast(res[celltype == ct], method_lbl ~ database, value.var = val)[match(METHODS, method_lbl)]
+    data.table(`Cell type` = CT_LBL[[ct]], Method = unname(M_SHOW[as.character(m$method_lbl)]), m[, db_names, with = FALSE])
+  }))
 }
-out_xlsx <- file.path(FIG_DIR, "Fig3_Hyper_table.xlsx")
+tp <- mk_long("p_txt"); tf <- mk_long("fold"); setnames(tp, db_names, db_lbls[db_names]); setnames(tf, db_names, db_lbls[db_names])
+stopifnot(nrow(tp) == length(CELLS) * NM, nrow(tf) == nrow(tp))
+
+writeData(wb, sh, "Hypergeometric enrichment of method-specific significant peaks in gold-standard links (Bn, CD4, CD8)", startRow = 1, startCol = 1)
+addStyle(wb, sh, st_title, rows = 1, cols = 1)
+blk <- function(top, ttl, tb, st_val, best = FALSE) {   # top = 标题行; 表头 top + 1; 数据 top + 2 起
+  writeData(wb, sh, ttl, startRow = top, startCol = 1); addStyle(wb, sh, st_sect, rows = top, cols = 1)
+  writeData(wb, sh, as.data.frame(tb), startRow = top + 1, startCol = 1, headerStyle = st_head)
+  r <- top + 1 + seq_len(nrow(tb))
+  addStyle(wb, sh, st_row, rows = r, cols = 1:2, gridExpand = TRUE)
+  addStyle(wb, sh, st_val, rows = r, cols = 3:NC, gridExpand = TRUE)
+  for (k in seq_along(CELLS)) {   # CT 单元格纵向合并
+    rr <- top + 1 + (k - 1) * NM + seq_len(NM)
+    mergeCells(wb, sh, cols = 1, rows = rr)
+    addStyle(wb, sh, createStyle(fontSize = 12, textDecoration = "bold", fgFill = "#DCE6F1", halign = "center", valign = "center",
+                                 border = "TopBottomLeftRight", borderColour = "#BBBBBB"), rows = rr, cols = 1, gridExpand = TRUE)
+    if (best) for (j in seq_len(ND)) addStyle(wb, sh, st_best, rows = rr[which.max(tb[[2 + j]][(k - 1) * NM + seq_len(NM)])], cols = 2 + j)
+  }
+  setRowHeights(wb, sh, rows = top + 1, heights = 24)
+}
+blk(3, "Global hypergeometric P (S1 Table)", tp, st_cell)
+blk(3 + NM * length(CELLS) + 3, "Fold enrichment, pooled (S2 Table)", tf, st_fold, best = TRUE)
+writeData(wb, sh, foot, startRow = 3 + 2 * (NM * length(CELLS) + 3) + 1, startCol = 1)
+setColWidths(wb, sh, cols = 1:NC, widths = c(11, 28, rep(16, ND)))
+freezePane(wb, sh, firstCol = TRUE)
+out_xlsx <- file.path(OUT_DIR, "Table_1_2.xlsx")
 saveWorkbook(wb, out_xlsx, overwrite = TRUE)
 msg("Saved: ", out_xlsx)

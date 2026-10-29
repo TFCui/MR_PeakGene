@@ -1,0 +1,172 @@
+cell_type = CD4_Tn_CCR7 | TEST_N = 0 | cores = 36 | job = 20214236_1
+===== CD4_Tn_CCR7 | cores = 36 | chunks = 144 | TEST_N = 0 =====
+pairs: 85527
+           used  (Mb) gc trigger  (Mb)  max used (Mb)
+Ncells   645259  34.5    1057691  56.5    692365   37
+Vcells 23676922 180.7   91996988 701.9 114424333  873
+           used  (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   647927  34.7    4094144  218.7   4964904  265.2
+Vcells 41022547 313.0  416191030 3175.3 518932183 3959.2
+caQTL 子集: 3069029 行 | eQTL 子集: 2213641 行
+待跑 chunks: 144 / 144
+  chunk 012: 594 pairs, 8.0 min
+  chunk 020: 594 pairs, 8.0 min
+  chunk 015: 594 pairs, 8.0 min
+  chunk 032: 594 pairs, 8.0 min
+  chunk 025: 594 pairs, 8.0 min
+  chunk 019: 594 pairs, 8.0 min
+  chunk 024: 594 pairs, 8.0 min
+  chunk 023: 594 pairs, 8.0 min
+  chunk 036: 594 pairs, 8.0 min
+  chunk 003: 594 pairs, 8.0 min
+  chunk 027: 594 pairs, 8.0 min
+  chunk 009: 594 pairs, 8.0 min
+  chunk 017: 594 pairs, 8.0 min
+  chunk 006: 594 pairs, 8.0 min
+  chunk 014: 594 pairs, 8.0 min
+  chunk 016: 594 pairs, 8.0 min
+  chunk 031: 594 pairs, 8.0 min
+  chunk 002: 594 pairs, 8.0 min
+  chunk 007: 594 pairs, 8.0 min
+  chunk 004: 594 pairs, 8.0 min
+  chunk 011: 594 pairs, 8.0 min
+  chunk 035: 594 pairs, 8.0 min
+  chunk 026: 594 pairs, 8.0 min
+  chunk 034: 594 pairs, 8.0 min
+  chunk 022: 594 pairs, 8.0 min
+  chunk 028: 594 pairs, 8.0 min
+  chunk 018: 594 pairs, 8.0 min
+  chunk 010: 594 pairs, 8.0 min
+  chunk 021: 594 pairs, 8.0 min
+  chunk 013: 594 pairs, 8.0 min
+  chunk 001: 594 pairs, 8.0 min
+  chunk 005: 594 pairs, 8.0 min
+  chunk 008: 594 pairs, 8.0 min
+  chunk 030: 594 pairs, 8.0 min
+  chunk 029: 594 pairs, 8.0 min
+  chunk 033: 594 pairs, 8.0 min
+  chunk 050: 594 pairs, 5.8 min
+  chunk 072: 594 pairs, 5.8 min
+  chunk 052: 594 pairs, 5.8 min
+  chunk 053: 594 pairs, 5.8 min
+  chunk 067: 594 pairs, 5.8 min
+  chunk 070: 594 pairs, 5.8 min
+  chunk 045: 594 pairs, 5.8 min
+  chunk 038: 594 pairs, 5.8 min
+  chunk 061: 594 pairs, 5.8 min
+  chunk 056: 594 pairs, 5.8 min
+  chunk 071: 594 pairs, 5.8 min
+  chunk 065: 594 pairs, 5.8 min
+  chunk 048: 594 pairs, 5.8 min
+  chunk 055: 594 pairs, 5.8 min
+  chunk 066: 594 pairs, 5.8 min
+  chunk 060: 594 pairs, 5.8 min
+  chunk 044: 594 pairs, 5.8 min
+  chunk 064: 594 pairs, 5.8 min
+  chunk 068: 594 pairs, 5.8 min
+  chunk 041: 594 pairs, 5.8 min
+  chunk 042: 594 pairs, 5.8 min
+  chunk 037: 594 pairs, 5.8 min
+  chunk 063: 594 pairs, 5.8 min
+  chunk 051: 594 pairs, 5.8 min
+  chunk 046: 594 pairs, 5.8 min
+  chunk 059: 594 pairs, 5.8 min
+  chunk 058: 594 pairs, 5.8 min
+  chunk 054: 594 pairs, 5.8 min
+  chunk 039: 594 pairs, 5.8 min
+  chunk 062: 594 pairs, 5.8 min
+  chunk 040: 594 pairs, 5.8 min
+  chunk 069: 594 pairs, 5.8 min
+  chunk 057: 594 pairs, 5.8 min
+  chunk 043: 594 pairs, 5.8 min
+  chunk 047: 594 pairs, 5.8 min
+  chunk 049: 594 pairs, 5.8 min
+  chunk 081: 594 pairs, 5.6 min
+  chunk 102: 594 pairs, 5.6 min
+  chunk 087: 594 pairs, 5.6 min
+  chunk 108: 594 pairs, 5.6 min
+  chunk 104: 594 pairs, 5.6 min
+  chunk 080: 594 pairs, 5.6 min
+  chunk 098: 594 pairs, 5.6 min
+  chunk 106: 594 pairs, 5.6 min
+  chunk 088: 594 pairs, 5.6 min
+  chunk 076: 594 pairs, 5.6 min
+  chunk 099: 594 pairs, 5.6 min
+  chunk 092: 594 pairs, 5.6 min
+  chunk 090: 594 pairs, 5.6 min
+  chunk 096: 594 pairs, 5.6 min
+  chunk 078: 594 pairs, 5.6 min
+  chunk 084: 594 pairs, 5.6 min
+  chunk 086: 594 pairs, 5.6 min
+  chunk 101: 594 pairs, 5.6 min
+  chunk 085: 594 pairs, 5.6 min
+  chunk 079: 594 pairs, 5.6 min
+  chunk 105: 594 pairs, 5.6 min
+  chunk 100: 594 pairs, 5.6 min
+  chunk 103: 594 pairs, 5.6 min
+  chunk 095: 594 pairs, 5.6 min
+  chunk 074: 594 pairs, 5.6 min
+  chunk 093: 594 pairs, 5.6 min
+  chunk 094: 594 pairs, 5.6 min
+  chunk 077: 594 pairs, 5.6 min
+  chunk 107: 594 pairs, 5.6 min
+  chunk 097: 594 pairs, 5.6 min
+  chunk 075: 594 pairs, 5.6 min
+  chunk 082: 594 pairs, 5.6 min
+  chunk 091: 594 pairs, 5.6 min
+  chunk 083: 594 pairs, 5.6 min
+  chunk 073: 594 pairs, 5.6 min
+  chunk 089: 594 pairs, 5.6 min
+  chunk 139: 593 pairs, 5.8 min
+  chunk 112: 594 pairs, 5.8 min
+  chunk 120: 594 pairs, 5.8 min
+  chunk 125: 594 pairs, 5.8 min
+  chunk 142: 593 pairs, 5.8 min
+  chunk 144: 593 pairs, 5.8 min
+  chunk 137: 593 pairs, 5.8 min
+  chunk 119: 594 pairs, 5.8 min
+  chunk 123: 594 pairs, 5.8 min
+  chunk 115: 594 pairs, 5.8 min
+  chunk 129: 594 pairs, 5.8 min
+  chunk 114: 594 pairs, 5.8 min
+  chunk 110: 594 pairs, 5.8 min
+  chunk 128: 594 pairs, 5.8 min
+  chunk 113: 594 pairs, 5.8 min
+  chunk 133: 594 pairs, 5.8 min
+  chunk 109: 594 pairs, 5.8 min
+  chunk 130: 594 pairs, 5.8 min
+  chunk 122: 594 pairs, 5.8 min
+  chunk 126: 594 pairs, 5.8 min
+  chunk 141: 593 pairs, 5.8 min
+  chunk 132: 594 pairs, 5.8 min
+  chunk 116: 594 pairs, 5.8 min
+  chunk 134: 594 pairs, 5.8 min
+  chunk 117: 594 pairs, 5.8 min
+  chunk 127: 594 pairs, 5.8 min
+  chunk 111: 594 pairs, 5.8 min
+  chunk 138: 593 pairs, 5.8 min
+  chunk 135: 594 pairs, 5.8 min
+  chunk 131: 594 pairs, 5.8 min
+  chunk 140: 593 pairs, 5.8 min
+  chunk 118: 594 pairs, 5.8 min
+  chunk 136: 593 pairs, 5.8 min
+  chunk 121: 594 pairs, 5.8 min
+  chunk 124: 594 pairs, 5.8 min
+  chunk 143: 593 pairs, 5.8 min
+pair status 分布:
+   status     N
+   <char> <int>
+1:     ok 85527
+
+===== 对账: flip 版 Egger 与正式表
+       n n_snp_match max_abs_d_beta max_abs_d_log10p
+   <int>       <int>          <num>            <num>
+1: 85527       85527   6.394885e-14     7.105427e-15
+
+===== Egger 显著 (p.adj < 0.05): 不 flip (行) x flip (列)
+          flip_sig
+noflip_sig FALSE  TRUE
+     FALSE 77971  1001
+     TRUE   2274  4281
+
+Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/QC/2_FlipPoints/CD4_Tn_CCR7_Egger_FlipScan.tsv.gz (85527 pairs) | 26.5 min

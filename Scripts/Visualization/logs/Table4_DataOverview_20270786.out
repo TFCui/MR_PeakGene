@@ -1,0 +1,30 @@
+===== Table4 Fri Oct 23 16:23:00 CDT 2026
+     block                                                                item            Bn                 CD4               CD8
+    <char>                                                              <char>        <list>              <list>            <list>
+ 1:      B               Individuals (passing RNA and ATAC cell-count filters)           335                 372               346
+ 2:      B                                                     scRNA-seq cells       160,577             916,643           460,439
+ 3:      B                                                    scATAC-seq cells       123,580             360,343           210,077
+ 4:      B                        scRNA-seq cells per individual, median (IQR) 436 (315–619) 2,336 (1,655–3,150) 1,200 (763–1,760)
+ 5:      B                       scATAC-seq cells per individual, median (IQR) 348 (236–464)     898 (618–1,278)     510 (320–845)
+ 6:      B                                  Genes in the pseudobulk RNA matrix        36,326              36,326            36,326
+ 7:      B                                 Peaks in the pseudobulk ATAC matrix       338,036             338,036           338,036
+ 8:      C                                                    eQTL sample size           405                 406               405
+ 9:      C                                                   caQTL sample size           385                 385               384
+10:      C                           Peaks with at least one caQTL at P < 1e-8         3,449               6,110             3,847
+11:      D  Candidate gene–peak pairs (All_GenePeak, TSS–peak distance < 1 Mb)     3,814,826           5,146,441         4,505,251
+12:      D With caQTL and eQTL variants in common (at least 3 shared variants)        46,190             109,961            62,136
+13:      D               Gene and peak present in both pseudobulk and WNN data                                                    
+14:      D      After removing pairs with a missing p-value in any base method        40,153              85,782            51,123
+15:      D                     Final analysis set (IVW residual variance ≤ 10)        40,087              85,527            50,931
+16:      D                             Genes / peaks in the final analysis set 8,149 / 2,951      10,701 / 5,338     9,427 / 3,327
+17:      D        Variants (instruments) per pair in the IVW fit, median (IQR)    22 (10–40)          22 (10–43)         22 (9–41)
+18:      E                                 Pseudobulk correlation: individuals           335                 372               346
+19:      E                 WNN correlation: metacells (external PBMC multiome)            80                  80                80
+            ct eq_min eq_max ca_min ca_max      sig_max
+        <char>  <int>  <int>  <int>  <int>        <num>
+1:    Bn_TCL1A    405    405    385    385 9.999187e-09
+2: CD4_Tn_CCR7    406    406    385    385 9.999887e-09
+3: CD8_Tn_CCR7    405    405    384    384 9.998221e-09
+[16:48:16] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261027/Table_4.xlsx + Table_4.tsv
+===== OK
+===== DONE Fri Oct 23 16:48:17 CDT 2026

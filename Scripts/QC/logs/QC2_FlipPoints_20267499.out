@@ -1,0 +1,37 @@
+===== QC2_FlipPoints Fri Oct 23 14:51:14 CDT 2026
+[14:51:33] pairs: 6
+[14:51:33] ==================== Bn_TCL1A ====================
+[14:52:01]   chr11:117185715-117186216__SIDT2: ok
+[14:52:01]   chr3:195747820-195748321__PIGX: ok
+[14:52:02] ==================== CD4_Tn_CCR7 ====================
+[14:52:35]   chr1:23691494-23691995__RPL11: ok
+[14:52:35]   chr1:149608426-149608927__PDE4DIP: ok
+[14:52:35] ==================== CD8_Tn_CCR7 ====================
+[14:53:05]   chr2:30447755-30448256__LCLAT1: ok
+[14:53:06]   chr12:10553007-10553508__KLRC3: ok
+
+===== 对账: flip 版 beta 与正式 MR 表的最大差异
+    model max_abs_diff
+   <char>        <num>
+1:    IVW 4.218847e-15
+2:  Egger 4.218847e-15
+
+===== flip 前后对比 (不 flip 减 flip)
+    model max_abs_d_beta median_p_ratio
+   <char>          <num>          <num>
+1:  Egger      0.9694084    3.55425e-05
+2:    IVW      0.0000000    1.00000e+00
+     cell_type gene_id beta_noflip beta_flip p_noflip   p_flip int_noflip int_flip
+        <char>  <char>       <num>     <num>    <num>    <num>      <num>    <num>
+1:    Bn_TCL1A    PIGX      -0.274   -0.0808  1.3e-11  1.7e-01   -0.00310  -0.0920
+2:    Bn_TCL1A   SIDT2       1.020    1.0300 2.9e-171 7.0e-171    0.00160  -0.0230
+3: CD4_Tn_CCR7 PDE4DIP       1.020    0.0532  1.5e-10  6.8e-01    0.00540   0.6700
+4: CD4_Tn_CCR7   RPL11       1.130    1.1400  1.7e-11  2.5e-07    0.00005  -0.0034
+5: CD8_Tn_CCR7   KLRC3       0.723    0.1510  8.1e-09  2.7e-01    0.00240   0.5000
+6: CD8_Tn_CCR7  LCLAT1       0.806    0.7980 6.9e-142 1.3e-140   -0.00720   0.0310
+[14:53:06] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/QC/2_FlipPoints/FigureS2_estimates.tsv
+[14:53:19] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261027/Figure_S2.pdf
+[14:53:24] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261027/Figure_S2.svg
+[14:53:24] All done.
+===== OK
+===== DONE Fri Oct 23 14:53:25 CDT 2026

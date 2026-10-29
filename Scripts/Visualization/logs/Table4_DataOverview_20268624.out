@@ -1,0 +1,5 @@
+===== Table4 Fri Oct 23 15:33:47 CDT 2026
+Error: nrow(mr[[i]]) == lg[[i]]$final is not TRUE
+Execution halted
+!!!!! FAILED
+===== DONE Fri Oct 23 15:57:54 CDT 2026

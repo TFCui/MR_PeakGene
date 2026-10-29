@@ -71,10 +71,10 @@ original_example	CD8_Tn_CCR7	21			4	Significant only in MR	S100B	chr21:46633535-
 original_example	CD8_Tn_CCR7	22			4	Significant only in MR	BANF1	chr11:66001982-66002483
 original_example	CD8_Tn_CCR7	23			4	Significant only in MR	BUD31	chr7:99380850-99381351
 original_example	CD8_Tn_CCR7	24			4	Significant only in MR	BUD31	chr7:99376204-99376705
-Fig2_selected	Bn_TCL1A		1	1			SCNN1D	chr1:1693193-1693694
+Fig2_selected	Bn_TCL1A		1	4			SCNN1D	chr1:1693193-1693694
 Fig2_selected	CD8_Tn_CCR7		1	2			ERAP2	chr5:96885894-96886395
 Fig2_selected	CD4_Tn_CCR7		1	3			RPL11	chr1:23691494-23691995
-Fig2_selected	Bn_TCL1A		1	4			SIDT2	chr11:117185715-117186216
+Fig2_selected	Bn_TCL1A		1	1			SIDT2	chr11:117185715-117186216
 Fig2_selected	CD4_Tn_CCR7		2	1	1	All methods significant	ACYP2	chr2:53994688-53995189
 Fig2_selected	CD4_Tn_CCR7		2	2	2	Not significant in Marginal Multiomics / Pseudobulk	ERAP2	chr5:96885894-96886395
 Fig2_selected	CD4_Tn_CCR7		2	3	3	Opposite direction (MR vs. marginal)	PLEC	chr8:143966529-143967030
@@ -95,3 +95,7 @@ Fig2_selected	CD8_Tn_CCR7		6	1	1	All methods significant	PRMT2	chr21:46550539-46
 Fig2_selected	CD8_Tn_CCR7		6	2	2	Not significant in Marginal Multiomics / Pseudobulk	ERAP2	chr5:96885894-96886395
 Fig2_selected	CD4_Tn_CCR7		6	3	3	Opposite direction (MR vs. marginal)	PLEC	chr8:143966529-143967030
 Fig2_selected	Bn_TCL1A		6	4	4	Significant only in MR	ADD3	chr10:110153435-110153936
+Figure_2	Bn_TCL1A		1	1			SIDT2	chr11:117185715-117186216
+Figure_2	CD4_Tn_CCR7		1	2			RPL11	chr1:23691494-23691995
+Figure_2	CD4_Tn_CCR7		1	3			ERAP2	chr5:96885894-96886395
+Figure_2	CD4_Tn_CCR7		1	4			ARPC1B	chr7:99376204-99376705
