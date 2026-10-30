@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=01:00:00
-# Fig1B/C + S3: 重写 Figure_1B_C (PLOT1_WRITE_1BC=1) 和 Figure_S3 到 Figures_20261027/
+# Fig1B/C + S3: 重写 Figure_1B_C.svg (PLOT1_WRITE_1BC=1) 和 Figure_S3.pdf 到 Figures_20261102/
 # 提交: cd /scratch/user/tfcui2025/CIMA/Claude_project && mkdir -p Scripts/Visualization/logs && sbatch Scripts/Visualization/Plot1_MRresults_slurm.sh
 
 PROJ=/scratch/user/tfcui2025/CIMA/Claude_project

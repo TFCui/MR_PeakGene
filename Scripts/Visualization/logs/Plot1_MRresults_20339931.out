@@ -1,0 +1,40 @@
+===== Plot1_MRresults Thu Oct 29 16:09:11 CDT 2026
+     cell_type n_pairs
+        <char>   <int>
+1:    Bn_TCL1A   40087
+2: CD4_Tn_CCR7   85527
+3: CD8_Tn_CCR7   50931
+
+===== Example pairs: pass (new FDR) vs pass_old (paper FDR)
+      cell_type cat_id     n in_table pass_old pass_new
+         <char>  <int> <int>    <int>    <int>    <int>
+ 1:    Bn_TCL1A      1     6        6        6        6
+ 2:    Bn_TCL1A      2     6        6        6        6
+ 3:    Bn_TCL1A      3     6        6        6        6
+ 4:    Bn_TCL1A      4     6        6        6        6
+ 5: CD4_Tn_CCR7      1     6        6        6        6
+ 6: CD4_Tn_CCR7      2     6        6        6        6
+ 7: CD4_Tn_CCR7      3     6        6        6        6
+ 8: CD4_Tn_CCR7      4     6        6        6        6
+ 9: CD8_Tn_CCR7      1     6        6        6        6
+10: CD8_Tn_CCR7      2     6        6        6        6
+11: CD8_Tn_CCR7      3     6        6        6        6
+12: CD8_Tn_CCR7      4     6        6        6        6
+
+----- pairs that changed or fail:
+Empty data.table (0 rows and 14 cols): cell_type,ord,cat_id,gene_id,peak_id,in_table...
+Key: <cell_type, n_total>
+     cell_type n_total Causal SMR Causal IVW Causal Egger Causal Joint Marginal Multiomics Marginal Pseudobulk
+        <char>   <int>      <num>      <num>        <num>        <num>               <num>               <num>
+1:    Bn_TCL1A   40087       3534       3977         3361         4406               18179                4924
+2: CD4_Tn_CCR7   85527       8627       9569         7265        10597               37181               17181
+3: CD8_Tn_CCR7   50931       5220       5722         4538         6451               24114                9618
+     cell_type n_all6 five_disc mr3_disc obs_disc
+        <char>  <int>     <int>    <int>    <int>
+1:    Bn_TCL1A    469       115        0      115
+2: CD4_Tn_CCR7   1259       342        1      341
+3: CD8_Tn_CCR7    759       196        1      195
+[16:09:20] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261102/Figure_1B_C.svg
+[16:09:23] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261102/Figure_S3.pdf
+===== OK
+===== DONE Thu Oct 29 16:09:23 CDT 2026

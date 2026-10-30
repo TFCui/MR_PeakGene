@@ -303,6 +303,7 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 | PBC | `PASS.Primary_Biliary_Cirrhosis.Cordell2015` |
 
 - 资源（沿用）：22 核、150G、12 h。`.results` 和 `.log` 写到 `Results/Validation/Valid2_SLDSC/h2/<CT>/`。
+- 数据来源（2026-10-29 核对）：reference（1000G Phase 3 EUR plink、baselineLD v2.2、weights_hm3_no_MHC、frq，hg19）和 107 套独立 GWAS（`GWAS_data/sumstats_107/`，即 `sumstats_indep107.tgz`）都来自 Gazal 的 Zenodo “S-LDSC reference files” v4（doi:10.5281/zenodo.10515792；GWAS 下载地址 https://zenodo.org/records/10515792/files/sumstats_indep107.tgz）。本地 tgz 的大小与 Zenodo 一致，`sumstats_indep107.tgz` 的 md5 为 `8406e1370e5807a11f9f04174ce9f76e`，也一致。上表中 PASS/GBMI 开头的文件与 `sumstats_107/` 中的同名文件完全相同；`CUSTOM.*` 和 `PASS_Multiple_sclerosis` 不在这 107 套里。
 
 **步骤 3 `Valid2_SLDSC_3_merge.R`（合并）**
 - 读每个 `.results` 的第 1 行（`L2_0`，即我们的 annotation）：Prop._SNPs、Prop._h2(±se)、Enrichment(±se, p)、Coefficient(±se, z)。
@@ -339,7 +340,7 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 
 **步骤 3 `Valid3_Motif_3_table.R`（1 核、8G；约 2 min）**：论文 Table 2
 - Logo：42 个 motif ID，JASPAR2020 PFM → 列归一化 PPM → `ggseqlogo`（bits），输出 `Results/Validation/Valid3_Motif/logos/<ID>.{png,svg}`（3 × 1.6 in）。
-- xlsx：`Results/Figures/Figures_20261027/Table_3.xlsx`（openxlsx 新建，`insertImage` 嵌入 logo）。2026-10-23 起建表阶段再筛一次：IVW / MR_Egger / SMR 任一 FDR < 0.01（`MR_FDR_TABLE`）且 fold > 1，并去掉 `brief_interpretation` 以 “No clear” 开头的行 → 13 行（Bn 10 / CD4 2 / CD8 1）；被去掉的 34 行写进 `Excluded` sheet；步骤 2 的 `Motif_MR_specific*.tsv`（47 行，FDR < 0.05）不动
+- xlsx：`Results/Figures/Figures_20261102/Table_1.xlsx`（论文正文 Table 1；openxlsx 新建，`insertImage` 嵌入 logo）。2026-10-29 起建表阶段：每个 CT 按 IVW / MR_Egger / SMR 中 fold > 1 的最小 FDR 排序，跳过 “No clear” 的行，取前 2 个（`TOP_N`）→ 6 行（Bn ATF3、FOSL2::JUND；CD4 MNT、CENPB；CD8 POU3F1、TEF）；每个 motif 只列一篇文献，一句解释 + PubMed 链接来自人工整理的 `Motif_table_main.tsv`（PMID 已核对），合为 “Brief interpretation & link” 列，无 Reference 列；高亮阈值 0.05；被去掉的 41 行写进 `Excluded` sheet（2026-10-23 版为 p.adj < 0.01 的 13 行 `Figures_20261027/Table_3.xlsx`）；步骤 2 的 `Motif_MR_specific*.tsv`（47 行，FDR < 0.05）不动
   - `Motif_table`：Cell type | TF motif | Motif ID | Motif logo | IVW / MR-Egger / SMR 各 % obs、% bg、Fold、FDR | CCT、WNN、Pseudobulk 的 FDR | Immune relevance | Brief interpretation | Reference；FDR < 0.05 且 fold > 1 的 FDR 单元格黄底粗体（CCT/WNN/Pseudo 的 fold 从 `<CT>_motif_enrichment.tsv.gz` 取）；表下脚注写定义。
   - `Details`：完整解释、全部参考文献及说明、与旧表的对照、各方法 `n_fg`。
 
@@ -466,7 +467,7 @@ sbatch --dependency=afterok:$j1 QC1_2_OneSampleMR_slurm.sh
 ### 4.2 QC2_FlipPoints：MR-Egger 中 flip 前后的对比
 - **QC2_1 全基因组扫描**（`QC2_1_FlipScan.R` + `_slurm.sh`，array 0-2，每 CT 一个 task）：对 `Results/MR` 中全部 pair，按 `MR_AllPairs.R` 的对齐 → 去重 → PLINK LD，再拟合 GLS Egger 两次（flip：`bx`、`by`、`R` 同乘 `sign(beta_x)`；不 flip：原始编码）。IVW 对 flip 不变，所以只做 Egger。flip 版与正式表对账；不 flip 版按 gene 内 BH 得 `egger_fdr_noflip`。输出 `Results/QC/2_FlipPoints/<CT>_Egger_FlipScan.tsv.gz`；chunk 在 `tmp/QC2_FlipScan/`。
 - **挑候选**（`QC2_1_FlipScan_select.R`，登录节点）：不 flip p.adj < 0.05 且 flip 后 p.adj ≥ 0.1，按 −log10 p 落差排序 → `FlipScan_candidates.tsv`（每 CT 前 20）；另存 SNP 数 ≥ 50 的候选（Bn 187 / CD4 507 / CD8 305 个，每 CT 前 20）→ `FlipScan_candidates_nsnp50.tsv`（Figure S2 “差别大”的例子从这里挑）。
-- **QC2_2 画图**（`QC2_2_FlipPoints_plot.R` + `_slurm.sh`）：6 个 pair（每个 CT：差别小 SIDT2 / RPL11 / LCLAT1 + 差别大 PIGX 136 SNP / PDE4DIP 74 / KLRC3 134）→ `Figures_20261027/Figure_S2.pdf` + `Figure_S2.svg`（单页 3 行 × 4 panel：每行一个 CT，左半 = 差别小的 pair [原始 | flip]，右半 = 差别大的 pair [原始 | flip]，同一 pair 的两图坐标范围相同；panel 上方写 IVW P、Egger P）；每个 peak-gene pair 一个 panel 字母 A–F（按行从左到右）；数值 `FigureS2_estimates.tsv`（对账：flip 版 β 与正式 MR 表一致，Egger p 与扫描表一致）。旧版（3 页，差别大的例子为 GSTM4 / RGS12 / YBEY，SNP 数 10 / 32 / 40）备份在 `tmp/QC2_FlipPoints_test/old_20261027/`。原 18 个 example 的数值在 `FlipPoints_estimates.tsv`。
+- **QC2_2 画图**（`QC2_2_FlipPoints_plot.R` + `_slurm.sh`）：6 个 pair（每个 CT：差别小 SIDT2 / RPL11 / LCLAT1 + 差别大 PIGX 136 SNP / PDE4DIP 74 / KLRC3 134）→ `Figures_20261102/Figure_S2.pdf`（只出 PDF；单页 3 行 × 4 panel：每行一个 CT，左半 = panel A = 差别小的 pair [No flipping | Flipping]，右半 = panel B = 差别大的 pair，同一 pair 的两图坐标范围相同；panel 上方写 IVW P、Egger P；所有 SNP 同为红三角，不标 lead SNP）；数值 `FigureS2_estimates.tsv`（对账：flip 版 β 与正式 MR 表一致，Egger p 与扫描表一致）。旧版（3 页，差别大的例子为 GSTM4 / RGS12 / YBEY，SNP 数 10 / 32 / 40）备份在 `tmp/QC2_FlipPoints_test/old_20261027/`。原 18 个 example 的数值在 `FlipPoints_estimates.tsv`。
 
 ---
 

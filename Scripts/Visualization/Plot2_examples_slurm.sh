@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=96G
 #SBATCH --time=03:00:00
-# Fig2 example pairs: 一个作业画全部选定的 pair (Example_pairs.tsv 中 pair_set = --set), 默认 pair_set = Figure_2, 输出 Figures_20261027/Figure_2.{pdf,svg}
+# Fig2 example pairs: 一个作业画全部选定的 pair (Example_pairs.tsv 中 pair_set = --set), 默认 pair_set = Figure_2, 输出 Figures_20261102/Figure_2.pdf
 # 提交: cd /scratch/user/tfcui2025/CIMA/Claude_project && mkdir -p Scripts/Visualization/logs && sbatch Scripts/Visualization/Plot2_examples_slurm.sh
 
 PROJ=/scratch/user/tfcui2025/CIMA/Claude_project

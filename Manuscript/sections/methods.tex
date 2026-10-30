@@ -4,7 +4,7 @@
 \subsection{Data sources}
 Our study was conducted on the the Chinese Immune Multi-Omics Atlas (CIMA)  (OMIX009786), which provided cell-type-specific caQTL and eQTL summary statistics, and single-cell RNA and ATAC count (Citation). We also used another external PBMC multiome data for the marginal multiome method. 
 
-\noindent CIMA provided hierarchical cell-type annotations, and we chose to focus on three major naive lymphocyte populations: Bn\_TCL1A (naive B cells, marker gene \textit{TCL1A}), CD4\_Tn\_CCR7 (naive CD4$^+$ T cells, marker gene \textit{CCR7}), and CD8\_Tn\_CCR7 (naive CD8$^+$ T cells, marker gene \textit{CCR7}). We will use Bn, CD4 Tn, and CD8 Tn throughout the paper for simplicity.
+\noindent CIMA provided hierarchical cell-type annotations, and we chose to focus on three major naive lymphocyte populations: Bn\_TCL1A (naive B cells, marker gene \textit{TCL1A}), CD4\_Tn\_CCR7 (naive CD4$^+$ T cells, marker gene \textit{CCR7}), and CD8\_Tn\_CCR7 (naive CD8$^+$ T cells, marker gene \textit{CCR7}). We will use Bn, CD4 T cells, and CD8 T cells throughout the paper for simplicity.
 
 \noindent External multiome data for WNN 
 
@@ -546,7 +546,7 @@ described in \nameref{sec:data-preprocessing}, counts were summed across
 cells from the same individual within each cell type to construct
 gene-by-individual and peak-by-individual pseudobulk matrices.
 We retained individuals with both RNA and ATAC profiles, yielding
-335 individuals for Bn, 372 for CD4, and 346 for CD8.
+335 individuals for Bn, 372 for CD4 T cells, and 346 for CD8 T cells.
 For each modality, counts were normalized to counts per million (CPM)
 using the corresponding individual-level library size and transformed
 using \(\log(1+\mathrm{CPM})\). Library sizes were calculated across all
@@ -632,7 +632,7 @@ T = \frac{1}{3}\left\{\tan\left[\pi(0.5 - p_{\mathrm{IVW}})\right] + \tan\left[\
 where $p_{\mathrm{IVW}}$, $p_{\mathrm{Egger}}$, and $p_{\mathrm{SMR}}$ denote the nominal p-values from GLS-IVW, GLS MR-Egger, and SMR, respectively. The causal joint results can be understood as the aggregated causal evidence for the studied peak--gene links.
 
 \subsection{Motif enrichment analysis}
-We implemented the motif enrichment analysis to determine whether the transcription factor binding motifs or functional sequence patterns are statistically overrepresented in the detected peaks compared to all background peaks. For each cell types (Bn, CD4, CD8) and each method (causal IVW, causal MR-Egger, causal SMR, marginal multiomics, and marginal pseudobulk), we separately selected significant peak-gene pairs (BH p.adjust < 0.1) and further extracted those peaks as the foreground set for the motif analysis. All available peaks provided by CIMA cell-type specific xQTL data were used as the background set. Motif occurrences were annotated with AddMotifs in Signac (citation, version) using the non-redundant JASPAR2020 CORE vertebrate collection (746 motifs) (citation) and the hg38 genome (BSgenome.Hsapiens.UCSC.hg38 [version]). We use the FindMotifs function in Signac to get the p value of motifs, and the p values were  adjusted by the Benjamini–Hochberg (BH) procedure across motifs for each cell type and method. Motifs with adjusted p < 0.05 and fold enrichment > 1 were considered enriched. We were interested in the motif which were significant in at least one causal methods but were not significant by both marginal multiomics and marginal pseudobulk methods. In the table (table number), we should the most significant motifs only detected by causal methods for each cell types seperately. 
+We implemented the motif enrichment analysis to determine whether the transcription factor binding motifs or functional sequence patterns are statistically overrepresented in the detected peaks compared to all background peaks. For each cell types (Bn, CD4 T cells, CD8 T cells) and each method (causal IVW, causal MR-Egger, causal SMR, marginal multiomics, and marginal pseudobulk), we separately selected significant peak-gene pairs (BH p.adjust < 0.1) and further extracted those peaks as the foreground set for the motif analysis. All available peaks provided by CIMA cell-type specific xQTL data were used as the background set. Motif occurrences were annotated with AddMotifs in Signac (citation, version) using the non-redundant JASPAR2020 CORE vertebrate collection (746 motifs) (citation) and the hg38 genome (BSgenome.Hsapiens.UCSC.hg38 [version]). We use the FindMotifs function in Signac to get the p value of motifs, and the p values were  adjusted by the Benjamini–Hochberg (BH) procedure across motifs for each cell type and method. Motifs with adjusted p < 0.05 and fold enrichment > 1 were considered enriched. We were interested in the motif which were significant in at least one causal methods but were not significant by both marginal multiomics and marginal pseudobulk methods. In the table (table number), we should the most significant motifs only detected by causal methods for each cell types seperately. 
 
 \subsection{Hypergeometric test}
 

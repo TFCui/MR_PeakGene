@@ -1,8 +1,8 @@
 # ==============================================================================
 # Figure 4 (原 Fig10): S-LDSC (Combined) + MR-only link / GWAS SNP 位点图
-#   输出: Figures_20261027/Figure_4.{pdf,svg} (正文, panel B 1 行 x 4) + Figure_S4.{pdf,svg} (补充, 单页, panel B 2 行 x 4 = 8 个 pair)
-#   panel A (每页相同) = Plot5_SLDSC.R 的 Combined 页 (MR-Only vs All peaks), 去掉标题和解释文字; 2026-10-23 起改为单个面板: 共用 y 轴, GWAS 名在 x 轴, 两根柱紧贴
-#   panel B (每页换 4 个 pair) = Plot8_Link.R 的单 pair 位点图, 精简文字 (顶部 Gene / Peak, 底部 细胞类型 | GWAS trait; 星号 / 颜色 / 线宽等解释写在论文 caption, 图里不放)
+#   输出: Figures_20261102/Figure_4.pdf (正文, 只出 PDF; panel B 1 行 x 5 个 pair); 2026-10-29 起不再输出 Figure_S4
+#   panel A = Plot5_SLDSC.R 的 Combined 页 (MR-Only (亮蓝) vs All peaks), 去掉标题和解释文字; 单个面板: 共用 y 轴, GWAS 名在 x 轴, 两根柱紧贴
+#   panel B = Plot8_Link.R 的单 pair 位点图, 精简文字 (只有底部 细胞类型 | GWAS trait; 星号 / 线宽等解释写在论文 caption, 图里不放); 显著 link 统一红色
 #     pair 之间用浅灰细竖线分隔 (不加边框); 左侧行名字号 LABEL_SIZE
 #     行名 (Gene / SNPs / Peak / 5 个方法) 只在最左边一列写一次; 显著 link 在弧线旁标 * / ** / *** (p.adj < 0.05 / 0.01 / 0.001)
 #   选 pair: 下面 PAGES; 数据 = Valid2_SLDSC/SLDSC_all.tsv + Valid6_GWAS/GWAS_MRonly_overlap.tsv
@@ -27,7 +27,7 @@ PLINK    <- file.path(CIMA_DIR, "R_package/my_plink/plink")
 REF_DIR  <- file.path(PROJ, "data/ref_chr/hg38")
 OMIX     <- file.path(CIMA_DIR, "Data/OMIX009786")
 LD_DIR   <- file.path(PROJ, "tmp/plink_fig10", paste0("ld_fig10_", Sys.getpid()))   # PLINK / 临时文件放项目 tmp/, 结束自动删除
-FIG_DIR  <- file.path(PROJ, "Results/Figures/Figures_20261027")
+FIG_DIR  <- file.path(PROJ, "Results/Figures/Figures_20261102")
 PAIR_FILE <- file.path(PROJ, "Results/Validation/Valid6_GWAS/GWAS_MRonly_overlap.tsv")
 PDF_FILE  <- file.path(FIG_DIR, "Figure_4.pdf")
 dir.create(FIG_DIR, recursive = TRUE, showWarnings = FALSE)
@@ -48,8 +48,8 @@ TICK_SEP   <- 0.14                    # 刻度最小间距 (x 轴比例)
 N_SNP_TARGET <- 6; SNP_MIN_SEP <- 0.025 # SNP 轨: 每页目标 SNP 数 (含 GWAS SNP) / 最小间距 (x 轴比例)
 LW_RANGE   <- c(1, 3.2); LW_NS <- 0.6 # 显著 link 线宽范围; 不显著 link 线宽
 BASE_SIZE  <- 12
-PAGE_W     <- 24                      # 页宽; 页高 = PAGE_H_A (panel A) + PAGE_H_ROW x panel B 的行数 (每行 4 个 pair): 正文 1 行 = 11 in, 补充 2 行 = 18.7 in
-PAGE_H_A   <- 3.3; PAGE_H_ROW <- 7.7; PAIRS_PER_ROW <- 4
+PAGE_W     <- 24                      # 页宽; 页高 = PAGE_H_A (panel A) + PAGE_H_ROW x panel B 的行数 (每行 5 个 pair)
+PAGE_H_A   <- 4.5; PAGE_H_ROW <- 7.0; PAIRS_PER_ROW <- 5
 page_h     <- function(n_pair) PAGE_H_A + PAGE_H_ROW * ceiling(n_pair / PAIRS_PER_ROW)
 
 # MR 固定参数 (与 MR 结果一致)
@@ -60,7 +60,7 @@ METHODS <- data.table(method  = c("Causal SMR", "Causal IVW", "Causal Egger", "M
                       fdr_col = c("smr_fdr", "ivw_fdr", "egger_fdr", "wnn_fdr", "pseudo_fdr"),
                       eff_col = c("smr_b", "ivw_beta", "egger_beta", "wnn_rho", "pseudo_rho"),
                       col     = c("#F0A14A", "#E64B35", "#3C5488", "#4DBBD5", "#00A087"))
-DIR_COL   <- c("Positive" = "#D7191C", "Negative" = "#2C7BB6")
+DIR_COL   <- c("Positive" = "#D7191C", "Negative" = "#D7191C")   # 2026-10-29: 显著 link 统一红色, 不再按效应方向分红 / 蓝
 NS_COL    <- "grey65"
 GENE_COL  <- "#4E79A7"; PEAK_FILL <- "#E1B13F"
 SNP_COL   <- "#3C5488"; GWAS_COL <- "#7E1F86"
@@ -70,12 +70,11 @@ SNP_COL   <- "#3C5488"; GWAS_COL <- "#7E1F86"
 
 EX <- fread(PAIR_FILE)[, ord := rleid(cell_type, gene_id, peak_id)]
 ALL_PAIRS <- unique(EX[, .(ord, cell_type, gene_id, peak_id, mr_methods_sig)], by = "ord")[order(ord)]
-CT_SHORT  <- c(Bn_TCL1A = "Bn", CD4_Tn_CCR7 = "CD4", CD8_Tn_CCR7 = "CD8")
-# 每页 4 个 pair (cell_type, gene); 改这里即可换 pair (候选见 GWAS_MRonly_overlap.tsv)
+CELL_LAB  <- local({ source(file.path(PROJ, "Scripts/Visualization/00_common.R"), local = TRUE); CELL_LAB })   # 图中细胞类型标签 (Bn / CD4 T cell / CD8 T cell)
+# 一页 = Figure_4 (正文), 5 个 pair (cell_type, gene); 改这里即可换 pair (候选见 GWAS_MRonly_overlap.tsv)
+# 2026-10-29: 加入 GNAS (CD8, 原 Figure_S4); Figure_S4 不再输出 (原第 2 页: GLS2, GNAS (CD4), UBA7, TMBIM1, ERAP1, TMPRSS3, ZSCAN16)
 PAGES <- list(
-  list(c("Bn_TCL1A", "RGL2"),  c("CD4_Tn_CCR7", "ERBB3"), c("CD4_Tn_CCR7", "POLR2E"), c("CD4_Tn_CCR7", "UBAC2")),                  # 第 1 页 = Figure_4 (正文)
-  list(c("CD8_Tn_CCR7", "GLS2"), c("CD4_Tn_CCR7", "GNAS"),  c("Bn_TCL1A", "UBA7"),    c("CD8_Tn_CCR7", "TMBIM1"),                # 第 2 页 = Figure_S4 (补充, 一张图, panel B 两行 x 4)
-       c("CD8_Tn_CCR7", "GNAS"), c("Bn_TCL1A", "ERAP1"),    c("CD4_Tn_CCR7", "TMPRSS3"), c("Bn_TCL1A", "ZSCAN16")))
+  list(c("Bn_TCL1A", "RGL2"), c("CD4_Tn_CCR7", "ERBB3"), c("CD4_Tn_CCR7", "POLR2E"), c("CD4_Tn_CCR7", "UBAC2"), c("CD8_Tn_CCR7", "GNAS")))
 SEL <- rbindlist(lapply(seq_along(PAGES), function(pg) rbindlist(lapply(seq_along(PAGES[[pg]]), function(k)
   data.table(page = pg, slot = k, cell_type = PAGES[[pg]][[k]][1], gene_id = PAGES[[pg]][[k]][2])))))
 PAIRS <- ALL_PAIRS[SEL, on = .(cell_type, gene_id), nomatch = NULL][order(page, slot)]
@@ -237,7 +236,7 @@ track_base <- function(S, ylim) {
     coord_cartesian(xlim = c(0, 1), ylim = ylim, expand = FALSE, clip = "off") +
     theme_classic(base_size = BASE_SIZE) +
     theme(axis.line = element_blank(), axis.ticks = element_blank(), axis.text.x = element_blank(), axis.title = element_blank(),
-          axis.text.y = element_blank(), plot.margin = margin(1, 6, 1, 4))
+          axis.text.y = element_blank(), plot.margin = margin(1, 3, 1, 2))
 }
 ylab_axis <- function(at, lab) scale_y_continuous(breaks = at, labels = lab)
 
@@ -333,7 +332,7 @@ track_axis <- function(S) {
 
 dist_lab <- function(d) if (d < 1e3) sprintf("%.0f bp", d) else sprintf("%.1f kb", d / 1e3)
 
-PAIR_HEIGHTS <- c(0.55, 1.0, 1.3, 0.4, 4.4, 0.01, 0.55)   # 顶部 Gene/Peak | Gene | SNPs | Peak | 5 个方法 link | x 轴 | 底部 CT | trait (label_column 同高)
+PAIR_HEIGHTS <- c(1.0, 1.3, 0.4, 4.4, 0.01, 0.55)   # Gene | SNPs | Peak | 5 个方法 link | x 轴 | 底部 CT | trait (label_column 同高; 2026-10-29 去掉顶部 Gene/Peak 文字轨)
 LABEL_SIZE   <- BASE_SIZE + 2                              # 行名字号 (pt)
 text_track <- function(txt, x = 0.5, hjust = 0.5, parse = FALSE, size = BASE_SIZE + 1) {   # 只放一行文字的窄轨 (pair 顶部 / 底部)
   ggplot() + annotate("text", x = x, y = 0.5, label = txt, hjust = hjust, parse = parse, color = "#1F2937", size = size / .pt) +
@@ -358,11 +357,10 @@ plot_pair <- function(pr, res, snp_dt, score_max) {
   if (nrow(gw_out)) msg("    警告: GWAS SNP 不在 Peak 区内: ", paste(gw_out$rsid, collapse = ", "))
   msg(sprintf("    SNP 轨: %d MR + %d GWAS (MR instrument 共 %d)", nrow(S$mr), nrow(gw), nrow(sd)))
 
-  # 少文字: 顶部 = Gene / Peak (hg38), 底部 = 细胞类型 | GWAS trait (rsID 已标在 SNPs 轨); 图例类解释放 caption
+  # 少文字: 底部 = 细胞类型 | GWAS trait (基因名在 Gene 轨, rsID 在 SNPs 轨); 图例类解释放 caption
   gs <- unique(EX[cell_type == pr$cell_type & gene_id == g & peak_id == peak, .(trait, gwas_p)])[order(gwas_p)]
-  head_txt <- sprintf('"Gene: "~bold("%s")~~"Peak: "~bold("%s")', g, peak)
-  foot_txt <- sprintf("%s | %s", CT_SHORT[[pr$cell_type]], paste(unique(gs$trait), collapse = ", "))
-  (text_track(head_txt, parse = TRUE, hjust = 0, x = 0.01, size = BASE_SIZE - 1) / track_gene(S) / track_snps(S) / track_peak(S) / track_links(S, score_max) / track_axis(S) /
+  foot_txt <- sprintf("%s | %s", CELL_LAB[[pr$cell_type]], paste(unique(gs$trait), collapse = ", "))
+  (track_gene(S) / track_snps(S) / track_peak(S) / track_links(S, score_max) / track_axis(S) /
      text_track(foot_txt, hjust = 0.5, x = 0.5)) +
     plot_layout(heights = PAIR_HEIGHTS)
 }
@@ -380,8 +378,8 @@ label_column <- function() {
           axis.ticks.x = element_line(colour = NA), axis.ticks.length.x = unit(1.5, "mm"),
           axis.text.x = element_text(size = BASE_SIZE - 2, colour = NA), axis.title.x = element_text(size = BASE_SIZE - 1, face = "bold", colour = NA),
           plot.margin = margin(1, 6, 1, 4))
-  blank <- ggplot() + theme_void()   # 与 pair 顶部 / 底部文字轨同高的空轨
-  (blank / lab_track(c(-0.5, 1.1), 0, "Gene") / lab_track(c(-0.15, 1.5), 0.3, "SNPs") / lab_track(c(-0.1, 1), 0.45, "Peak") /
+  blank <- ggplot() + theme_void()   # 与 pair 底部文字轨同高的空轨
+  (lab_track(c(-0.5, 1.1), 0, "Gene") / lab_track(c(-0.15, 1.5), 0.3, "SNPs") / lab_track(c(-0.1, 1), 0.45, "Peak") /
      lab_track(c(min(base) - 0.95, 0.08), base - 0.5, sub("^(Causal|Marginal) ", "\\1\n", METHODS$method), METHODS$col) / ax / blank) +
     plot_layout(heights = PAIR_HEIGHTS)
 }
@@ -392,10 +390,10 @@ label_column <- function() {
 
 SLD <- fread(file.path(PROJ, "Results/Validation/Valid2_SLDSC/SLDSC_all.tsv"))
 SL_KEYS   <- c("MROnly", "pool")
-SL_TRAITS <- c("AS", "CD", "IBD", "RA", "SLE", "MS", "T1D", "Asthma", "PBC")
+SL_TRAITS <- c("AS", "CD", "IBD", "RA", "SLE", "MS", "T1D")   # 2026-10-29: 去掉 Asthma、PBC (用户决定不再展示; S-LDSC 本身仍跑了 9 个 GWAS)
 sl_lab    <- c(MROnly = "MR-Only", pool = "All peaks")
-sl_fill   <- c(`MR-Only` = "#B07AA1", `All peaks` = "#D5DDE5")
-sl_line   <- c(`MR-Only` = "#8C5A80", `All peaks` = "#A3AFBC")
+sl_fill   <- c(`MR-Only` = "#1F78B4", `All peaks` = "#D5DDE5")   # MR-Only = 亮蓝 (与 Fig 3C 同色)
+sl_line   <- c(`MR-Only` = "#17609A", `All peaks` = "#A3AFBC")
 
 dt_sl <- SLD[trait %in% SL_TRAITS & set %in% SL_KEYS & cell_type == "Combined"]
 stopifnot(nrow(dt_sl) == length(SL_TRAITS) * length(SL_KEYS))
@@ -436,9 +434,9 @@ SCORE_MAX <- min(SCORE_CAP, max(2, -log10(pmax(all_fdr[!is.na(all_fdr) & all_fdr
 msg(sprintf("线宽标尺: -log10(FDR) in [%.2f, %.2f]", -log10(FDR_CUT), SCORE_MAX))
 
 SEP_COL <- "#C8CDD3"
-boxed <- function(p, sep = TRUE) {   # pair 图左边缘画一条浅灰细竖线 (分隔相邻 example, 也隔开行名列); 内容缩一点, 与竖线留缝; 行名列不画线但同样缩放, 保证上下对齐
-  g <- grid::grobTree(patchwork::patchworkGrob(p), vp = grid::viewport(width = 0.975, height = 0.975))
-  if (sep) g <- grid::grobTree(g, grid::segmentsGrob(x0 = 0, x1 = 0, y0 = 0.03, y1 = 0.97, gp = grid::gpar(col = SEP_COL, lwd = 0.8)))
+boxed <- function(p, sep = TRUE) {   # pair 图左边缘画一条浅灰细竖线 (分隔相邻 example, 也隔开行名列); 内容稍缩, 与竖线留一点缝; 行名列不画线但同样缩放, 保证上下对齐
+  g <- grid::grobTree(patchwork::patchworkGrob(p), vp = grid::viewport(width = 0.99, height = 0.99))
+  if (sep) g <- grid::grobTree(g, grid::segmentsGrob(x0 = 0, x1 = 0, y0 = 0.02, y1 = 0.98, gp = grid::gpar(col = SEP_COL, lwd = 0.8)))
   wrap_elements(full = g)
 }
 
@@ -453,7 +451,7 @@ build_page <- function(pg) {
     idx <- ((r - 1) * PAIRS_PER_ROW + 1):(r * PAIRS_PER_ROW)
     c(list(boxed(label_column(), sep = FALSE)), lapply(idx, function(i) if (i <= length(ps)) ps[[i]] else plot_spacer()))
   }), recursive = FALSE)
-  grid_b <- wrap_elements(full = grid::grobTree(patchwork::patchworkGrob(wrap_plots(cells, nrow = n_row, widths = c(0.36, rep(1, PAIRS_PER_ROW)))),
+  grid_b <- wrap_elements(full = grid::grobTree(patchwork::patchworkGrob(wrap_plots(cells, nrow = n_row, widths = c(0.3, rep(1, PAIRS_PER_ROW)))),
                                               vp = grid::viewport(y = 0, height = 0.96, just = "bottom")))   # 顶部留出 tag "B" 的位置
   (wrap_elements(full = p_sldsc) / grid_b) + plot_layout(heights = c(PAGE_H_A, PAGE_H_ROW * n_row)) +
     plot_annotation(tag_levels = "A") &
@@ -461,13 +459,12 @@ build_page <- function(pg) {
 }
 
 # patchworkGrob 构图时要在当前设备上量尺寸, 所以每页在设备打开后再构建; 第一页 print(newpage = FALSE) 防止多出空白页
-# 输出两个文件: Figure_4 = 第 1 页 (正文, 4 个 pair 一行); Figure_S4 = 第 2 页 (补充, 单页, 8 个 pair 两行); 每个 PDF 配一个 SVG (svglite, 文字可编辑)
+# 输出一个文件: Figure_4 = 第 1 页 (正文, 5 个 pair 一行), 只出 PDF; 2026-10-29 起不再输出 Figure_S4 和 SVG
 # 预览: 设环境变量 FIG10_PNG_DIR 则改输出 PNG (每页一张, 供检查版面; 不写 Figures)
 PNG_DIR <- Sys.getenv("FIG10_PNG_DIR")
 pages <- sort(unique(PAIRS$page))
 H <- sapply(pages, function(pg) page_h(sum(PAIRS$page == pg)))
-OUTS  <- list(list(pdf = PDF_FILE, svg = file.path(FIG_DIR, "Figure_4.svg"), page = pages[1]),
-              list(pdf = file.path(FIG_DIR, "Figure_S4.pdf"), svg = file.path(FIG_DIR, "Figure_S4.svg"), page = pages[2]))
+OUTS  <- list(list(pdf = PDF_FILE, page = pages[1]))
 if (nzchar(PNG_DIR)) {
   dir.create(PNG_DIR, showWarnings = FALSE)
   for (pg in pages) {
@@ -479,10 +476,6 @@ if (nzchar(PNG_DIR)) {
   print(build_page(o$page), newpage = FALSE)
   invisible(dev.off())
   msg("Saved: ", o$pdf)
-  svglite::svglite(o$svg, width = PAGE_W, height = H[o$page])
-  print(build_page(o$page), newpage = FALSE)
-  invisible(dev.off())
-  msg("Saved: ", o$svg)
 }
 unlink(LD_DIR, recursive = TRUE)
 msg("All done.")

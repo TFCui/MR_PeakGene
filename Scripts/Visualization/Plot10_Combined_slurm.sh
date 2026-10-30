@@ -6,8 +6,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=48G
 #SBATCH --time=02:00:00
-# Figure 4 (原 Fig10): S-LDSC Combined + MR-only link + GWAS pair; Figure_4 = 4 个 pair (1 行), Figure_S4 = 8 个 pair (2 行, 单页)
-# 输出: Results/Figures/Figures_20261027/Figure_4.{pdf,svg} + Figure_S4.{pdf,svg}
+# Figure 4 (原 Fig10): S-LDSC Combined + MR-only link + GWAS pair; Figure_4 = 5 个 pair (1 行); 不再输出 Figure_S4
+# 输出: Results/Figures/Figures_20261102/Figure_4.pdf (只出 PDF)
 # 提交: cd /scratch/user/tfcui2025/CIMA/Claude_project && mkdir -p Scripts/Visualization/logs && sbatch Scripts/Visualization/Plot10_Combined_slurm.sh
 
 PROJ=/scratch/user/tfcui2025/CIMA/Claude_project

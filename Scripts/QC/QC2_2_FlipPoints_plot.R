@@ -10,8 +10,9 @@
 #   flip = FALSE: 原始等位编码, 不翻转
 #   分别拟合 GLS IVW / Egger (函数拷自 Plot2_examples_v2.R, 与 MR_AllPairs.R 一致)
 # 输出: Results/QC/2_FlipPoints/FigureS2_estimates.tsv (pair x flip x model 的 beta / se / p / Egger 截距)
-#       Results/Figures/Figures_20261027/Figure_S2.pdf + Figure_S2.svg (单页, 3 行 = Bn / CD4 / CD8, 每行 4 个 panel, 每个 peak-gene pair 一个字母 A-F (按行从左到右):
-#         左半 = 差别小的 pair [不 flip | flip], 右半 = 差别大的 pair [不 flip | flip]; 同一 pair 的两个 panel 坐标范围相同; panel 内只写 IVW P / Egger P)
+#       Results/Figures/Figures_20261102/Figure_S2.pdf (只出 PDF; 单页, 3 行 = Bn / CD4 T cell / CD8 T cell, 每行 4 个 panel;
+#         左半 = panel A = 差别小的 pair [No flipping | Flipping], 右半 = panel B = 差别大的 pair [No flipping | Flipping];
+#         同一 pair 的两个 panel 坐标范围相同; panel 内只写 IVW P / Egger P; 所有 SNP 同样画红三角, 不单独标 lead SNP)
 # 运行: sbatch Scripts/QC/QC2_2_FlipPoints_plot_slurm.sh
 # ==============================================================================
 
@@ -24,7 +25,7 @@ CIMA_DIR <- "/scratch/user/tfcui2025/CIMA"
 PROJ     <- file.path(CIMA_DIR, "Claude_project")
 MR_DIR   <- file.path(PROJ, "Results/MR")
 OUT_DIR  <- file.path(PROJ, "Results/QC/2_FlipPoints")
-FIG_DIR  <- file.path(PROJ, "Results/Figures/Figures_20261027")
+FIG_DIR  <- file.path(PROJ, "Results/Figures/Figures_20261102")
 PLINK    <- file.path(CIMA_DIR, "R_package/my_plink/plink")
 REF_DIR  <- file.path(PROJ, "data/ref_chr/hg38")
 LD_DIR   <- file.path(PROJ, "tmp/QC2_FlipPoints", paste0("ld_", Sys.getpid()))   # PLINK 临时文件, 结束自动删除
@@ -99,8 +100,6 @@ run_gls_mr <- function(bx, by, se_y, R, intercept = FALSE, eg = NULL) {
              alpha = if (intercept) est[1] else NA_real_, p_alpha = if (intercept) pv[1] else NA_real_)
 }
 
-smr_lead <- function(d) d$variant_id[order(d$p_x, -abs(d$beta_x / d$se_x))[1]]
-
 # 对齐 -> 去重 -> LD 只做一次; 然后 flip = FALSE / TRUE 各拟合一次 IVW + Egger
 run_pair_both <- function(gene, peak, ca_data, eq_data) {
   pid <- paste(peak, gene, sep = "__")
@@ -126,7 +125,7 @@ run_pair_both <- function(gene, peak, ca_data, eq_data) {
     res <- rbindlist(lapply(c(FALSE, TRUE), function(itc) tryCatch(run_gls_mr(bx, by, d$se_y, R_use, intercept = itc, eg = eg), error = function(e) NULL)))
     list(res = res[, flipped := flip], pts = data.table(variant_id = d$variant_id, x = bx, y = by, se_x = d$se_x, se_y = d$se_y))
   })
-  list(status = "ok", fits = fits, lead = smr_lead(d), n_snp = nrow(d))
+  list(status = "ok", fits = fits, n_snp = nrow(d))
 }
 
 read_filtered <- function(file, keys) {           # 只读第一列在 keys 里的行
@@ -178,13 +177,13 @@ msg("Saved: ", file.path(OUT_DIR, "FigureS2_estimates.tsv"))
 
 # ---------------------------- 作图 -----------------------------------------------
 COL_IVW <- "#E64B35"; COL_EGG <- "#3C5488"                    # 方法配色同 00_common.R
-COL_SNP <- "#DC0000"; LEAD_FILL <- "#FFD34E"; LEAD_BORDER <- "#5C4A00"; COL_ERR <- "#C8D1D9"; COL_REF <- "grey60"; SEP_COL <- "#C8CDD3"
+COL_SNP <- "#DC0000"; COL_ERR <- "#C8D1D9"; COL_REF <- "grey60"; SEP_COL <- "#C8CDD3"
 BASE <- 12
 fmt_p <- function(p) if (is.na(p)) "NA" else if (p < 1e-3) sprintf("%.1e", p) else sprintf("%.3f", p)
 
 # lim = list(x, y): 同一个 pair 的两张图 (不 flip / flip) 用相同坐标范围; 只画散点和拟合线 (文字放在 panel_header, 避免压住点和线)
-mr_core <- function(fit, lead, lim, show_x = TRUE, show_y = TRUE) {
-  pts <- copy(fit$pts)[, is_lead := variant_id == lead]
+mr_core <- function(fit, lim, show_x = TRUE, show_y = TRUE) {
+  pts <- fit$pts
   r <- fit$res; iv <- r[model == "IVW"]; eg <- r[model == "Egger"]
   lines <- data.table(series = factor(c("Causal IVW", "Causal Egger"), levels = c("Causal IVW", "Causal Egger")),
                       slope = c(iv$beta, eg$beta), intercept = c(0, eg$alpha))
@@ -194,8 +193,7 @@ mr_core <- function(fit, lead, lim, show_x = TRUE, show_y = TRUE) {
     geom_errorbar(aes(ymin = y - 1.96 * se_y, ymax = y + 1.96 * se_y), color = COL_ERR, width = 0, linewidth = 0.4) +
     geom_errorbar(aes(xmin = x - 1.96 * se_x, xmax = x + 1.96 * se_x), orientation = "y", color = COL_ERR, width = 0, linewidth = 0.4) +
     geom_abline(data = lines, aes(slope = slope, intercept = intercept, color = series), linewidth = 1.3, alpha = 0.8) +
-    geom_point(data = pts[is_lead == FALSE], shape = 24, fill = COL_SNP, color = "white", size = 2.8, stroke = 0.4) +
-    geom_point(data = pts[is_lead == TRUE], shape = 24, fill = LEAD_FILL, color = LEAD_BORDER, size = 4, stroke = 0.5) +
+    geom_point(shape = 24, fill = COL_SNP, color = "white", size = 2.8, stroke = 0.4) +
     scale_color_manual(values = c(`Causal IVW` = COL_IVW, `Causal Egger` = COL_EGG), name = NULL) +
     coord_cartesian(xlim = lim$x, ylim = lim$y) +
     labs(x = if (show_x) "caQTL effect size" else NULL, y = if (show_y) "eQTL effect size" else NULL) +
@@ -213,13 +211,13 @@ panel_header <- function(ttl, p_ivw, p_egg) {
     coord_cartesian(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE, clip = "off") + theme_void(base_size = BASE) +
     theme(plot.margin = margin(0, 4, 0, 4))
 }
-mr_panel <- function(fit, lead, ttl, lim, show_x = TRUE, show_y = TRUE) {
+mr_panel <- function(fit, ttl, lim, show_x = TRUE, show_y = TRUE) {
   r <- fit$res
-  (panel_header(ttl, r[model == "IVW"]$p_beta, r[model == "Egger"]$p_beta) / mr_core(fit, lead, lim, show_x, show_y)) + plot_layout(heights = c(0.3, 1))
+  (panel_header(ttl, r[model == "IVW"]$p_beta, r[model == "Egger"]$p_beta) / mr_core(fit, lim, show_x, show_y)) + plot_layout(heights = c(0.3, 1))
 }
 
 # 页顶只放一行文字的窄轨: Gene: XXX  Peak: chr:start-end (与 Fig 4 同风格)
-text_track <- function(txt, parse = TRUE, size = BASE, tag = NULL) {   # tag = pair 序号 (A-F), 画在左侧
+text_track <- function(txt, parse = TRUE, size = BASE, tag = NULL) {   # tag = panel 字母 (A / B, 只在第一行), 画在左侧
   ggplot() + annotate("text", x = 0.5, y = 0.5, label = txt, parse = parse, color = "#1F2937", size = size / .pt) +
     { if (!is.null(tag)) annotate("text", x = 0, y = 0.5, label = tag, hjust = 0, fontface = "bold", size = (BASE + 8) / .pt, color = "black") } +
     coord_cartesian(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE, clip = "off") + theme_void(base_size = BASE) +
@@ -232,7 +230,7 @@ build_pair <- function(o, show_x, tag = NULL) {
   rng <- function(v, s) { r <- range(c(0, v - 1.96 * s, v + 1.96 * s)); r + c(-1, 1) * 0.05 * diff(r) }
   lim <- list(x = rng(P$x, P$se_x), y = rng(P$y, P$se_y))
   hd  <- text_track(sprintf('"Gene: "~bold("%s")~~"Peak: "~bold("%s")', o$gene_id, o$peak_id), tag = tag)
-  pn  <- mr_panel(o$fits[[1]], o$lead, "Original coding", lim, show_x, TRUE) | mr_panel(o$fits[[2]], o$lead, "Flipped", lim, show_x, FALSE)
+  pn  <- mr_panel(o$fits[[1]], "No flipping", lim, show_x, TRUE) | mr_panel(o$fits[[2]], "Flipping", lim, show_x, FALSE)
   (hd / pn) + plot_layout(heights = c(0.11, 1))
 }
 
@@ -241,18 +239,18 @@ row_label <- function(ct) {
   ggplot() + annotate("text", x = 0.5, y = 0.5, label = CT_SHORT[[ct]], angle = 90, fontface = "bold", size = (BASE + 3) / .pt, color = "#1F2937") +
     coord_cartesian(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE) + theme_void()
 }
-CT_SHORT <- c(Bn_TCL1A = "Bn", CD4_Tn_CCR7 = "CD4", CD8_Tn_CCR7 = "CD8")
+CT_SHORT <- local({ source(file.path(PROJ, "Scripts/Visualization/00_common.R"), local = TRUE); CELL_LAB })   # Bn / CD4 T cell / CD8 T cell
 with_sep <- function(p) {
   g <- grid::grobTree(patchwork::patchworkGrob(p), grid::segmentsGrob(x0 = 0, x1 = 0, y0 = 0.02, y1 = 0.98, gp = grid::gpar(col = SEP_COL, lwd = 0.9)))
   wrap_elements(full = g)
 }
-build_row <- function(ct, show_x, tags) {   # tags = 这一行两个 pair 的字母 (左 = 差别小, 右 = 差别大); 全图按行从左到右 A-F
-  pr <- function(grp, tg) { k <- SEL[cell_type == ct & group == grp, paste(cell_type, gene_id, peak_id, sep = "|")]; if (is.null(OBJ[[k]])) plot_spacer() else build_pair(OBJ[[k]], show_x, tg) }
+build_row <- function(ct, show_x, tags) {   # tags = 这一行两个 pair 的字母 (左 = A 差别小, 右 = B 差别大; 只有第一行有, 其余为 NULL)
+  pr <- function(grp, tg = NULL) { k <- SEL[cell_type == ct & group == grp, paste(cell_type, gene_id, peak_id, sep = "|")]; if (is.null(OBJ[[k]])) plot_spacer() else build_pair(OBJ[[k]], show_x, tg) }
   wrap_plots(row_label(ct), wrap_elements(full = patchwork::patchworkGrob(pr("small", tags[1]))), with_sep(pr("large", tags[2])), nrow = 1, widths = c(0.035, 1, 1))
 }
 
 legend_grob <- function() {
-  p <- mr_core(OBJ[[1]]$fits[[2]], OBJ[[1]]$lead, list(x = c(0, 1), y = c(0, 1))) +
+  p <- mr_core(OBJ[[1]]$fits[[2]], list(x = c(0, 1), y = c(0, 1))) +
     theme(legend.position = "bottom", legend.direction = "horizontal")
   wrap_elements(full = cowplot_free_legend(p))
 }
@@ -263,7 +261,7 @@ cowplot_free_legend <- function(p) {   # ggplot2 >= 3.5: 图例 grob 名为 guid
 
 build_page <- function() {
   cts <- intersect(CELLTYPES, SEL$cell_type)
-  rows <- lapply(seq_along(cts), function(i) wrap_elements(full = patchwork::patchworkGrob(build_row(cts[i], show_x = (i == length(cts)), tags = LETTERS[(2 * i - 1):(2 * i)]))))
+  rows <- lapply(seq_along(cts), function(i) wrap_elements(full = patchwork::patchworkGrob(build_row(cts[i], show_x = (i == length(cts)), tags = if (i == 1) c("A", "B") else NULL))))
   wrap_plots(c(rows, list(legend_grob())), ncol = 1, heights = c(rep(1, length(cts)), 0.07))
 }
 
@@ -273,12 +271,6 @@ cairo_pdf(pdf_file, width = PAGE_W, height = PAGE_H)
 print(build_page(), newpage = FALSE)   # newpage = FALSE: 构图时 ggplotGrob 会先在设备上开一页, 否则多出空白页
 invisible(dev.off())
 msg("Saved: ", pdf_file)
-svg_file <- file.path(FIG_DIR, "Figure_S2.svg")
-svglite::svglite(svg_file, width = PAGE_W, height = PAGE_H)
-print(build_page(), newpage = FALSE)
-invisible(dev.off())
-msg("Saved: ", svg_file)
-unlink(file.path(FIG_DIR, sprintf("Figure_S2_%d.svg", 1:3)))   # 旧版每页一个 SVG, 已不再使用
 
 unlink(LD_DIR, recursive = TRUE)
 msg("All done.")

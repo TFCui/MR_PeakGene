@@ -1,13 +1,14 @@
 #!/usr/bin/env Rscript
 # ==============================================================================
-# 2026.10.19  Figure 2: 指定的示例 peak-gene pairs -> Figures_20261027/<set>.pdf + SVG (1 页: <set>.svg; 多页: <set>_p<k>.svg)
+# 2026.10.19  Figure 2: 指定的示例 peak-gene pairs -> Figures_20261102/<set>.pdf (只出 PDF)
 # 选哪些 pair / 在哪一页哪一行: Example_pairs.tsv 中 pair_set == --set 的行 (page, row, type, cell_type, gene_id, peak_id, category)
 #   Figure_2 (默认) = 1 页 4 个 pair: SIDT2 (Bn), RPL11 / ERAP2 / ARPC1B (CD4)
 #   Fig2_selected = 上一版 6 页 (page 1 = 4 个指定 pair; page 2-6 = 每页 Type 1-4 各一个)
 #   原来每个细胞类型 24 个 example 也在 Example_pairs.tsv (pair_set = original_example; 01_example_pairs.R 仍供 Plot1 检查使用)
 # 版面: 每页 4 行 (行标签 A-D), 每行一个 pair, 行内 4 个 panel (不标字母, 下面 a-d 只是说明顺序):
 #   a = 两条轨: caQTL | eQTL (共用 xlim = peak/TSS 中点 ±500 kb); 红色三角 = MR 用到的 SNP; 金色三角 = SMR lead SNP
-#       caQTL 轨不画 P < 1e-8 且不在 MR 中的 variant; 角标 = 进入 MR 的 SNP 数
+#       caQTL 轨不画 P < 1e-8 且不在 MR 中的 variant; 角标 = 红三角 + 进入 MR 的 SNP 数
+#   行标题 = gene | peak (细胞类型, CELL_LAB); 无副标题 (分类型的 pair 集才写 "Type k: ..."); c / d 的回归线都是 lm 实线
 #   b = MR (flip 后散点 + Causal IVW / Egger 线; 不画 SMR 线, 但保留 SMR lead SNP 标注)
 #   c = Marginal Multiomics: WNN metacell Spearman (across metacells / cell types)
 #   d = Marginal Pseudobulk: 个体层 Spearman (across individuals)
@@ -27,7 +28,7 @@ options(width = 300)
 # ---------------------------- 参数 (试跑 / 全量 只改这里或命令行) -------------
 args    <- commandArgs(trailingOnly = TRUE)
 get_arg <- function(name, default) { i <- match(paste0("--", name), args); if (is.na(i) || i == length(args)) default else args[i + 1] }
-FIG_DIR  <- get_arg("outdir", "/scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261027")
+FIG_DIR  <- get_arg("outdir", "/scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261102")
 SEL_FILE <- get_arg("pairs",  "/scratch/user/tfcui2025/CIMA/Claude_project/Scripts/Visualization/Example_pairs.tsv")
 PAIR_SET <- get_arg("set",    "Figure_2")
 
@@ -52,6 +53,7 @@ caqtl_clump_file <- function(ct) file.path(OMIX, "cis_caQTL_Summary_Statics/cis_
 caqtl_full_file  <- function(ct) file.path(OMIX, "cis_caQTL_Summary_Statics/cis_caQTL", paste0(ct, ".txt.gz"))
 
 CELLTYPES <- c("Bn_TCL1A", "CD4_Tn_CCR7", "CD8_Tn_CCR7")
+CELL_LAB  <- local({ source(file.path(PROJ, "Scripts/Visualization/00_common.R"), local = TRUE); CELL_LAB })   # 图中细胞类型标签 (Bn / CD4 T cell / CD8 T cell)
 SIGMA2_MAX <- 10; FDR_CUT <- 0.1
 
 # MR 固定参数 (与 MR_results_formal 一致)
@@ -211,13 +213,22 @@ add_corner <- function(p, labels, colors = rep("black", length(labels))) {
   for (k in seq_along(labels)) p <- p + annotate("text", x = -Inf, y = Inf, label = labels[k], hjust = -0.05, vjust = 1.5 + (k - 1) * 1.4, color = colors[k], size = ANNOT)
   p
 }
+# 左上角 "▲ N SNPs": 红色三角与散点中 MR SNP 的三角相同; 用 grid grob 定位在作图区左上角 (与数据坐标无关)
+add_snp_key <- function(p, n) {
+  g <- grid::gTree(children = grid::gList(
+    grid::pointsGrob(x = unit(2.6, "mm"), y = unit(1, "npc") - unit(2.6, "mm"), pch = 24, size = unit(2.6, "mm"),
+                     gp = grid::gpar(fill = COL_MRSNP, col = "white", lwd = 0.6)),
+    grid::textGrob(sprintf("%d SNPs", n), x = unit(4.8, "mm"), y = unit(1, "npc") - unit(2.6, "mm"), just = c("left", "centre"),
+                   gp = grid::gpar(fontsize = ANNOT * .pt, col = "black"))))
+  p + annotation_custom(g, xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf)
+}
 empty_plot <- function(title_txt, txt = "Data not available") {
   ggplot() + theme_void() + labs(title = title_txt) + annotate("text", x = 0.5, y = 0.5, label = txt, color = "grey60", fontface = "italic", size = ANNOT + 0.4) +
     theme(plot.title = element_text(face = "bold", size = BASE + 1, hjust = 0))
 }
 
 # ---------------------------- Panel a: caQTL / eQTL 两轨 ------------------------
-qtl_track <- function(d, title_txt, pt_col, xlim, pk_x, tss_x, corner_txt, chr, show_x = FALSE) {
+qtl_track <- function(d, title_txt, pt_col, xlim, pk_x, tss_x, n_mr, chr, show_x = FALSE) {
   d_oth <- d[!d$is_mr & !d$is_lead, , drop = FALSE]; d_mr <- d[d$is_mr & !d$is_lead, , drop = FALSE]; d_lead <- d[d$is_lead, , drop = FALSE]
   p <- ggplot(d, aes(x, y)) +
     geom_vline(xintercept = pk_x,  color = COL_PEAK, linewidth = 0.6) +
@@ -226,20 +237,16 @@ qtl_track <- function(d, title_txt, pt_col, xlim, pk_x, tss_x, corner_txt, chr, 
   if (nrow(d_mr))   p <- p + geom_point(data = d_mr, shape = 24, fill = COL_MRSNP, color = "white", size = PT_QTL + 1.2, stroke = 0.3)
   if (nrow(d_lead)) p <- p + geom_point(data = d_lead, shape = 24, fill = LEAD_FILL, color = LEAD_BORDER, size = PT_LEAD - 1, stroke = 0.5)
   p <- p + scale_x_continuous(limits = xlim, expand = c(0, 0), oob = oob_keep, labels = mb_labels(diff(xlim))) +
-    scale_y_continuous(expand = expansion(mult = c(0.03, 0.25))) +
-    labs(title = title_txt, x = if (show_x) sprintf("%s (Mb)", chr) else NULL, y = expression(-log[10](italic(P)))) + theme_fig
+    scale_y_continuous(expand = expansion(mult = c(0.03, 0.2))) +
+    labs(title = title_txt, x = if (show_x) sprintf("%s (Mb)", chr) else NULL, y = expression(-log[10](italic(P)))) + theme_fig +
+    theme(plot.title = element_text(face = "bold", size = BASE + 1, hjust = 0, margin = margin(b = 1)),
+          plot.margin = margin(1, 8, if (show_x) 4 else 1, 4))   # 两条轨之间收紧
   if (!show_x) p <- p + theme(axis.text.x = element_blank())
-  add_corner(p, corner_txt$txt, corner_txt$col)
-}
-
-# peak 中点到 TSS 的距离标签 (写在页面 subtitle)
-peak_tss_lab <- function(pk, tss) {
-  dist <- abs(mean(pk) - tss) * 1e6
-  if (dist < 1e3) sprintf("%.0f bp", dist) else sprintf("%.1f kb", dist / 1e3)
+  add_snp_key(p, n_mr)
 }
 
 build_track_panel <- function(ca_d, eq_d, peak, gene, mr_ids, lead_id) {
-  if (!nrow(ca_d) || !nrow(eq_d)) return(list(plot = empty_plot("caQTL / eQTL", "QTL data not available"), lab = "NA"))
+  if (!nrow(ca_d) || !nrow(eq_d)) return(empty_plot("caQTL / eQTL", "QTL data not available"))
   chr  <- sub(":.*$", "", peak)
   pk   <- as.numeric(strsplit(sub("^[^:]+:", "", peak), "-")[[1]]) / 1e6
   tss  <- median(eq_d$pos - eq_d$start_distance) / 1e6             # tensorQTL: start_distance = variant - phenotype start
@@ -252,10 +259,10 @@ build_track_panel <- function(ca_d, eq_d, peak, gene, mr_ids, lead_id) {
   }
   d_ca <- mk(ca_d); d_eq <- mk(eq_d)
   d_ca <- d_ca[d_ca$is_mr | d_ca$is_lead | d_ca$y <= -log10(CA_HIDE_P), , drop = FALSE]   # 不画 P < 1e-8 且不在 MR 中的 caQTL variant
-  n_mr <- list(txt = sprintf("%d SNPs in MR", length(mr_ids)), col = "black")
+  n_mr <- length(mr_ids)
   p_ca <- qtl_track(d_ca, "caQTL", COL_PEAK, xlim, mean(pk), tss, n_mr, chr)
   p_eq <- qtl_track(d_eq, "eQTL",  COL_TSS,  xlim, mean(pk), tss, n_mr, chr, show_x = TRUE)
-  list(plot = p_ca / p_eq + plot_layout(heights = c(1, 1)), lab = peak_tss_lab(pk, tss))
+  p_ca / p_eq + plot_layout(heights = c(1, 1))
 }
 
 # ---------------------------- Panel b: MR ---------------------------------------
@@ -305,7 +312,7 @@ plot_wnn <- function(gene, peak_seurat, rf) {
   ttl <- "Marginal Multiomics (across metacells / cell types)"
   if (!(gene %chin% colnames(wnn_rna_log)) || !(peak_seurat %chin% colnames(wnn_peak_log))) return(empty_plot(ttl))
   df <- data.frame(X = as.numeric(wnn_peak_log[, peak_seurat]), Y = as.numeric(wnn_rna_log[, gene]))
-  p <- ggplot(df, aes(X, Y)) + geom_smooth(method = "lm", formula = y ~ x, color = "grey30", fill = "grey85", linetype = "longdash", linewidth = LWD, alpha = 0.5)
+  p <- ggplot(df, aes(X, Y)) + geom_smooth(method = "lm", formula = y ~ x, color = "grey30", fill = "grey70", linewidth = LWD, alpha = 0.18)   # 线性回归, 实线 (与 pseudobulk 列同样式)
   if (HAS_CT) {
     df$CT <- as.character(wnn.celltype); df$Col <- as.character(wnn.celltype.col)
     lab <- as.data.table(df)[, .(X = median(X), Y = median(Y)), by = .(CT, Col)]
@@ -325,7 +332,7 @@ plot_pseudo <- function(gene, peak_seurat, rf) {
   df <- data.frame(X = as.numeric(subject_peak_logcpm[peak_seurat, ]), Y = as.numeric(subject_gene_logcpm[gene, ]))
   p <- ggplot(df, aes(X, Y)) +
     geom_point(shape = 21, fill = pal_method[["Marginal Pseudobulk"]], color = "white", size = PT_MARG, stroke = 0.25, alpha = 0.7) +
-    geom_smooth(method = "lm", formula = y ~ x, color = "#00624F", fill = pal_method[["Marginal Pseudobulk"]], linewidth = LWD, alpha = 0.18) +
+    geom_smooth(method = "lm", formula = y ~ x, color = "#00624F", fill = pal_method[["Marginal Pseudobulk"]], linewidth = LWD, alpha = 0.18) +   # 线性回归, 实线
     scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
     labs(title = ttl, subtitle = marg_subtitle(rf, "Marginal Pseudobulk", "pseudo"), x = "ATAC log1p(CPM)", y = "RNA log1p(CPM)") + theme_fig
   add_corner(p, sprintf("%d individuals", nrow(df)))
@@ -342,7 +349,7 @@ HAS_CT <- exists("wnn.celltype") && exists("wnn.celltype.col") && length(wnn.cel
 msg("WNN: ", nrow(wnn_rna_log), " metacells | cell-type colours: ", HAS_CT)
 
 # ---------------------------- 主循环: 按细胞类型生成每个 pair 的 4 个 panel ----------
-ROWS <- list()                                     # key = "CT|gene|peak" -> list(pA, pB, pC, pD, lab, n_snp)
+ROWS <- list()                                     # key = "CT|gene|peak" -> list(pA, pB, pC, pD)
 row_key <- function(ct, gene, peak) paste(ct, gene, peak, sep = "|")
 
 for (CT in intersect(CELLTYPES, SEL$cell_type)) {
@@ -394,9 +401,8 @@ for (CT in intersect(CELLTYPES, SEL$cell_type)) {
     tryCatch({
       obj <- objs[[pid]]; mr_ids <- if (is.null(obj$dat)) character(0) else obj$dat$variant_id
       tr  <- build_track_panel(ca_full[phenotype_id == peak], eq_full[phenotype_id == gene], peak, gene, mr_ids, getv(rf, "smr_variant_id"))
-      ROWS[[row_key(CT, gene, peak)]] <- list(pA = wrap_elements(full = tr$plot), pB = build_mr_panel(obj, rf),
-                                               pC = plot_wnn(gene, rf$peak_seurat, rf), pD = plot_pseudo(gene, rf$peak_seurat, rf),
-                                               lab = tr$lab, n_snp = length(mr_ids))
+      ROWS[[row_key(CT, gene, peak)]] <- list(pA = wrap_elements(full = tr), pB = build_mr_panel(obj, rf),
+                                               pC = plot_wnn(gene, rf$peak_seurat, rf), pD = plot_pseudo(gene, rf$peak_seurat, rf))
     }, error = function(e) msg("    作图失败: ", conditionMessage(e)))
   }
   rm(eq_full, ca_full, eq_sub, ca_sub, objs, subject_gene_logcpm, subject_peak_logcpm); invisible(gc())
@@ -405,10 +411,11 @@ for (CT in intersect(CELLTYPES, SEL$cell_type)) {
 # ---------------------------- 组装: 每页 4 行, 每行一个 pair ------------------------
 make_row <- function(s) {
   r <- ROWS[[row_key(s$cell_type, s$gene_id, s$peak_id)]]
-  if (is.null(r)) return(wrap_elements(full = empty_plot(sprintf("%s | %s (%s)", s$gene_id, s$peak_id, s$cell_type), "Plot failed")))
-  sub <- c(if (nzchar(s$category)) sprintf("Type %d: %s", s$type, s$category), sprintf("peak-TSS distance: %s", r$lab), sprintf("%d SNPs in MR", r$n_snp))
-  row <- (r$pA | r$pB | r$pC | r$pD) + plot_layout(widths = c(1.3, 1, 1, 1)) +
-    plot_annotation(title = sprintf("%s  |  %s  (%s)", s$gene_id, s$peak_id, s$cell_type), subtitle = paste(sub, collapse = "   |   "),
+  ct_lab <- CELL_LAB[[s$cell_type]]
+  if (is.null(r)) return(wrap_elements(full = empty_plot(sprintf("%s | %s (%s)", s$gene_id, s$peak_id, ct_lab), "Plot failed")))
+  sub <- if (nzchar(s$category)) sprintf("Type %d: %s", s$type, s$category) else NULL   # 只有分类型的 pair 集才有副标题 (Figure_2 没有)
+  row <- (r$pA | r$pB | r$pC | r$pD) + plot_layout(widths = c(1.2, 1, 1, 1)) +
+    plot_annotation(title = sprintf("%s  |  %s  (%s)", s$gene_id, s$peak_id, ct_lab), subtitle = sub,
       theme = theme(plot.title = element_text(size = BASE + 3, face = "bold", hjust = 0),
                     plot.subtitle = element_text(size = BASE, color = "grey30", hjust = 0, margin = margin(b = 4)),
                     plot.margin = margin(6, 4, 10, 26)))   # 左边距留给行标签 A-D, 不压行标题
@@ -433,15 +440,7 @@ pdf_file <- file.path(FIG_DIR, paste0(PAIR_SET, ".pdf"))
 open_pdf(pdf_file)
 for (p in PAGES) print(p)
 invisible(dev.off())
-msg("Saved: ", pdf_file)
-# SVG (svglite: 文字保留为可编辑文本, 便于拼图); SVG 不支持多页, 每页一个文件
-for (k in seq_along(PAGES)) {
-  svg_file <- file.path(FIG_DIR, if (length(PAGES) == 1) paste0(PAIR_SET, ".svg") else sprintf("%s_p%d.svg", PAIR_SET, k))
-  svglite::svglite(svg_file, width = PAGE_W, height = PAGE_H)
-  print(PAGES[[k]])
-  invisible(dev.off())
-  msg("Saved: ", svg_file)
-}
+msg("Saved: ", pdf_file)   # 只出 PDF (见 Visualization.md 第 2 节)
 
 unlink(LD_DIR, recursive = TRUE)
 msg("All done.")

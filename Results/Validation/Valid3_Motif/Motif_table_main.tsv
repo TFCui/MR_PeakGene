@@ -1,0 +1,7 @@
+celltype	motif	motif.name	pmid	brief
+Bn_TCL1A	MA0605.2	ATF3	28414328	In mouse marginal zone B cells, ATF3 drives PDL1 expression, through which these cells restrain the T follicular helper response to a high-cholesterol diet.
+Bn_TCL1A	MA1145.1	FOSL2::JUND(var.2)	28566276	Fra-2 (FOSL2) drives IRF4 and Foxo1 transcription and is required for mouse B-cell proliferation and pre-B-cell differentiation.
+CD4_Tn_CCR7	MA0825.1	MNT	16507988	Deleting Mnt in mouse T cells causes Th1-skewed hyperproliferation of activated CD4+ T cells, intestinal inflammation and T-cell lymphoma.
+CD4_Tn_CCR7	MA0637.1	CENPB	8527711	CENP-B is a major anti-centromere autoantigen; antibodies to recombinant CENP-B were detected in 60% of patients with primary biliary cholangitis.
+CD8_Tn_CCR7	MA0786.1	POU3F1	36738683	POU3F1 is one of the top five transcription factors predicted from disease-associated chromatin accessibility and gene expression in CD4+ T cells of SLE patients.
+CD8_Tn_CCR7	MA0843.1	TEF	15665112	TEF is expressed in hematolymphoid progenitors, where it blocks apoptosis on IL-3 withdrawal and restrains proliferation by down-regulating the common beta chain of cytokine receptors.

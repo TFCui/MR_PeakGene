@@ -1,0 +1,37 @@
+===== Plot10 Thu Oct 29 22:55:54 CDT 2026
+[22:56:46] Fig10 pairs: 5 | GWAS SNP-pair 行: 31
+There were 24 warnings (use warnings() to see them)
+[22:57:49] EnsDb v86: 58613 genes | 2080628 exon/cds/utr 片段
+Key: <trait>
+    trait         MR-Only       All peaks
+   <fctr>          <char>          <char>
+1:     AS  17.7 (p=0.303)   3.1 (p=0.197)
+2:     CD 20.0* (p=0.084)  6.4* (p=0.000)
+3:    IBD 18.0* (p=0.050)  5.1* (p=0.000)
+4:     RA  10.1 (p=0.248)  5.7* (p=0.000)
+5:    SLE  14.0 (p=0.246)  6.5* (p=0.000)
+6:     MS 50.8* (p=0.069) 26.0* (p=0.000)
+7:    T1D 19.7* (p=0.060)  4.6* (p=0.000)
+[22:58:19]   [Bn_TCL1A] chr6:33313910-33314411__RGL2: ok, 97 SNPs
+[22:58:19] [Bn_TCL1A] 对账: SNP 数一致 1 / 1, lead SNP 找到 1 / 1
+[22:58:52]   [CD4_Tn_CCR7] chr12:56041553-56042054__ERBB3: ok, 57 SNPs
+[22:58:52]   [CD4_Tn_CCR7] chr19:1095225-1095726__POLR2E: ok, 7 SNPs
+[22:58:53]   [CD4_Tn_CCR7] chr13:99375239-99375740__UBAC2: ok, 138 SNPs
+[22:58:53] [CD4_Tn_CCR7] 对账: SNP 数一致 3 / 3, lead SNP 找到 3 / 3
+[22:59:21]   [CD8_Tn_CCR7] chr20:59254001-59254502__GNAS: ok, 8 SNPs
+[22:59:21] [CD8_Tn_CCR7] 对账: SNP 数一致 1 / 1, lead SNP 找到 1 / 1
+[22:59:21] 线宽标尺: -log10(FDR) in [1.30, 10.09]
+[22:59:25]   page 1: Bn_TCL1A | RGL2 | chr6:33313910-33314411
+[22:59:25]     SNP 轨: 4 MR + 2 GWAS (MR instrument 共 97)
+[22:59:28]   page 1: CD4_Tn_CCR7 | ERBB3 | chr12:56041553-56042054
+[22:59:28]     SNP 轨: 5 MR + 1 GWAS (MR instrument 共 57)
+[22:59:29]   page 1: CD4_Tn_CCR7 | POLR2E | chr19:1095225-1095726
+[22:59:29]     SNP 轨: 4 MR + 2 GWAS (MR instrument 共 7)
+[22:59:29]   page 1: CD4_Tn_CCR7 | UBAC2 | chr13:99375239-99375740
+[22:59:29]     SNP 轨: 4 MR + 2 GWAS (MR instrument 共 138)
+[22:59:30]   page 1: CD8_Tn_CCR7 | GNAS | chr20:59254001-59254502
+[22:59:30]     SNP 轨: 2 MR + 1 GWAS (MR instrument 共 8)
+[22:59:32] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261102/Figure_4.pdf
+[22:59:32] All done.
+===== Plot10 OK
+===== DONE Thu Oct 29 22:59:33 CDT 2026

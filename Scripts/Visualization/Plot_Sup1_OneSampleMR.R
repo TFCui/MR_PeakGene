@@ -2,7 +2,7 @@
 # Figure S1: 1 页, 2 个 panel: A = pair 内相关 rho_hat, B = 相关性检验的 P 值; 横轴为 pair 内共享 null SNP 数分组,
 #            每组 3 根并排箱子 = 3 个细胞类型 (图例写各细胞类型的全基因组整体 rho 和 P); 说明 (虚线含义 / pair 数) 写在论文 caption
 # 输入: Results/QC/1_OneSampleMR/<CT>_pair_corr.tsv.gz, <CT>_global_rho.tsv
-# 输出: Results/Figures/Figures_20261027/Figure_S1.pdf + Figure_S1.svg
+# 输出: Results/Figures/Figures_20261102/Figure_S1.pdf (只出 PDF)
 # 运行: Rscript Scripts/Visualization/Plot_Sup1_OneSampleMR.R
 
 source("/scratch/user/tfcui2025/CIMA/Claude_project/Scripts/Visualization/00_common.R")
@@ -11,9 +11,9 @@ QC_DIR <- file.path(PROJ, "Results/QC/1_OneSampleMR")
 
 BRK <- c(2, 10, 20, 30, 40, 50, Inf)
 LAB <- c("3–10", "11–20", "21–30", "31–40", "41–50", ">50")
-CT_SHORT <- c(Bn_TCL1A = "Bn", CD4_Tn_CCR7 = "CD4", CD8_Tn_CCR7 = "CD8")
-COL_CT   <- c(Bn = "#7570B3", CD4 = "#1B9E77", CD8 = "#D95F02")   # ColorBrewer Dark2 (色盲友好); 与 6 个方法的配色不同
-COL_CT_D <- c(Bn = "#4B4785", CD4 = "#116B50", CD8 = "#963F01")   # 同色加深: 箱子描边 / 中位线
+CT_SHORT <- CELL_LAB[CELLS]   # Bn / CD4 T cell / CD8 T cell (00_common.R)
+COL_CT   <- setNames(c("#7570B3", "#1B9E77", "#D95F02"), CT_SHORT)   # ColorBrewer Dark2 (色盲友好); 与 6 个方法的配色不同
+COL_CT_D <- setNames(c("#4B4785", "#116B50", "#963F01"), CT_SHORT)   # 同色加深: 箱子描边 / 中位线
 BASEF <- 11
 FONT  <- "sans"   # cairo_pdf 嵌入字体, 支持 ρ 等符号
 fmt_p <- function(p) sprintf("%.1e", p)
@@ -56,15 +56,10 @@ p2 <- box_plot("p_value", expression(italic(P) * " value of correlation test"), 
 fig <- (p1 | p2) + plot_layout(guides = "collect") + plot_annotation(tag_levels = "A") & theme(legend.position = "top")
 
 FIG_W <- 9.5; FIG_H <- 4.8
-OUT_DIR <- file.path(PROJ, "Results/Figures/Figures_20261027")
+OUT_DIR <- file.path(PROJ, "Results/Figures/Figures_20261102")
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 out <- file.path(OUT_DIR, "Figure_S1.pdf")
 cairo_pdf(out, width = FIG_W, height = FIG_H, family = FONT)
-print(fig)
-invisible(dev.off())
-msg("Saved: ", out)
-out <- file.path(OUT_DIR, "Figure_S1.svg")
-svglite::svglite(out, width = FIG_W, height = FIG_H)   # svglite: 文字保留为可编辑文本, 便于拼图
 print(fig)
 invisible(dev.off())
 msg("Saved: ", out)

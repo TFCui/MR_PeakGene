@@ -20,6 +20,7 @@ dir.create(FIG_DIR, recursive = TRUE, showWarnings = FALSE)
 # ---------- 细胞类型 ----------
 CELLS     <- c("Bn_TCL1A", "CD4_Tn_CCR7", "CD8_Tn_CCR7")
 CELL_DESC <- c(Bn_TCL1A = "Naive B cells", CD4_Tn_CCR7 = "Naive CD4+ T cells", CD8_Tn_CCR7 = "Naive CD8+ T cells")
+CELL_LAB  <- c(Bn_TCL1A = "Bn", CD4_Tn_CCR7 = "CD4 T cell", CD8_Tn_CCR7 = "CD8 T cell")   # 图中统一的细胞类型标签 (见 CLAUDE.md)
 
 # ---------- 方法: 显示名 / 数据 key / 配色 ----------
 METHODS    <- c("Causal SMR", "Causal IVW", "Causal Egger", "Causal Joint", "Marginal Multiomics", "Marginal Pseudobulk")

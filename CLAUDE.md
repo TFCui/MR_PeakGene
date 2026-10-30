@@ -4,6 +4,7 @@
 用 CIMA（OMIX009786）细胞类型特异的 caQTL 和 eQTL 做 MR，推断 peak → gene 的因果调控连接，
 并和 marginal 相关方法比较，用外部证据验证。
 - 细胞类型只做：`Bn_TCL1A`、`CD4_Tn_CCR7`、`CD8_Tn_CCR7`
+- **细胞类型名称（画图和论文统一）**：图中标签写 `Bn`、`CD4 T cell`、`CD8 T cell`（代码用 `Scripts/Visualization/00_common.R` 的 `CELL_LAB`）。论文在首次出现处定义：naive B cells（Bn_TCL1A，简称 Bn）、naive CD4⁺ T cells（CD4_Tn_CCR7，简称 CD4 T cells）、naive CD8⁺ T cells（CD8_Tn_CCR7，简称 CD8 T cells）；之后正文写 Bn / CD4 T cells / CD8 T cells，作定语或表头用单数（“CD4 T cell links”）。不再单独用 CD4、CD8、CD4 Tn 或 CIMA 原始标签指代细胞类型。
 - 6 个方法：IVW、Egger、SMR、CCT（Causal），WNN、Pseudobulk（Marginal）
 
 ## 2. 文件安全规则（必须遵守）
@@ -66,8 +67,8 @@
 | WNN metacell（外部 10x PBMC，不分细胞类型） | `$BASE/Data/Valid_Multiome/1_pbmc_multiomics.reprocessed.rda` |
 | LD 参考（hg38，1000G EAS，ID 为 `CHR:BP:REF:ALT`） | `data/ref_chr/hg38/chr*.{bed,bim,fam}` |
 | 金标准 | `$BASE/Data/PBMC_validation/`（EnhancerAtlas、FANTOM5、4DGenome、GTEx、HiChIP xlsx、PCHiC、liftOver chain） |
-| S-LDSC 资源 | `$BASE/R_package/S_LDSC/reference_genome/`（EUR plink、HM3、baselineLD v2.2、weights、frq） |
-| GWAS | `$BASE/R_package/S_LDSC/GWAS_data/selected_sumstats/` |
+| S-LDSC 资源 | `$BASE/R_package/S_LDSC/reference_genome/`（EUR plink、HM3、baselineLD v2.2、weights、frq；hg19）。来源：Gazal 的 Zenodo “S-LDSC reference files” v4（doi:10.5281/zenodo.10515792，https://zenodo.org/records/10515792），5 个 tgz 的大小与 Zenodo 一致 |
+| GWAS | `$BASE/R_package/S_LDSC/GWAS_data/selected_sumstats/`（项目用的 9 个）。107 套独立 GWAS 在 `GWAS_data/sumstats_107/`，下载自同一 Zenodo 记录：https://zenodo.org/records/10515792/files/sumstats_indep107.tgz（md5 已核对一致；LDSC 格式，`SNP A1 A2 N Z`）。`selected_sumstats/` 中的 PASS/GBMI 文件与它完全相同；`CUSTOM.*`（AS、CD、IBD、SLE）和 `PASS_Multiple_sclerosis` 是另外处理的 |
 | CIMA GRN | `$BASE/Results/RunMR/Materials_runMR/20260430_LinkPeakGene_more/MRresult_20260911/Valid6_CIMA_GRN/Data/` |
 | 旧结果（对账用） | `$BASE/Results/RunMR/Materials_runMR/20260430_LinkPeakGene_more/MRresult_20260911/` |
 
@@ -141,3 +142,5 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 - 2026-10-20：新增 `paper_reference/`（核心参考论文）；`CLAUDE.md` 增加第 11 节 Manuscript，Git 规则改为第 10 节，Update History 移到最后（第 12 节）。
 - 2026-10-20：`Manuscript/MANUSCRIPT_CONTEXT.md` 改名为 `Notes_Claude_Code.md`；明确 Claude Code 与 CodeX 协同分工，CodeX 的笔记在 `Manuscript/CODEX_METHODS_NOTES.md`。
 - 2026-10-20：论文补充图表拆成独立文件 `Manuscript/supplementary.tex`（`supplementary.pdf`）；正文末尾只保留 Supporting information 标题列表，用 `\nameref` 引用；补充表格统一编号为 S1 / S2 / S3 Table。
+- 2026-10-29：第 6 节记录 S-LDSC reference 和 107 套 GWAS 的来源（Zenodo 10515792，已核对文件大小 / md5）；`Scripts/Pipeline.md` 3.2 同步。
+- 2026-10-29：细胞类型名称统一为 Bn / CD4 T cell / CD8 T cell（第 1 节，图和论文全文已改）；新一轮论文图放 `Results/Figures/Figures_20261102/`，除 `Figure_1B_C` 只出 SVG 外所有图只出 PDF（见 `Scripts/Visualization.md`）；Fig 1B–C / S3 重画（环形图恢复图例和中心文字）。

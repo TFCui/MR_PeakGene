@@ -1,0 +1,30 @@
+job = 20342179 | cores = 1 | node = c262
+[23:23:19] Rows: 47 | unique motifs: 42
+
+===== 每个 CT 前 2 个 (MR min FDR, 跳过 No clear)
+      celltype    motif         motif.name mr_min_FDR table_pmid
+        <char>   <char>             <char>      <num>     <char>
+1:    Bn_TCL1A MA0605.2               ATF3    0.00015   28414328
+2:    Bn_TCL1A MA1145.1 FOSL2::JUND(var.2)    0.00110   28566276
+3: CD4_Tn_CCR7 MA0825.1                MNT    0.00290   16507988
+4: CD4_Tn_CCR7 MA0637.1              CENPB    0.00360    8527711
+5: CD8_Tn_CCR7 MA0786.1             POU3F1    0.00630   36738683
+6: CD8_Tn_CCR7 MA0843.1                TEF    0.01000   15665112
+[23:23:20] Kept: 6 | excluded: 41
+Warning message:
+The `<scale>` argument of `guides()` cannot be `FALSE`. Use "none" instead as
+of ggplot2 3.3.4.
+ℹ The deprecated feature was likely used in the ggseqlogo package.
+  Please report the issue at <https://github.com/omarwagih/ggseqlogo/issues>. 
+[23:23:32] Logos: 6 PNG + SVG in /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid3_Motif/logos
+[23:23:33] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Figures/Figures_20261102/Table_1.xlsx
+[23:23:33] Embedded images: 6 | highlighted FDR cells: 10 | rows by CT: Bn_TCL1A 2, CD4_Tn_CCR7 2, CD8_Tn_CCR7 2
+Key: <celltype, immune_relevance>
+      celltype immune_relevance     N
+        <char>           <char> <int>
+1:    Bn_TCL1A         Moderate     1
+2:    Bn_TCL1A           Strong     1
+3: CD4_Tn_CCR7           Strong     1
+4: CD4_Tn_CCR7             Weak     1
+5: CD8_Tn_CCR7             Weak     2
+[23:23:33] Done.

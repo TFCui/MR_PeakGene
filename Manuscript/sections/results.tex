@@ -4,8 +4,8 @@
 \subsection{A common analysis set enables comparison of six linking methods}
 \label{res:analysis-set}
 We used cell-type-specific CIMA caQTL and eQTL summary statistics to investigate
-accessibility-to-expression links in naive B cells (Bn), naive CD4 T cells (CD4),
-and naive CD8 T cells (CD8). The six methods were GLS-IVW, GLS-MR Egger, SMR,
+accessibility-to-expression links in naive B cells (Bn), naive CD4$^+$ T cells (CD4 T cells),
+and naive CD8$^+$ T cells (CD8 T cells). The six methods were GLS-IVW, GLS-MR Egger, SMR,
 an equal-weight Cauchy combination of these three MR tests (CCT), WNN metacell
 Spearman correlation, and donor-level pseudobulk Spearman correlation
 (Fig~\ref{fig:overview}A).
@@ -16,12 +16,12 @@ Spearman correlation, and donor-level pseudobulk Spearman correlation
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth,height=0.7\textheight,keepaspectratio]{Figure_1.pdf}
-\caption{The complete analysis framework and the results of  CD4 cells.
+\caption{The complete analysis framework and the results of CD4 T cells.
 \textbf{A} MR methods (IVW, MR Egger, SMR) use cell-type specific caQTL/eQTL summary statistics; Marginal multiomics uses external PBMC metacells, and marginal pseudobulk correlations use CIMA individuals. Both two marginal correlation are measured by the Spearman correlation.
-\textbf{B} UpSet plot of significant links in CD4 cells (p-adjust < 0.1, BH)
-\textbf{C} Effect directions among the 1,259 CD4 links significant in all six
+\textbf{B} UpSet plot of significant links in CD4 T cells (p-adjust < 0.1, BH)
+\textbf{C} Effect directions among the 1,259 CD4 T cell links significant in all six
 methods. Slices compare the sign of the IVW estimate with the signs of the
-marginal correlations: concordant with both marginal methods (light gray), discordant with Marginal Multiomics only (blue), discordant with Marginal Pseudobulk only (green), and discordant with both (brown). Bn and CD8 comparisons appear in \nameref{S3_Fig}.}
+marginal correlations: concordant with both marginal methods (light gray), discordant with Marginal Multiomics only (blue), discordant with Marginal Pseudobulk only (green), and discordant with both (brown). Bn and CD8 T cell comparisons appear in \nameref{S3_Fig}.}
 \label{fig:overview}
 \end{figure}
 
@@ -53,22 +53,32 @@ terms (Fig~\ref{fig:go}).
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{Figure_3.pdf}
-\caption{GO enrichment summaries.
+\caption{GO enrichment summaries and overlap with the CIMA regulatory network.
 \textbf{A,} Biological Process terms, with 4,031 genes reported in the panel.
 \textbf{B,} Molecular Function terms, with 4,185 genes reported in the panel.
 The horizontal axis gives GeneRatio, bubble size represents the displayed
-term count, and color represents adjusted p-values.}
+term count, and color represents adjusted p-values.
+\textbf{C,} Odds ratio for a link significant for each method (within-gene
+BH-adjusted \(p<0.05\), a stricter threshold than the \(\q<0.1\) used elsewhere)
+being present in the CIMA SCENIC+ regulatory network, compared with links not in
+the network (\(2\times2\) table; all tested pairs in the cell type as background).
+Light bars use eRegulons active in the cell type (cell-type eRegulons), and dark
+bars the subset of these that belong to the high-quality eRegulons of the
+corresponding lineage (high-quality eRegulons); these contained 864, 2,520, and
+1,364 tested pairs in Bn, CD4 T cells, and CD8 T cells (cell-type eRegulons) and
+817, 458, and 382 (high-quality eRegulons). Fisher's exact test \(P<10^{-30}\) for
+every bar; the dashed line marks an odds ratio of 1. ``Causal Joint'' denotes CCT.}
 \label{fig:go}
 \end{figure}
 
 \subsection{MR-only regions show exploratory disease-heritability enrichment}
 \label{res:sldsc}
 The disease-heritability summary compares the combined MR-only peak
-annotation with the all-peaks annotation across nine GWAS
+annotation with the all-peaks annotation across seven GWAS
 (Fig~\ref{fig:disease}A). 
 
-The selected main-text examples are RGL2 in Bn and ERBB3, POLR2E, and UBAC2
-in CD4 (Fig~\ref{fig:disease}B).
+The selected main-text examples are RGL2 in Bn, ERBB3, POLR2E, and UBAC2
+in CD4 T cells, and GNAS in CD8 T cells (Fig~\ref{fig:disease}B).
 
 
 \begin{figure}[htbp]
@@ -80,7 +90,7 @@ all-candidate-peak S-LDSC annotations for each GWAS trait, shown on a common
 y axis; asterisks mark the annotated enrichment results (p value < 0.1).
 \textbf{B}  Tracks show the gene, MR instruments (dark-blue ticks), GWAS variants within the peak (purple diamonds), the peak (gold bar), and one link
 per method (Causal SMR, IVW, and Egger; Marginal Multiomics and Pseudobulk).
-Red/blue links indicate positive/negative effects, and line width increases
+Significant links are drawn in red, and line width increases
 with \(-\log_{10}\) adjusted \(p\); gray dashed links are nonsignificant.
 Link stars denote adjusted \(p<0.05\) (*), \(0.01\) (**), and \(0.001\) (***).
 }
@@ -89,4 +99,6 @@ Link stars denote adjusted \(p<0.05\) (*), \(0.01\) (**), and \(0.001\) (***).
 
 \TODO{Add results text for the allele-orientation comparison
 (\nameref{S2_Fig}), the overlap of significant links with the CIMA regulatory
-network (\nameref{S5_Fig}), and the MR-specific motifs (\nameref{S3_Table}).}
+network (Fig~\ref{fig:go}C), and the MR-specific motifs (Table~\ref{tab:motif}).}
+
+\input{tables/motif}

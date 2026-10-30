@@ -15,8 +15,8 @@ Overleaf 导出不含这些 md。**两个根文档**：`main.tex`（正文，pdf
 **细胞类型**：`Bn_TCL1A`（Bn）、`CD4_Tn_CCR7`（CD4）、`CD8_Tn_CCR7`（CD8）。
 **数据**：CIMA（OMIX009786）细胞类型特异 caQTL / eQTL 汇总统计、候选 peak–gene 表、个体层 pseudobulk RNA/ATAC、外部 PBMC multiome 的 WNN metacell。数据路径见 `../CLAUDE.md` 第 6 节。
 **6 个方法**：GLS-IVW、GLS-MR Egger、SMR、CCT（SMR + IVW + Egger 的等权 Cauchy 合并），以及 WNN metacell Spearman、个体层 pseudobulk Spearman（marginal）。过滤在 CCT 之前，BH 在每个 gene 内、每个方法单独做；发现阈值 q < 0.1。
-**论文使用的验证 / 刻画**：CD4 / Bn / CD8 方法比较和方向一致性（Fig 1、S3）；位点示例（Fig 2）；调控参考的超几何富集（S1 / S2 Table）；GO BP / MF（Fig 3）；S-LDSC 与 GWAS 重叠示例（Fig 4、S4）；null-SNP 诊断（S1 Fig）；MR-Egger flip 敏感性（S2 Fig）；MR 特异 motif（S3 Table）。
-**v2 起不在论文里的内容**（仍在 `../Results/` 和 git 历史）：ROC-AUC、旧 BP GSEA、旧的两张主文计数表；motif 以 S3 Table 形式回来，SCENIC+ GRN 重叠以 S5 Fig 形式回来（2026-10-23，仅图和 caption，Results / Methods 文字仍是 TODO）。
+**论文使用的验证 / 刻画**：CD4 / Bn / CD8 方法比较和方向一致性（Fig 1、S3）；位点示例（Fig 2）；调控参考的超几何富集（S1 / S2 Table）；GO BP / MF（Fig 3）；S-LDSC 与 GWAS 重叠示例（Fig 4、S4）；null-SNP 诊断（S1 Fig）；MR-Egger flip 敏感性（S2 Fig）；MR 特异 motif（正文 Table 1）。
+**v2 起不在论文里的内容**（仍在 `../Results/` 和 git 历史）：ROC-AUC、旧 BP GSEA、旧的两张主文计数表；motif 以 S3 Table 形式回来，SCENIC+ GRN 重叠以 S5 Fig 形式回来（2026-10-23），2026-10-29 起只保留 odds ratio 并入主文 Fig 3C（仅图和 caption，Results / Methods 文字仍是 TODO）。
 **证据地图**：`../Scripts/Pipeline.md`（分析流程）、`../Scripts/Visualization.md`（图）、`../Scripts_reference/00_README_Pipeline_Summary.md`（旧代码）；代码在 `../Scripts/{Model,QC,Validation,Visualization}/`；结果在 `../Results/{MR,Validation,QC,Figures}/`。写 Methods 时要回到代码核对细节。
 
 **核心参考论文（`../paper_reference/`，5 个 PDF，只读）**
@@ -60,56 +60,59 @@ Overleaf 导出不含这些 md。**两个根文档**：`main.tex`（正文，pdf
 每个条目：**位置 / 含义 / 来源 / 进入论文前的修改 / caption 与引用 / 校验**。**FIG** = `../Results/Figures/Figures_20261027/`（用户的最新图和编号，按图逐张更新到论文）。2026-10-23 起 Fig 1–3 已按 `Figures_20261027` 更新；下面其余条目（Fig 4、S 图、表）仍写旧的 `Figures_20261026` 版本，各自更新时再改，在那之前它们对应的 FIG 文件可能已改名或拆分（见 `../Scripts/Visualization.md`）。
 旧的 7 个 PDF 图的论文内副本与当时的 FIG 同名文件已核对**逐字节一致**（2026-10-20）；hash 为 SHA-256 前 12 位，刷新用 `sha256sum figures/*.pdf`。
 FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
-编号总览：主文 Fig 1–4（在 `main.tex` / `sections/results.tex`）；Supporting 在独立文件 `supplementary.tex` 中：S1–S5 Fig，S1 / S2 / S3 / S4 Table（2026-10-20 起统一编号，不再有 “S1.2 Tables”；2026-10-23 S7 / S8、S2–S4、S5 / S6 各自合并后为 S1–S4，再新增 S5 Fig（GRN）后为 S1–S5，图编号由 `supplementary.tex` 的计数器自动生成，手写的列表和 `\nameref` 要同步）。
+编号总览：主文 Fig 1–4（在 `main.tex` / `sections/results.tex`）；Supporting 在独立文件 `supplementary.tex` 中：S1–S3 Fig（2026-10-29 删除 S5（并入 Fig 3C）和 S4（GNAS 并入 Fig 4B）），正文 Table 1（MR 特异 motif，2026-10-29 由 S3 Table 移入正文）；S1 / S2 / S3 Table（2026-10-29 起 S3 = 数据概览，原 S4；2026-10-20 起统一编号，不再有 “S1.2 Tables”；2026-10-23 S7 / S8、S2–S4、S5 / S6 各自合并后为 S1–S4，再新增 S5 Fig（GRN）后为 S1–S5，图编号由 `supplementary.tex` 的计数器自动生成，手写的列表和 `\nameref` 要同步）。
 **正文与补充的引用方式**：正文用 PLOS 的 `\nameref{S1_Fig}` 等引用补充条目（label 在 `sections/supporting_info.tex` 的 Supporting information 列表里，只含编号和标题；补充 PDF 里的 caption label 另用 `fig:supp-*` / `tab:supp-*`，两套互不依赖）。补充 caption 里指向正文的 6 处是**固定文字**，正文图号变化时要手动同步：S3 Fig 的 “Fig 1B–C”（1 处）、S4 Fig 的 “Fig 4A”（1 处）。新增或重排补充条目时，要同时改 `supplementary.tex`、`sections/supporting_info.tex`（列表和 label）以及正文里的 `\nameref`。
 
-### Fig 1 — 研究框架、方法重叠与方向比较（CD4）
-- **位置**：主文 Fig 1（`sections/results.tex`，label `fig:overview`，第 4 页），`figures/Figure_1.pdf`，`width=\linewidth, height=0.7\textheight, keepaspectratio`（1706×1427 pt，宽 6.5 in 时约 5.4 in 高）。panel 字母 A / B / C 已画在图里，LaTeX 不再另写。
+### Fig 1 — 研究框架、方法重叠与方向比较（CD4 T cell）
+- **位置**：主文 Fig 1（`sections/results.tex`，label `fig:overview`，第 3 页），`figures/Figure_1.pdf`，`width=\linewidth, height=0.7\textheight, keepaspectratio`（2026-10-29 版 960×890 pt，宽 6.5 in 时约 6.0 in 高）。panel 字母 A / B / C 已画在图里，LaTeX 不再另写。
 - **含义**：A = 研究框架：MR 用 caQTL（exposure）/ eQTL（outcome）汇总统计；左下 “Correlation across individuals”（CIMA pseudobulk），右下 “Correlation across cell types”（外部 PBMC multiome 的 WNN metacell）。B = CD4 的 UpSet（前 15 个显著组合，6 个方法，p.adj < 0.1，右侧条形图 “Significant pairs”，标题只写细胞类型）。C = 六个方法都显著的 pair 的环形图：扇区是 IVW 方向与两个 marginal 相关方向的关系（都一致 / 只与 Multiomics 不一致 / 只与 Pseudobulk 不一致 / 都不一致），图内只标 73% 和 24% 两个扇区并用短线注明含义，n、SMR / IVW / Egger 内部一致比例、两个小扇区占比都不在图里，写在 caption。图里 “Causal Joint” = CCT。
-- **来源**（2026-10-25 更新）：`Figure_1B_C` 已缩小为 9×3.6 in 并简化后（`Plot1_MRresults.R`），用户重新在 Figma 里拼接；原写：用户在 Figma 里把 `Figures_20261027/Figure_1A.pdf`（手工示意图，非脚本生成）和 `Figure_1B_C.pdf`（`../Scripts/Visualization/Plot1_MRresults.R`，CD4）拼接排版，得到 `../Results/Figures/Figures_20261027/Figure_1.pdf`（手工，非脚本生成）；输入 `../Results/MR/<CT>_AllPairs_results.tsv.gz`；`Visualization.md` 3.1。
+- **来源**（2026-10-29 更新）：用户在 Figma 里把 `../Results/Figures/Figures_20261102/Fig0_Schematics.svg`（1A，新示意图）和 `Figure_1B_C.svg`（1B–C，`Plot1_MRresults.R`：前 15 个组合、y 轴 “Size”、环形图带底部图例和中心 n / SMR-IVW-Egger 一致比例、标题 “CD4 T cell”）拼接，得到 `Figures_20261102/Figure_1.pdf`（Figma 导出，含 219 张带 SMask 的位图）；论文用拍平版 `Figures_20261102/Figure_1_flat.pdf`（Ghostscript 10.03.1，PDF 1.3，整页 720 ppi Flate 无损，脚本 `../tmp/Fig1_flatten/flatten_slurm.sh`；与原图渲染对比 RMSE 0.016，图内文字为位图）。（2026-10-25 版：`Figure_1B_C` 已缩小为 9×3.6 in 并简化后（`Plot1_MRresults.R`），用户重新在 Figma 里拼接；原写：用户在 Figma 里把 `Figures_20261027/Figure_1A.pdf`（手工示意图，非脚本生成）和 `Figure_1B_C.pdf`（`../Scripts/Visualization/Plot1_MRresults.R`，CD4）拼接排版，得到 `../Results/Figures/Figures_20261027/Figure_1.pdf`（手工，非脚本生成）；输入 `../Results/MR/<CT>_AllPairs_results.tsv.gz`；`Visualization.md` 3.1。
 - **修改**：论文内直接复制该文件，不改画面（2026-10-25 换成新拼接的版本；caption 的 B / C 重写：写明 50,704 个 ≥1 方法显著的 pair、前 15 个组合、四种扇区颜色含义及数量 918 / 304 / 17 / 20（73% / 24% / 1.4% / 1.6%）、n = 1,259 和 SMR/IVW/Egger 一致 1,258/1,259；数量由 `Results/MR` 表直接计数，与图一致）。（2026-10-23）原先 LaTeX 里 1A 和 1B–C 上下叠放并另写 A / B / C 标签，已改为单个 `\includegraphics`。旧的 “示意图 pseudobulk 分支写 across metacells” 的问题在新图中已修正（现在是 across individuals / across cell types）。
 - **正文数字**：六方法都显著的 pair 数 Bn 469 / CD4 1,259 / CD8 759；三个 MR 方向一致 469/469、1,258/1,259、758/759；IVW 与两个 marginal 方向都一致的比例约 75% / 73% / 74%（取自图上标注）。
 - **引用**：`results.tex` 的 A common analysis set 小节（Fig 1A）；Shared links 小节已于 2026-10-29 被用户删除。caption 里的 Bn / CD8 指向 S3 Fig（原 S5 / S6）。
 - **caption（2026-10-29 Overleaf 改写）**：用户重写 A / B / C 三句，去掉了 50,704、前 15 个组合、四个扇区的数量 / 百分比和 SMR/IVW/Egger 一致 1,258/1,259；上面 “修改” 里记录的 2026-10-25 caption 内容已不在论文中。
 - **注意**：Bn / CD8 的方法重叠已放进 S3 Fig（`figures/Figure_S3.pdf`）；论文内旧的 `figures/Figure_1A.pdf`、`Figure_1B_C.pdf` 已无引用。
-- **hash**：`c23ab1bc59ab`（`figures/Figure_1.pdf` = `Figures_20261027/Figure_1_flat.pdf`；Figma 原文件 `Figure_1.pdf` 的 hash 为 `485ffbcd9a73`）。
+- **hash**：`8c0d08b7fabf`（`figures/Figure_1.pdf` = `Figures_20261102/Figure_1_flat.pdf`；Figma 原文件 `Figures_20261102/Figure_1.pdf` 为 `81411a569c5d`）。caption 未改（2026-10-29 Overleaf 版与新图一致）。
 
 ### Fig 2 — 四个示例 peak–gene link
 - **位置**：主文 Fig 2（`results.tex`，label `fig:examples`），`figures/Figure_2.pdf`，`width=\linewidth, height=0.65\textheight, keepaspectratio`（22×20 in 的图缩放进竖版页）。
 - **含义**：4 行，A = SIDT2（Bn），B = RPL11（CD4），C = ERAP2（CD4），D = ARPC1B（CD4）。每行 4 列：caQTL / eQTL −log10 P 轨道（红三角 = MR 保留的工具变量，金三角 = SMR lead SNP）、MR 散点和 IVW / Egger 线、WNN metacell Spearman、个体层 pseudobulk Spearman。
-- **来源**：`../Scripts/Visualization/Plot2_examples_v2.R` + `Plot2_examples_slurm.sh`；pair 由 `../Scripts/Visualization/Example_pairs.tsv`（`pair_set = Figure_2`）指定；每个 pair 重跑 QTL 对齐 → 去重 → PLINK LD → GLS IVW / Egger；`Visualization.md` 3.2。
+- **来源**（2026-10-29 起 `../Results/Figures/Figures_20261102/Figure_2.pdf`，只出 PDF）：`../Scripts/Visualization/Plot2_examples_v2.R` + `Plot2_examples_slurm.sh`；pair 由 `../Scripts/Visualization/Example_pairs.tsv`（`pair_set = Figure_2`）指定；每个 pair 重跑 QTL 对齐 → 去重 → PLINK LD → GLS IVW / Egger；`Visualization.md` 3.2。
 - **修改**：项目内由上一版 6 页 `Fig2_selected` 改为 1 页 4 行，行标签 A–D；论文内不改画面。
 - **引用**：**2026-10-29 起正文无引用**（原 Shared links 小节及四个例子的描述被用户删除；float 仍在 A common analysis set 小节）。
 - **caption（2026-10-29 Overleaf 改写）**：按列说明 4 列内容（caQTL/eQTL 轨道、MR 拟合 + SMR/IVW/Egger/Causal Joint p 值、80 个 WNN metacell、个体层 pseudobulk），不再写 A–D 对应的基因名。
 - **版面**（2026-10-23）：`Figures_20261027/Figure_2.pdf` 与论文内副本逐字节一致，未改；受宽度限制（6.5 in），图内文字在竖版页上偏小。
-- **hash**：`f360de84b125`。
+- **2026-10-29 微调**：去掉每行副标题（peak–TSS 距离、MR SNP 数）；行标题细胞类型改为 Bn / CD4 T cell；第一列两条轨间距收紧、列宽 1.3 → 1.2，左上角角标改为红三角 + “N SNPs”；第三列 WNN 回归线由灰色长虚线改为实线（与第四列一致，均为 `lm`）。数值不变（日志对账 IVW β、Egger β、SMR SNP 一致）。caption（用户 Overleaf 版）与新图一致，未改。
+- **hash**：`ae5b94e5c822`（2026-10-29，与 `Figures_20261102/Figure_2.pdf` 逐字节一致；旧版 `f360de84b125`）。
 
-### Fig 3 — GO 富集（BP / MF）
-- **位置**：主文 Fig 3（`results.tex`，label `fig:go`），`figures/Figure_3.pdf`，`width=\linewidth`。
-- **含义**：A = GO Biological Process，B = GO Molecular Function，dotplot；每个 panel 按 DAVID FDR 取前 10 个 term；x = GeneRatio，点大小 = Count，颜色 = p.adj（< 1e-10 截为最深色）。图上标注 A 4,031 个基因、B 4,185 个基因。
-- **来源**：`../Scripts/Visualization/Plot9_GO.R`；输入是 3 个 CT 合并的 MR-Only gene（`../Results/Validation/Valid7_GO/DAVID_input/MROnly_genes_all.txt`，4,509 个）在 DAVID 网站的结果 `DAVID_output/DAVIDChartReport_A1BG_2026-10-19.csv`（只含 GO BP / MF）；`Visualization.md` 3.10。
-- **修改**：由旧 `Fig9_GO_DAVID.pdf` 重画为 13×5.5 in 的 A / B 并排；图中 FDR 一律写 p.adj。论文内不改画面。
+### Fig 3 — GO 富集（BP / MF）+ GRN odds ratio
+- **位置**：主文 Fig 3（`results.tex`，label `fig:go`，第 5 页），`figures/Figure_3.pdf`，`width=\linewidth`（13×11 in）。
+- **含义**：A = GO Biological Process，B = GO Molecular Function，dotplot；每个 panel 按 DAVID FDR 取前 10 个 term；x = GeneRatio，点大小 = Count，颜色 = p.adj（< 1e-10 截为最深色）；图上标注 A 4,031 个基因、B 4,185 个基因。C（2026-10-29 由原 S5 Fig panel B 并入）= 各方法显著（gene 内 BH p.adj < 0.05，比主图的 0.1 严）的 pair 在 CIMA SCENIC+ GRN 中的 odds ratio（2×2 Fisher，背景 = 该 CT 全部 MR pair），每个细胞类型一个小面板（Bn / CD4 T cell / CD8 T cell），浅蓝 / 亮蓝柱（`#A6CEE3` / `#1F78B4`，ColorBrewer Paired）= 细胞类型 eRegulon / 高质量 eRegulon，虚线 OR = 1；上下两行高度比 1 : 1.1；所有比较 Fisher P < 1e-30（最大 1.2e-31）；GRN pair 数 864 / 2,520 / 1,364（CT）、817 / 458 / 382（CT_HQ）。
+- **来源**：`../Scripts/Visualization/Plot9_GO_GRN.R`（2026-10-29 由 `Plot9_GO.R` 和 `Plot_Sup2_GRN.R` 合并，旧脚本已删除）→ `../Results/Figures/Figures_20261102/Figure_3.pdf`（只出 PDF）。A / B 输入：3 个 CT 合并的 MR-Only gene（`../Results/Validation/Valid7_GO/DAVID_input/MROnly_genes_all.txt`，4,509 个）在 DAVID 网站的结果 `DAVID_output/DAVIDChartReport_A1BG_2026-10-19.csv`；C 输入：`../Results/Validation/Valid5_GRN/GRN_sig_counts_by_method.tsv`、`GRN_summary.tsv`（`../Scripts/Validation/Valid5_GRN.R`）；`Visualization.md` 3.7 / 3.10。
+- **修改**：2026-10-29 上行 A / B 不变，下行加 C（原 S5 panel A 不再画，S5 Fig 删除）；C 的样式改成与 GO panel 一致（字号 10、标题 / 副标题、图例在上），细胞类型标签用 `CELL_LAB`；数值与原 S5 一致。caption 加 C 句（取自原 S5 caption），标题改为 “GO enrichment summaries and overlap with the CIMA regulatory network.”；`results.tex` 末尾 TODO 的 `\nameref{S5_Fig}` 改为 `Fig~\ref{fig:go}C`。
 - **待确认**：图上 4,031 / 4,185 与输入 4,509 的关系（推测是 DAVID 识别的基因数，未核实）；背景集、DAVID 版本、term 筛选规则要写进 Methods。2026-10-29：用户在 Methods “Gene ontology analysis” 写的是 clusterProfiler `gseGO`（GSEA），与本图的 DAVID 来源不一致，待用户核对；caption 去掉了色标截断（≤1e-10）和 “remain to be documented” 句。
-- **版面**（2026-10-23）：`Figures_20261027/Figure_3.pdf` 与论文内副本逐字节一致，未改。
-- **hash**：`0d10d08a12c3`。
+- **hash**：`8b2173494e61`（2026-10-29，C 加高 + 换色后，与 `Figures_20261102/Figure_3.pdf` 逐字节一致；旧版 `0d10d08a12c3`）。
 
 ### Fig 4 — S-LDSC 与 GWAS 重叠的位点示例
-- **位置**：主文 Fig 4（`results.tex`，label `fig:disease`，第 7 页），`figures/Figure_4.pdf`（2026-10-23 起只有 1 页）。
+- **位置**：主文 Fig 4（`results.tex`，label `fig:disease`，第 6 页），`figures/Figure_4.pdf`（1 页，24×11.5 in）。
+- **2026-10-29 微调**（`Figures_20261102/Figure_4.pdf`，只出 PDF）：panel A 加高（3.3 → 4.5 in），MR-Only 柱由紫红改为亮蓝 `#1F78B4`；panel B 加入原 S4 的 GNAS（CD8 T cell，chr20:59254001-59254502，IBD / CD），一行 5 个 pair，例子之间更紧凑，去掉每个 pair 顶部 Gene / Peak 文字，显著 link 统一红色，底部细胞类型改为 Bn / CD4 T cell / CD8 T cell。S4 Fig 删除。`results.tex`：例子句加 “and GNAS in CD8 T cells”，caption 的 “Red/blue links indicate positive/negative effects” 改为 “Significant links are drawn in red”。
 - **含义**：A = S-LDSC enrichment，3 个 CT 合并（Combined）的 MR-Only peak vs 全部候选 peak，9 个 GWAS（AS、CD、IBD、RA、SLE、MS、T1D、Asthma、PBC）；MR-Only = IVW / Egger / SMR 任一 FDR < 0.1 且 WNN、Pseudobulk 都不显著的 link 的 peak（hg19，两侧各扩 500 bp，baselineLD）；柱上 `*` 标 enrichment raw P < 0.1，不画 s.e.。B = 4 个位点：RGL2（Bn）、ERBB3、POLR2E、UBAC2（CD4；peak 内 2 个 GWAS SNP，均为 asthma），每个位点顶部写 Gene / Peak（hg38 坐标），底部写 细胞类型 | GWAS 性状，中间是 Gene / SNPs / Peak / 5 个方法的 link / 分段 x 轴；紫色菱形 = GWAS SNP，红 / 蓝 link = 正 / 负效应，虚线 = 不显著，星号 = p.adj < 0.05 / 0.01 / 0.001。
 - **来源**：`../Scripts/Visualization/Plot10_Combined.R` + `Plot10_Combined_slurm.sh`；panel A 数据 `../Results/Validation/Valid2_SLDSC/SLDSC_all.tsv`；panel B 的 pair 来自 `../Results/Validation/Valid6_GWAS/GWAS_MRonly_overlap.tsv`；`Visualization.md` 3.9，`Pipeline.md` 3.2 / 3.6。
 - **修改**：项目内由 Fig5 的 Combined 页和 Fig8 的单 pair 位点图合并而成（原 Fig10，改名 Figure_4）；panel B 行名只在最左列写一次，弧线旁标星号；pair 每页 4 个，共 3 页。**2026-10-23 重画 panel B**：去掉页底说明（星号、红 / 蓝、线宽 ∝ −log10 p.adj、灰虚线）和黑色边框，改成相邻 pair 之间浅灰细竖线；顶部 `Gene: … Peak: …`，底部 `CT | GWAS trait`；左侧行名放大；正文的 GNAS (CD4) 与 S7 的 UBAC2 (CD4) 互换。去掉的解释文字已写进论文 Fig 4 caption（`results.tex`）和 S7 / S8 caption。项目内输出拆成 `Figure_4.pdf`（第 1 页，正文）和 `Figure_S4.pdf`（2 页 = S4.1 / S4.2，补充）；论文内 Figure_4.pdf 放主文，Figure_S4.pdf 的第 1 / 2 页放 S7 / S8 Fig（补充图编号本步未改）。
 - **2026-10-23 重画 panel A**：由 9 个独立 y 轴的小面板改为单个面板，9 个 GWAS 共用同一个 y 轴，GWAS 名写在 x 轴，每个 GWAS 的 MR-Only / All peaks 两根柱紧贴（数据、星号标准不变，仍是 Combined 3 个 CT）；`results.tex` Fig 4 caption 的 A 句加入 “for each GWAS trait, shown on a common y axis”。panel B 不变。
 - **caption（2026-10-29 Overleaf 改写）**：A 句写明星号 = p < 0.1；B 只保留轨道 / 颜色 / 线宽 / 星号说明，去掉疾病缩写表、四个位点列表、位点标题说明和 “//” 轴断说明。正文只剩 S-LDSC 小节的两句（引用 Fig 4A、4B），原 GWAS 小节（`res:gwas`）已删除。
 - **待确认**：MR-only 选择规则现写在 Methods “Heritability enrichment analysis from S-LDSC”（IVW/Egger/SMR 任一 p.adj < 0.1 且两个 marginal 都不显著）；项目文档的说法如上，写定前要用代码核对。
-- **hash**：`58fa3582037e`（`Figure_4.pdf`，2026-10-23 重画 panel A，与 FIG 逐字节一致）。
+- **2026-10-29（二）**：panel A 去掉 Asthma 和 PBC（用户决定不再展示；S-LDSC 仍跑了 9 个 GWAS），剩 AS、CD、IBD、RA、SLE、MS、T1D 七个；`results.tex` 的 “across nine GWAS” 改为 “seven”。panel B 未改（ERBB3、UBAC2 底部仍写 Asthma）。
+- **hash**：`341ceb9b3e03`（2026-10-29，与 `Figures_20261102/Figure_4.pdf` 逐字节一致；之前 `c6b0f00e1a6a`、`58fa3582037e`）。
 
 ### S1 Fig — null-SNP 诊断
 - **位置**：Supporting（`supplementary.tex`，label `fig:supp-qc`；正文用 `\nameref{S1_Fig}`），`figures/Figure_S1.pdf`，`width=\linewidth`（9.5×4.8 in）。
 - **含义**：2 个 panel：A = caQTL 与 eQTL z 的 pair 内相关 ρ̂（按 pair 内共享 null SNP 数分组），B = 相关性检验的 p 值；每组 3 根并排箱子 = Bn / CD4 / CD8（紫 / 绿 / 橙）；虚线 = ρ = 0 和 p = 0.5。各 CT 的全局 ρ / P 写在图例里；pair 数（547,452 / 1,051,953 / 686,829）和 SNP–pair 观测数（17,074,938 / 33,263,695 / 21,537,822）写在 caption。
 - **来源**：`../Scripts/Visualization/Plot_Sup1_OneSampleMR.R`；输入 `../Results/QC/1_OneSampleMR/<CT>_pair_corr.tsv.gz` 和 `<CT>_global_rho.tsv`；上游 `../Scripts/QC/QC1_1_OneSampleMR_prune.R`、`QC1_2_OneSampleMR.R`；说明 `Pipeline.md` 4.1，`Visualization.md` 3.11。
 - **修改**：项目内由旧的每 CT 3 页 PDF 合并为 1 页（原 Sup1_OneSampleMR）；**2026-10-23 重画**：原 3 行 × 2 列（panel A–F，每 CT 一行）合并为 2 个 panel，三个细胞类型在同一个 panel 内并排，换 Dark2 配色，去掉每个箱子的 n 和行标题，说明移到 caption（旧版备份在 `../tmp/Plot_S1_test/old_20261027/`）；数据和分组不变（各组 pair 数、中位数与旧图一致）。方法：hg38 面板 LD pruning（500 kb / 50 / r² 0.1，MAF 0.01），两边 nominal P > 0.05，共享 SNP，slope 差 ≤ 1e-3 去重，ρ̂ 仅对 SNP 数 > 2 的 pair 计算。论文内不改画面；caption 改为 A / B 两个 panel。
+- **2026-10-29**：图例细胞类型名改为 Bn / CD4 T cell / CD8 T cell（`CELL_LAB`），其余不变；改为 `Figures_20261102/Figure_S1.pdf`（只出 PDF）；caption 不变。
 - **待补**：2026-10-29 用户删除了 Methods “Null-SNP diagnostic” 小节，S1 Fig 目前正文无引用、Methods 无对应文字。
-- **hash**：`92e1b359ae5a`（与 FIG 逐字节一致）。
+- **hash**：`c0aa5df5b020`（2026-10-29，与 `Figures_20261102/Figure_S1.pdf` 逐字节一致；之前 `92e1b359ae5a`）。
 
 ### S2 Fig — MR-Egger 的 flip 前后对比（Bn / CD4 / CD8，原 S2 / S3 / S4 Fig 合并）
 - **位置**：Supporting，label `fig:supp-flip`（原 `fig:supp-flip-bn/-cd4/-cd8` 已删除），`figures/Figure_S2.pdf`（单页，13×9.6 in），`width=\linewidth`。
@@ -119,32 +122,24 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 - **来源**：`../Scripts/QC/QC2_2_FlipPoints_plot.R` + `_slurm.sh`；上游全基因组扫描 `QC2_1_FlipScan.R`（176,545 个 pair，不 flip 的 Egger 在 gene 内 BH，flip 版与正式表一致）；候选挑选 `QC2_1_FlipScan_select.R`（不 flip p.adj < 0.05 且 flip 后 ≥ 0.1：Bn 700 / CD4 1,763 / CD8 1,056；其中 SNP 数 ≥ 50 的 187 / 507 / 305 个另存 `FlipScan_candidates_nsnp50.tsv`，大差别例子从这里挑）；数值 `../Results/QC/2_FlipPoints/FigureS2_estimates.tsv`；说明 `Pipeline.md` 4.2。
 - **修改**：项目内由 3 页（每 CT 一页，上下两个 pair、左右 flip 前后）重排为单页 3 × 4，只出 `Figure_S2.pdf` + `Figure_S2.svg`（旧 3 页版和旧估计表备份在 `../tmp/QC2_FlipPoints_test/old_20261027/`）。论文内一个 float，caption 写明行 / 列含义、SNP 数、线和符号。2026-10-23 补充图重新编号：S2–S4 合并为 S2 后，原 S5 / S6 / S7 顺延为 S3 / S4 / S5。
 - **引用**：目前只有 `results.tex` 末尾 TODO（`\nameref{S2_Fig}`）；Methods 的 “Allele-orientation sensitivity of MR-Egger” 小节 2026-10-29 已被用户删除，正文还没写。
-- **panel 字母**（2026-10-23）：每个 peak–gene pair 一个字母，按行从左到右：A SIDT2、B PIGX（Bn），C RPL11、D PDE4DIP（CD4），E LCLAT1、F KLRC3（CD8）；字母画在每个 pair 标题行的左侧。caption 同步写 A–F。
-- **hash**：`723913309d81`（`Figure_S2.pdf`，与 FIG 逐字节一致）。
+- **panel 字母**（2026-10-29 起）：只有两个 panel，A = 左半（差别小：SIDT2 / RPL11 / LCLAT1），B = 右半（差别大：PIGX / PDE4DIP / KLRC3），字母在两列左上角（原为每个 pair 一个字母 A–F）。小图标题改为 “No flipping” / “Flipping”；不再单独标 SMR lead SNP（金三角去掉，所有 SNP 同为红三角）；行名 Bn / CD4 T cell / CD8 T cell。改为 `Figures_20261102/Figure_S2.pdf`（只出 PDF，job 20342115，数值不变）。caption 改为 A / B 结构，金三角一句改为 “Red triangles are SNPs”。
+- **hash**：`21cbfe159813`（2026-10-29，与 `Figures_20261102/Figure_S2.pdf` 逐字节一致；之前 `723913309d81`）。
 
-### S3 Fig — Bn / CD8 的方法重叠与方向比较（原 S5 / S6 Fig 合并）
-- **位置**：Supporting，label `fig:supp-bn-cd8`（原 `fig:supp-bn` / `fig:supp-cd8` 已删除；正文用 `\nameref{S3_Fig}`），`figures/Figure_S3.pdf`（单页，15×11 in），`width=\linewidth`。
-- **含义**：A = Bn（上），B = CD8（下）（2026-10-23 加 panel 字母，每个细胞类型一个，画在每行左上角；`Plot1_MRresults.R` 默认不再重写 `Figure_1B_C`）；每个 CT 一行：左 UpSet（前 25 个显著组合，6 个方法，p.adj < 0.1，右侧条形图 “Significant pairs”），右环形图（六方法都显著的 pair：IVW 方向与两个 marginal 相关方向的关系，中心 = n 和 SMR / IVW / Egger 内部方向一致比例）。图内没有 A / B 字母，上下由 caption 说明。数字：六方法都显著 Bn 469 / CD8 759；一致比例 75% / 74%。
-- **来源**：`../Scripts/Visualization/Plot1_MRresults.R`（同 Fig 1B–C，一个脚本同时出 `Figure_1B_C`（CD4）和 `Figure_S3`（Bn + CD8）；`Visualization.md` 3.1）；`../Results/Figures/Figures_20261027/Figure_S3.pdf`。
-- **修改**：2026-10-23 图本身未改，直接复制为 `figures/Figure_S3.pdf`；论文内由原来的两个 float（用旧 `Figure_1B_C.pdf` 第 1 / 3 页）合并为一个 float。S3 / S4 Fig 合并后，原 S7 → S5（再顺延）：最终补充图编号为 S1–S4。
-- **引用**：Results 的 A common analysis set、Shared links 小节和 Fig 1 caption（三处 `\nameref{S3_Fig} and \nameref{S4_Fig}` 改为 `\nameref{S3_Fig}`）。
-- **注意**：论文内 `figures/Figure_1A.pdf`、`figures/Figure_1B_C.pdf`（旧版）已没有任何引用（Fig 1 用 `Figure_1.pdf`，S3 用 `Figure_S3.pdf`）；暂留未删。
-- **hash**：`e93ab3b469f0`（`Figure_S3.pdf`，加字母后重生成，与 FIG 逐字节一致）。
+### S3 Fig — Bn / CD8 T cell 的方法重叠与方向比较（原 S5 / S6 Fig 合并）
+- **位置**：Supporting，label `fig:supp-bn-cd8`（正文用 `\nameref{S3_Fig}`），`figures/Figure_S3.pdf`（单页，9×7.2 in），`width=\linewidth`（补充文件第 4 页）。
+- **含义**：A = Bn（上），B = CD8 T cell（下），panel 字母画在每行左上角。每行：左 UpSet（前 15 个显著组合，6 个方法，p.adj < 0.1；上方 y 轴 “Size”，右侧条形图 “Significant pairs”）；右环形图（六方法都显著的 pair：IVW 方向与两个 marginal 相关方向的关系；中心 = n 和 SMR / IVW / Egger 方向一致比例；底部图例）。两侧标题（细胞类型 / “Effect direction” + 两行说明）在同一行。数字：六方法都显著 Bn 469 / CD8 759；IVW 与两个 marginal 都一致 75% / 74%；三个 MR 一致 469/469、758/759。
+- **来源**：`../Scripts/Visualization/Plot1_MRresults.R`（同 Fig 1B–C；`Visualization.md` 3.1）→ `../Results/Figures/Figures_20261102/Figure_S3.pdf`（只出 PDF）。
+- **修改**：2026-10-29 重画并复制为 `figures/Figure_S3.pdf`：UpSet 由前 25 个组合改为前 15 个，字号放大，y 轴名改 “Size”，柱顶数字 45°；环形图恢复底部图例和中心文字；细胞类型标签改为 Bn / CD8 T cell；版式与 `Figure_1B_C` 相同。caption 重写（15 个组合、柱的含义、图例和中心文字说明，“CD4 T cell comparison … Fig 1B–C”）。（更早：2026-10-23 由两个 float 合并为一个。）
+- **引用**：Fig 1 caption（`\nameref{S3_Fig}`）。
+- **注意**：论文内 `figures/Figure_1A.pdf`、`figures/Figure_1B_C.pdf`（旧版）已没有任何引用；暂留未删。
+- **hash**：`c8ba628007de`（与 `Figures_20261102/Figure_S3.pdf` 逐字节一致）。
 
-### S4 Fig — 更多 GWAS 重叠位点（原 S7 / S8 Fig 合并；因 S2–S4、S5–S6 合并而顺延为 S4）
-- **位置**：Supporting，label `fig:supp-disease-2`（原 `fig:supp-disease-3` 已删除），`figures/Figure_S4.pdf`，单页，`width=\linewidth`（24×18.7 in，宽 6.5 in 时约 5.1 in 高）。2026-10-23 起；之前是 S7 / S8 两个 float，用 `Figure_4.pdf` 第 2 / 3 页。
-- **含义**：panel A 与 Fig 4A 相同；S7 的 panel B = GLS2（CD8，T1D / asthma）、GNAS（CD4，IBD / Crohn's；2026-10-23 与正文 UBAC2 互换）、UBA7（Bn，IBD）、TMBIM1（CD8，Crohn's）；第二行 = GNAS（CD8，IBD / Crohn's）、ERAP1（Bn，Crohn's）、TMPRSS3（CD4，T1D）、ZSCAN16（Bn，RA）。
-- **来源 / 修改**：同 Fig 4（版式同 2026-10-23 的新 panel B）；项目内 `Figure_S4.{pdf,svg}` 为单页，panel A 同 Fig 4A，panel B 两行 × 4 个 pair（共 8 个），页高 18.7 in；caption 写明两行的 pair 和符号说明。`sections/supporting_info.tex` 删除 S8 Fig 条目，`results.tex` 的 `\nameref` 只剩 S7；`supplementary.tex` 的 “S1–S8 Figs” 改为 “S1–S7 Figs”。
-- **2026-10-23**：panel A 随 Fig 4A 重画（共用 y 轴，GWAS 名在 x 轴，两根柱紧贴），panel B 不变；caption 不变（“repeated from Fig 4A”）。
-- **hash**：`7464e354d049`（`Figure_S4.pdf`，与 FIG 逐字节一致）；`Figure_4.pdf` 为 `58fa3582037e`。
+### S4 Fig — 已删除（2026-10-29）
+- 原为更多 GWAS 重叠位点（panel A 同 Fig 4A，panel B 8 个 pair）。2026-10-29 按用户要求：其中 GNAS（CD8 T cell）并入 Fig 4B，其余不再展示；`supplementary.tex` 的 float、`supporting_info.tex` 的条目和 `figures/Figure_S4.pdf` 已删除，补充图现为 S1–S3。旧图在 `../Results/Figures/Figures_20261027/Figure_S4.pdf`。
 
-### S5 Fig — 与 CIMA SCENIC+ 调控网络（GRN）的重叠（2026-10-23 新增）
-- **位置**：Supporting，label `fig:supp-grn`（正文用 `\nameref{S5_Fig}`，目前只在 `results.tex` 末尾 TODO 里；`methods.tex` 的 GRN 小节 2026-10-29 已被用户删除），`figures/Figure_S5.pdf`，`width=\linewidth`（10×9.5 in）。
-- **含义**：A = 各方法显著（gene 内 BH p.adj < 0.05，比主图的 0.1 严）且在 GRN 中的 pair 数（行 = 细胞类型 eRegulon / 高质量 eRegulon，列 = Bn / CD4 / CD8，柱 = 6 个方法）；B = 显著 pair 在 GRN 中的 odds ratio（2×2 Fisher，背景 = 该 CT 全部 MR pair），CT 与 CT_HQ 并排，虚线 OR = 1。所有比较 Fisher P < 1e-30。与 MR 重叠的 GRN pair 数：CT 864 / 2,520 / 1,364，CT_HQ 817 / 458 / 382（eRegulon 数 47 / 40 / 33 和 29 / 2 / 8）。OR 范围：CT 集 2.3–9.6（Bn）、2.8–7.2（CD4）、3.4–7.5（CD8），CT_HQ 集更高（CD4 / CD8 的 SMR 达 10.8 / 11.6）；WNN 的 OR 最低，SMR 最高。
-- **来源**：`../Results/Validation/Valid5_GRN/`（`../Scripts/Validation/Valid5_GRN.R`，2026-10-09 跑，MR 表此后未变）→ `../Scripts/Visualization/Plot_Sup2_GRN.R`（旧版 `Plot7_GRN.R` 的 `Fig7_GRN.pdf` 为 14×11 in 的 facet 图，已重画）；`Visualization.md` 3.7，`Pipeline.md` 3.5。
-- **修改**：新图，不是旧图复用；p.adj 写法、方法配色与全文一致；GRN 集合用浅 / 深灰蓝（避免与 6 个方法的配色冲突）；两个 panel 的三列对齐。
-- **待补**：Results / Methods 文字（`results.tex` 末尾 TODO；Methods 目前没有 GRN 小节，写时要对照 `Valid5_GRN.R` 并补 CIMA GRN 的来源）；eRegulon 集合、背景、阈值要写进 Methods。
-- **hash**：`09621f1760ed`（`Figure_S5.pdf`，与 FIG 逐字节一致）。
+### S5 Fig — 已删除（2026-10-29）
+- 原为与 CIMA SCENIC+ GRN 的重叠（A = 显著且在 GRN 中的 pair 数，B = odds ratio；2026-10-23 新增）。2026-10-29 按用户要求：B 并入主文 Fig 3C，A 不再画；`supplementary.tex` 的 float、`supporting_info.tex` 的条目和 `figures/Figure_S5.pdf` 已删除，补充图现为 S1–S4（S5 是最后一张，其余编号不变）。旧图在 `../Results/Figures/Figures_20261027/Figure_S5.pdf`。
+- **待补**（转到 Fig 3C）：Results / Methods 文字（Methods 目前没有 GRN 小节，写时要对照 `Valid5_GRN.R` 并补 CIMA GRN 的来源；eRegulon 集合、背景、阈值要写进 Methods）。
 
 ### S1 Table — 超几何富集 p 值
 - **位置**：Supporting，`tables/supplementary_hyper_p.tex`，label `tab:supp-hyper-p`。2026-10-29 起正文无引用（Results 的相关句和 Methods “Regulatory-reference enrichment” 被用户删除；新的 Methods “Hypergeometric test” 未引用）。
@@ -160,21 +155,21 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 - **数字（2026-10-29 起不在正文中）**：SMR 在 18 个 CT / 参考组合中的 17 个 fold 最大，CD4 PCHiC 是 IVW 最大；Bn 中 SMR 与 WNN 的 fold：FANTOM5 6.18 vs 3.56，HiChIP 4.46 vs 3.08。
 - **hash**：来源同上。
 
-### S3 Table — MR 特异 TF motif
-- **位置**：Supporting 末尾，`tables/supplementary_motif.tex`，label `tab:supp-motif`，`longtable`（竖版，`\scriptsize`，跨页重复表头，按细胞类型分组的整行标题）。目前正文只有 TODO 引用。
-- **含义**：13 个 MR 特异 motif（Bn 10 / CD4 2 / CD8 1）。2026-10-23 起“MR 特异”= IVW / MR-Egger / SMR 任一 Signac p.adj < **0.01** 且 fold > 1，同时 WNN 和 Pseudobulk 都不显著（p.adj ≥ 0.05），并且有明确的文献解释（CCT 不参与筛选，只列出）。Valid3 结果里的完整定义（p.adj < 0.05）仍得到 47 个（Bn 23 / CD4 14 / CD8 10）：其中 4 个没有明确解释（Bn CREB3L4、Bn Pax2、CD4 ZNF460、CD8 HINFP），其余 30 个 MR p.adj ≥ 0.01，共 34 个被去掉（见 `Table_3.xlsx` 的 `Excluded` sheet）。阈值对比（去掉无解释行后）：0.05 → 43、0.02 → 22、0.01 → 13、0.005 → 5、0.001 → 1。Motif 富集：Signac + JASPAR2020 CORE vertebrates，前景 = 各方法 FDR < 0.1 的 peak，背景从全部候选 peak 中按 GC 和可及性（log1p count）匹配 5 万个。
-- **来源**：`../Results/Validation/Valid3_Motif/Motif_MR_specific.tsv`（统计量，`Valid3_Motif_2_summary.R`）+ `Motif_MR_specific_literature.tsv`（文献注释；`../tmp/Valid3_Motif_lit/` 起草、`curate.py` 去掉限定语，86 个 PMID 均用 NCBI eutils 核对过题目、年份和摘要）+ `logos/<ID>.png`（`Valid3_Motif_3_table.R`，PNG 里标题带 TF 名和 Motif ID）；说明 `Pipeline.md` 3.3。完整版（含 % obs / % bg / fold / FDR 高亮 / immune relevance / 完整解释 / Excluded）在 `../Results/Figures/Figures_20261027/Table_3.xlsx`（hash `aeab6d63fc36`）。
-- **进入论文前的修改**：由 `../tmp/Manuscript_tables/make_motif_table.py` 从两个 TSV 生成 `.tex`（筛选规则与 `Table_3.xlsx` 相同，两边的 motif 集合已核对一致；PMID 取自 `reference_note`，不手抄）。相对 Table_3.xlsx：**删除** TF motif 名、Motif ID、Immune relevance 三列和 % obs / % bg / fold，只留各方法的 p.adj；MR 一侧 p.adj < 0.01 且 fold > 1 的数值加粗，PMID 只作文本（不进 `references.bib`）。**版式（2026-10-23）**：去掉 Cell type 列，改为按 CT 分组的整行标题（`Bn (10 motifs)` 等）；logo 宽由 0.78 in 放大到 1.74 in（约 2.2 倍，高约 0.93 in），p.adj 六列各 0.4 in，interpretation 列左对齐、宽 1.4 in；表只保留用到的 13 个 logo（`figures/motif_logos/`，其余副本已删，可从 `../Results/Validation/Valid3_Motif/logos/` 重新复制）。表下说明写明筛选定义和 **Reference (PMID) 的来源**：按 TF 在 PubMed 中检索同一或相关免疫细胞类型、免疫介导疾病中的功能文献，PMID 逐个核对 PubMed 记录（题目、年份、摘要）——这段只写了文档里有记录的流程，具体检索词没有保存，**待用户确认措辞**。
-- **注意**：`Table_3.xlsx` 同样是 13 行（`Motif_table`、`Details`）+ `Excluded`（34 行）三个 sheet；logo 放大到 1.8 × 0.96 in。剩下的 13 个里 Creb5、CENPB、POU3F1 的 immune relevance 是 Weak（解释句仍明确）。页脚写的是“Signac 报告的 adjusted p-value”；p.adj 的校正方式（项目文档写 BH）还没用 Signac 源码核对。
-- **待补**：Results 的 motif 小节还没写。2026-10-29 用户新写的 Methods “Motif enrichment analysis” 用的是 p.adj < 0.05 且 fold > 1，而本表用 p.adj < 0.01（并按文献解释筛选），两者待统一。
+### Table 1 — MR 特异 TF motif（正文；2026-10-29 前为 S3 Table）
+- **位置**：正文 `sections/results.tex` 末尾 TODO 段之后 `\input{tables/motif}`，`tables/motif.tex`，label `tab:motif`，普通 `table` 浮动体（`adjustwidth` 左扩 0.25 in，`\scriptsize`），正文第 7 页；引用只有 TODO 里的 `Table~\ref{tab:motif}`。`main.tex` 的 graphicspath 加 `figures/motif_logos/`。
+- **含义**：6 行 = 每个细胞类型 MR p.adj 最小的 2 个 MR 特异 motif（IVW / MR-Egger / SMR 中 fold > 1 的最小 p.adj 排序，跳过无明确解释的行）：Bn ATF3 (1.5e-4)、FOSL2::JUND(var.2) (1.1e-3)；CD4 T cell MNT (2.9e-3)、CENPB (3.6e-3)；CD8 T cell POU3F1 (6.3e-3)、TEF (0.010)。MR 特异 = MR 一侧任一 p.adj < 0.05 且 fold > 1，WNN / Pseudobulk 都不显著（Valid3 共 47 个）。列：logo | 6 个方法 p.adj（MR 三个与 CCT 在 < 0.05 且 fold > 1 时加粗）| Brief interpretation & link。
+- **单篇文献**（2026-10-29，用户要求每个 motif 只留一篇、解释改写成只基于这一篇；6 个 PMID 用 PubMed 核对过题目和摘要）：ATF3 28414328（Nus 2017 Nat Med）、FOSL2::JUND 28566276（Ubieta 2017 JEM）、MNT 16507988（Dezfouli 2006 MCB）、CENPB 8527711（Parveen 1995 JGH）、POU3F1 36738683（Wu 2023 Int Immunopharmacol）、TEF 15665112（Inukai 2005 Blood）。链接 `\url{https://pubmed.ncbi.nlm.nih.gov/<PMID>/}`，不进 `references.bib`。
+- **来源**：`../Results/Validation/Valid3_Motif/Motif_MR_specific.tsv`（统计量）+ `Motif_table_main.tsv`（6 行的解释和 PMID，人工整理，单一来源）+ `logos/<ID>.png` → `../tmp/Manuscript_tables/make_motif_table.py` 生成 `.tex`；xlsx 完整版 `../Results/Figures/Figures_20261102/Table_1.xlsx`（`Valid3_Motif_3_table.R`，job 20342179；`Motif_table` 6 行 + `Details` 6 行原注释和全部文献 + `Excluded` 41 行；hash `537c47ae7b9f`）；说明 `Pipeline.md` 3.3。`figures/motif_logos/` 只留 6 个 PNG。
+- **注意**：CD8 的两个解释证据较弱（POU3F1 的文献是 SLE CD4⁺ T 细胞，TEF 是造血祖细胞），CENPB 是自身抗原而非 T 细胞功能；PLOS 正文表格一般要求纯文本，表内 logo 投稿时可能需要改为 Figure 或去掉。
+- **待补**：Results 的 motif 小节还没写；Methods “Motif enrichment analysis” 的 `(table number)` 占位可改为 Table 1。
 
-### S4 Table — 三个细胞类型的数据概览
-- **位置**：Supporting 末尾（S3 Table 之后），`tables/supplementary_data_overview.tex`，label `tab:supp-data`，竖版 `table`（booktabs，4 列：项目 / Bn / CD4 / CD8，按 B–E 四块分组）；2026-10-29 起正文无引用（用户改写 Methods “Data sources” 后去掉了 `\nameref{S4_Table}`）。
+### S3 Table — 三个细胞类型的数据概览（2026-10-29 前为 S4 Table）
+- **位置**：Supporting 末尾（S2 Table 之后），`tables/supplementary_data_overview.tex`，label `tab:supp-data`，竖版 `table`（booktabs，4 列：项目 / Bn / CD4 / CD8，按 B–E 四块分组）；2026-10-29 起正文无引用（用户改写 Methods “Data sources” 后去掉了 `\nameref{S4_Table}`）。
 - **含义**：给出分析用到的 Bn / CD4 / CD8 的基本数字：个体数（335 / 372 / 346，同时通过 RNA 和 ATAC 过滤）、scRNA / scATAC 细胞数（及每个体中位数）、pseudobulk 矩阵的基因 / peak 数、eQTL 样本量（405 / 406 / 405）和 caQTL 样本量（385 / 385 / 384）、“至少一个 caQTL 的 peak 数”（P < 1e-8）、候选 pair 漏斗（All_GenePeak → 共享变异 ≥ 3 → 两个边际数据均有 → 去 NA → ivw_sigma2 ≤ 10；最终 40,087 / 85,527 / 50,931 pair，基因 8,149 / 10,701 / 9,427，peak 2,951 / 5,338 / 3,327）、每个 pair 的 IVW 变异数（中位数 22）、WNN 的 80 个 metacell。表注说明三套样本数的区别（QTL 样本量 / pseudobulk 个体数 / WNN metacell）、caQTL 与 eQTL 样本重叠、CIMA 全队列数字（428 人、73 个 L4 类型、±1 Mb、5,051,397 个 MAF > 0.1 变异，引自 CIMA 论文）。
 - **来源**：`../Scripts/Visualization/Table4_DataOverview.R`（slurm：`Table4_DataOverview_slurm.sh`；输出 `../Results/Figures/Figures_20261027/Table_4.xlsx`（单 sheet）+ `Table_4.tsv`（长表））；漏斗数字解析自 `../Scripts/Model/logs/MR_AllPairs_20074030_{0,1,2}.out`，最后一行与 `../Results/MR/<CT>_AllPairs_results.tsv.gz` 的 pair / 基因 / peak 数逐项核对（脚本内 `stopifnot`）。
-- **进入论文前的修改**：`../tmp/Manuscript_tables/make_data_table.py` 从 `Table_4.tsv` 生成 `.tex`（不手抄）。
+- **进入论文前的修改**：`../tmp/Manuscript_tables/make_data_table.py` 从 `Table_4.tsv` 生成 `.tex`（不手抄）。2026-10-29 重新生成：表头改为 Bn / CD4 T cell / CD8 T cell，表注同步；顺带补上 “Gene and peak present in both pseudobulk and WNN data” 一行（40,389 / 86,204 / 51,649；之前 `.tex` 生成于 `Table_4.tsv` 补全该行之前，所以是空的）。
 - **注意**：(1) “peaks with ≥ 1 caQTL at P < 1e-8” 是名义 P 阈值（即选工具变量的阈值），不是 CIMA 论文 FDR 定义的 caPeak，表注已写明；(2) 没有 eGene 数（本地只有名义 P 的汇总统计），如需要要从 CIMA 补充表 S8 取数并标注出处；(3) 表注里的 CIMA 全队列数字来自 `paper_reference/` 的 CIMA 论文，请作者最终核对；(4) Methods “Data sources” 的 TODO 保留（外部 PBMC 引用、协变量、数据获取声明仍缺）。
-- **hash**：`Table_4.xlsx` 见 E 节 / `sha256sum`。
+- **hash**：`Table_4.xlsx` 见 E 节 / `sha256sum`；`Figures_20261102/Table_S3.xlsx`（标题行改为 S3）= `51cafdf77cea`。
 
 ---
 
@@ -183,6 +178,7 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 （这里记录 LaTeX 里**现在有什么**、引用了哪些图表、还有哪些 TODO；CodeX 对 Methods / 公式的科学审阅和段落设计见 `CODEX_METHODS_NOTES.md`。若 CodeX 改过某一节，以实际 `.tex` 为准更新本节。）
 
 状态词：Not started / Outline / Initial draft / Under revision。TODO 数是 `\TODO{}` 的个数（`sections/*.tex` 中 2026-10-29 统计，Overleaf 导入后共 2 个）。
+2026-10-29（导入后）：全文细胞类型名称按 `../CLAUDE.md` 第 1 节统一为 Bn / CD4 T cells / CD8 T cells（results、methods、data_preprocessing、supporting_info、supplementary 和 4 张补充表），其余文字未动。
 2026-10-29 起，各节文字以用户在 Overleaf 上的版本为准（`tmp/Manuscript_overleaf.zip` 原样导入，未改任何文字）；导入前的本地版本备份在 `../tmp/Manuscript_backup_20261029/sections/`。
 
 ### Title Page（`sections/title_page.tex`）— Initial draft
@@ -202,10 +198,10 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 - **Fig 1 caption**（用户改写）：A = 框架（MR 用 caQTL/eQTL；Marginal multiomics 用外部 PBMC metacell；Marginal pseudobulk 用 CIMA 个体；均为 Spearman），B = CD4 UpSet（BH p.adj < 0.1），C = 1,259 个六方法都显著 link 的方向扇区；Bn / CD8 见 S3 Fig。不再写 50,704、扇区数量和 SMR/IVW/Egger 一致比例。
 - **Fig 2 caption**（用户改写）：按列说明（第 1 列 caQTL/eQTL 轨道，第 2 列 MR 拟合与 4 个 p 值，第 3 列 80 个 WNN metacell，第 4 列个体层 pseudobulk）；不再写 A–D 的基因名。**正文目前没有引用 Fig 2**（`fig:examples` 无 `\ref`）。
 - **Selected links are enriched for regulatory-reference support**：只剩一句（列出 6 个参考），不再引用 S1 / S2 Table，也不再有 fold 数字。
-- **GO summaries…**：一句，引用 Fig 3。Fig 3 caption 去掉了色标截断和 “remain to be documented” 句。
-- **MR-only regions show exploratory disease-heritability enrichment**：一句引用 Fig 4A，一句列出 Fig 4B 的 RGL2（Bn）、ERBB3、POLR2E、UBAC2（CD4）。原 “GWAS-overlapping peaks…” 小节（`res:gwas`）已删除，S4 Fig 正文不再引用。
-- **Fig 4 caption**（用户改写）：A 星号 = p < 0.1；B 只写轨道 / 颜色 / 线宽 / 星号说明，去掉了疾病缩写表、位点列表、标题说明和 “//” 轴断说明。
-- **末尾 TODO**：补 S2 Fig（flip 对比）、S5 Fig（GRN）和 S3 Table（MR 特异 motif）的结果文字。
+- **GO summaries…**：一句，引用 Fig 3。Fig 3 caption 去掉了色标截断和 “remain to be documented” 句；2026-10-29 Fig 3 加 panel C（GRN odds ratio，原 S5 Fig B），caption 加 C 句。
+- **MR-only regions show exploratory disease-heritability enrichment**：一句引用 Fig 4A，一句列出 Fig 4B 的 RGL2（Bn）、ERBB3、POLR2E、UBAC2（CD4 T cells）和 GNAS（CD8 T cells，2026-10-29 加入）。原 “GWAS-overlapping peaks…” 小节（`res:gwas`）已删除；S4 Fig 已于 2026-10-29 删除。
+- **Fig 4 caption**（用户改写）：A 星号 = p < 0.1；B 只写轨道 / 颜色 / 线宽 / 星号说明，去掉了疾病缩写表、位点列表、标题说明和 “//” 轴断说明；2026-10-29 颜色句改为 “Significant links are drawn in red”（图中不再分红 / 蓝）。
+- **末尾 TODO**：补 S2 Fig（flip 对比）、Fig 3C（GRN，原 S5 Fig）和 Table 1（MR 特异 motif）的结果文字。
 
 ### Discussion（`discussion.tex`）— Outline
 三条空提纲标题：Principal findings / Complementary biological information / Limitations and future directions（2026-10-29 用户清空内容，删去 “Scope of inference” 条和 TODO）。
@@ -220,7 +216,7 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 9. **Marginal pseudobulk correlations**（label `sec:pseudobulk-correlations`）：CPM + log(1+CPM)，Spearman，`cor.test(exact=FALSE)`，无协变量，gene 内 BH，FDR ≤ 0.1。
 10. **WNN metacell correlations**（label `sec:wnn-correlations`）：外部 PBMC 80 个 metacell，Signac `FeatureMatrix` 重新计数，log(1+x)，Spearman，gene 内 BH，FDR ≤ 0.1。**唯一 TODO**：外部数据描述与引用、WNN 方法引用、metacell 构建细节。
 11. **Causal joint**：CCT 等权合并 IVW / Egger / SMR，给出 T 统计量公式（未引用 `liu2020cauchy`）。
-12. **Motif enrichment analysis**：Signac AddMotifs + JASPAR2020（746 motif），FindMotifs，motif 间 BH，p.adj < 0.05 且 fold > 1；MR 特异定义；`(table number)` 占位。注意：S3 Table 现用 p.adj < 0.01 的定义。
+12. **Motif enrichment analysis**：Signac AddMotifs + JASPAR2020（746 motif），FindMotifs，motif 间 BH，p.adj < 0.05 且 fold > 1；MR 特异定义；`(table number)` 占位。注意：Table 1 为每个 CT 前 2 个（p.adj < 0.05 定义下）。
 13. **Hypergeometric test**：6 个参考资源的描述、liftOver、`phyper(q-1, m, n, k, lower.tail=F)`；多个 `(citation)`。不再写 pooled fold 定义，也不引用 S1 / S2 Table。
 14. **Gene ontology analysis**：写的是 clusterProfiler `gseGO`（GSEA，pos 打分，10–500 基因）；注意 Fig 3 来自 DAVID（`Plot9_GO.R`，见 C 节 Fig 3），两者待用户核对。
 15. **Heritability enrichment analysis from S-LDSC**：MR-only 定义、背景 peak、baselineLD v2.2、1000G EUR、HapMap3、9 个 GWAS 与下载来源；`(Version later)`、`(Later)`；T1D 写成 “T1B”。
@@ -261,3 +257,12 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 - 2026-10-25 | Claude Code | Fig 1 更新到论文：复制用户在 Figma 重新拼好的 `Figure_1.pdf`（B 缩小为前 15 个组合、C 只标两个大扇区）到 `figures/Figure_1.pdf`；`results.tex` 的 Fig 1 caption 的 B / C 重写（见 C 节 Fig 1 条目）；编译通过，第 4 页检查排版正常。S3 Fig 尚未换成新缩小版。
 - 2026-10-25 | Claude Code | Fig 1 透明度拍平：Figma 导出的 `Figure_1.pdf` 含约 158 张带 SMask 的位图，部分 PDF 阅读器显示为黑底；用 Ghostscript（PDF 1.3 兼容、整页 720 ppi 无损）重写为 `Figures_20261027/Figure_1_flat.pdf` 并放入 `figures/Figure_1.pdf`（无 SMask、无透明度；代价：图内文字变为位图，不再可选 / 可搜）。Figma 原文件保留不动。
 - 2026-10-29 | Overleaf（手改）→ Claude Code 导入 | 导入 `tmp/Manuscript_overleaf.zip`（用户在 Overleaf 上只改了文字）：42 个文件中 33 个（`main.tex`、`supplementary.tex`、`references.bib`、全部 `figures/`、`tables/`、`supporting_info.tex`）与本地逐字节一致，未改；只有 `sections/` 下 9 个文件（abstract、acknowledgments、author_summary、data_preprocessing、discussion、introduction、methods、results、title_page）不同，按用户要求逐字节覆盖（文字、拼写、占位一律未改）。10-25 旧导出包与导入前本地 sections 一致，无需合并；导入前版本备份在 `../tmp/Manuscript_backup_20261029/sections/`。TODO 21 → 2。C 节 Fig 1–4、S1/S2/S5 Fig、S1–S4 Table 的引用 / caption 说明和 D 节同步。编译通过：正文 21 页（原 23 页）、补充 11 页，无未定义引用；正文无 overfull，补充仍是原有 13 处 <1 pt 表格 overfull。
+- 2026-10-29 | Claude Code | 细胞类型名称全文统一为 Bn / CD4 T cells / CD8 T cells（`results.tex`、`methods.tex`、`data_preprocessing.tex`、`supporting_info.tex`、`supplementary.tex`；S1 / S2 Table 直接改，S3 / S4 Table 改生成脚本 `../tmp/Manuscript_tables/make_{motif,data}_table.py` 后重生成，S4 Table 顺带补上之前空着的一行；S1 Table `tabcolsep` 2.5 → 2.2 pt 消除新出现的 3.4 pt overfull）。S3 Fig 换成 `Figures_20261102/Figure_S3.pdf`（新版式），caption 重写。Fig 1 待用户 Figma 拼好后更新。编译通过：正文 21 页、补充 11 页，无未定义引用，补充仍只有原有 13 处 <1 pt overfull。注意：Fig 4、S1、S2、S4、S5 图内仍写 Bn / CD4 / CD8，逐张重画时再改。
+- 2026-10-29 | Claude Code | Fig 1 更新到论文：用户在 Figma 拼好的 `Figures_20261102/Figure_1.pdf`（新示意图 + 新 1B–C）含 219 张 SMask 透明位图，按 10-25 的办法用 Ghostscript 拍平为 `Figure_1_flat.pdf`（PDF 1.3、720 ppi 无损；`../tmp/Fig1_flatten/flatten_slurm.sh`），复制为 `figures/Figure_1.pdf`；caption 未改。编译通过（正文 21 页，Fig 1 在第 3 页，无未定义引用、无 overfull）。
+- 2026-10-29 | Claude Code | Fig 2 更新到论文：`Plot2_examples_v2.R` 去掉行副标题、细胞类型标签用 `CELL_LAB`、第一列收紧并改为 “▲ N SNPs” 角标、WNN 回归线改实线、输出 `Figures_20261102/Figure_2.pdf`（只出 PDF）；复制为 `figures/Figure_2.pdf`，caption 未改。编译通过（Fig 2 在第 4 页，无未定义引用、无 overfull）。
+- 2026-10-29 | Claude Code | Fig 3 = GO（A / B）+ GRN odds ratio（C，原 S5 Fig panel B）：`Plot9_GO.R` 与 `Plot_Sup2_GRN.R` 合并为 `Plot9_GO_GRN.R`（旧脚本删除），输出 `Figures_20261102/Figure_3.pdf`，复制为 `figures/Figure_3.pdf`；caption 加 C 句、标题改写；S5 Fig 从 `supplementary.tex` / `supporting_info.tex` 删除，`figures/Figure_S5.pdf` 删除，`results.tex` TODO 的 S5 引用改为 Fig 3C，“S1--S5 Figs” 改为 “S1--S4”。编译通过：正文 21 页（Fig 3 在第 5 页）、补充 10 页，无未定义引用，补充仍只有原有 13 处 <1 pt overfull。
+- 2026-10-29 | Claude Code | Fig 3 微调：panel C 加高（行高比 1 : 0.8 → 1 : 1.1，整图 13×10 → 13×11 in），GRN 两色由暗灰蓝换成 ColorBrewer Paired 浅蓝 / 亮蓝（`#A6CEE3` / `#1F78B4`）；重新复制到 `figures/Figure_3.pdf`，caption 不变（仍是浅 / 深柱）。
+- 2026-10-29 | Claude Code | Fig 4 微调（`Plot10_Combined.R`）：A 加高、MR-Only 亮蓝；B 加入 GNAS（CD8 T cell）成一行 5 个 pair，更紧凑，去掉顶部 Gene / Peak，显著 link 统一红色；只出 `Figures_20261102/Figure_4.pdf`，复制为 `figures/Figure_4.pdf`。S4 Fig 删除（`supplementary.tex`、`supporting_info.tex`、`figures/Figure_S4.pdf`），“S1--S4 Figs” 改为 “S1--S3”。`results.tex` 例子句和 Fig 4 caption 的颜色说明最小修改。编译通过：正文 21 页（Fig 4 在第 6 页）、补充 9 页，无未定义引用，补充仍只有原有 13 处 <1 pt overfull。
+- 2026-10-29 | Claude Code | Fig 4A 去掉 Asthma、PBC（`Plot10_Combined.R` 的 `SL_TRAITS`，7 个 GWAS），重出 `Figures_20261102/Figure_4.pdf` 并复制到论文；`results.tex` “nine GWAS” → “seven GWAS”。Methods 的 S-LDSC 段仍列 9 个 GWAS（用户文字，未改）。
+- 2026-10-29 | Claude Code | S1 / S2 Fig 更新：S1 只改图例细胞类型名（`Plot_Sup1_OneSampleMR.R`）；S2（`QC2_2_FlipPoints_plot.R`）去掉 lead SNP 金三角、小图标题改为 No flipping / Flipping、panel 字母由 A–F 改为 A（左半，差别小）/ B（右半，差别大）、行名用 `CELL_LAB`；两张图只出 PDF 到 `Figures_20261102/`，复制为 `figures/Figure_S1.pdf`、`Figure_S2.pdf`；`supplementary.tex` S2 caption 改为 A / B。编译通过：正文 21 页、补充 9 页，无未定义引用，补充仍只有原有 13 处 <1 pt overfull。
+- 2026-10-29 | Claude Code | Tables：MR 特异 motif 表由 S3 Table 移入正文 Table 1（`tables/motif.tex`，label `tab:motif`，`results.tex` TODO 后 `\input`，TODO 引用改 `Table~\ref{tab:motif}`；`main.tex` graphicspath 加 motif_logos）：每个 CT 取 MR p.adj 最小的 2 个（6 行），每个 motif 一篇文献（PMID 已核对），解释改写并与 PubMed 链接合为 “Brief interpretation & link” 列，去掉 Reference 列；`Valid3_Motif_3_table.R` → `Figures_20261102/Table_1.xlsx`，新增 `Motif_table_main.tsv`。补充表重编号：数据概览 S4 → S3（`supporting_info.tex`、`supplementary.tex` “S1--S3 Tables”，删除 `tables/supplementary_motif.tex`）；`Table_1_2.*` / `Table_4.*` 复制为 `Figures_20261102/Table_S1_S2.*` / `Table_S3.*`。编译通过：正文 23 页（Table 1 在第 7 页）、补充 7 页，无未定义引用，两边都无 overfull（补充原有 13 处 <1 pt overfull 来自旧 motif longtable，随之消失）。
