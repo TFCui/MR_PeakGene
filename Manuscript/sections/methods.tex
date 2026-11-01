@@ -647,15 +647,22 @@ Heritability enrichment analysis was conducted using stratified linkage disequil
  \url{https://pan.ukbb.broadinstitute.org/} (AS), and MS link (Later). For dataset whose genomic location are in hg19, we use liftover in R package rtracklayer (version) to map the location to hg38.   
 
 
+\subsection{Sensitivity analysis: Overlapping samples}
+Let's recall the two fundamental formula of caQTL and eQTL study, which will be the exposure and outcome in the MR framework. For each SNP separately, the marginal associations can be represented as
+\begin{align*}
+X_i &= \mu_{Xj} + \gamma_j G_{ij} + \varepsilon_{ij}^{X}, \\
+Y_i &= \mu_{Yj} + \Gamma_j G_{ij} + \varepsilon_{ij}^{Y},
+\end{align*}
+where \(\mu_{Xj}\) and \(\mu_{Yj}\) are intercepts, and \(\gamma_j\) and \(\Gamma_j\) are the population-level SNP--exposure and SNP--outcome associations, respectively. MR study is usually base on Two-Sample data, where the SNP-exposure estimates and SNP-outcome estimates come from two independent but homogeneous samples. In this ways, the residuals $\varepsilon_{ij}^{X}$ and $\varepsilon_{ij}^{Y}$ are independent. However, in our study, caQTL and eQTL come from the same population, leading to some potential bias. In order to measures of the bias, we do the following sensitivity test for each of cell types separately. 
+
+\noindent We first do the LD pruning (--indep-pairwise 500kb 50 0.1, MAF >= 0.01) on the all available SNPs in the caQTL data. We further select the insignificant SNPs under the null (caQTL nominal p > 0.5, eQTL nominal p > 0.5). The marginal associations are under the null, there is no evidence to prove the marginal associations ($\gamma_j$ and $\Gamma_j$) are nonzero values. Therefore, we can use the correlation of Z scores to approximate the correlation of residuals:  
+
+\begin{equation*}
+z_{Xj} = \frac{\hat{\gamma}_j}{s_{Xj}}, \qquad z_{Yj} = \frac{\hat{\Gamma}_j}{s_{Yj}}.
+\end{equation*}
 
 
-
-
-
-
-
-
-
+\noindent We calculate the whole-genome correlations of $z_{Xj}$ and $z_{Yj}$ for all SNPs for each cell types. And we also calculate the correlation of $z_{Xj}$ and $z_{Yj}$ for each peak-gene pairs with at least three SNPs after LD pruning. We show the box-plot of correlation and P values (Figure S1)
 
 
 

@@ -40,7 +40,12 @@ progress live in each tool's own notes file (see Roles).
    needs (section D).
 2. Inspect the relevant LaTeX sections and `main.tex`.
 3. Verify which version is current, including any newer Overleaf revisions;
-   do not overwrite newer work with an older local copy or ZIP.
+   do not overwrite newer work with an older local copy or ZIP. The server is
+   linked to Overleaf by git: run `bash tmp/overleaf_sync.sh status` (from the
+   project root) to see whether Overleaf has newer commits, and `pull` before
+   editing if it does. `push` changes the user's Overleaf project, so run it
+   only when the user explicitly asks. Details, conflict handling and rebuild
+   steps: section F of `Notes_Claude_Code.md`.
 4. Continue from the actual files, not solely from conversation history.
 5. When finished, update your own notes file:
    - Claude Code: a figure or table added, replaced, or changed -> its entry in

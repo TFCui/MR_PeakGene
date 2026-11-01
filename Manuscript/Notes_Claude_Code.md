@@ -1,8 +1,8 @@
 # MR_Peak_Gene 论文笔记（Claude Code）
 
-最后更新：2026-10-23。本文件是 **Claude Code 的笔记**：论文的概述、期刊要求、图表来源台账（C）、各章节的 LaTeX 现状（D）和 Claude Code 的更新记录（E）。工作规则见同目录 `AGENTS.md`。
+最后更新：2026-11-01。本文件是 **Claude Code 的笔记**：论文的概述、期刊要求、图表来源台账（C）、各章节的 LaTeX 现状（D）和 Claude Code 的更新记录（E）。工作规则见同目录 `AGENTS.md`。
 **分工**：Claude Code 负责整理 LaTeX、修改格式、检查交叉引用、编译论文，维护本文件；CodeX 负责阅读 Methods、检查公式、讨论科学逻辑、拟定段落结构，记录在 `CODEX_METHODS_NOTES.md`（按论文章节组织）。两边互相读对方的文件，各自只写自己的。
-Overleaf 导出不含这些 md。**两个根文档**：`main.tex`（正文，pdfLaTeX + BibTeX）和 `supplementary.tex`（补充图表，独立编译成 `supplementary.pdf`，pdfLaTeX）；本地一次编译两个：`../tmp/build_ms.sh`（`bash -l`）。Overleaf 里一次只能编译一个根文档，要编译补充文件时在 Menu → Main document 切到 `supplementary.tex`。
+Overleaf 导出不含这些 md。**与 Overleaf 的同步（pull / push）见 F 节。****两个根文档**：`main.tex`（正文，pdfLaTeX + BibTeX）和 `supplementary.tex`（补充图表，独立编译成 `supplementary.pdf`，pdfLaTeX）；本地一次编译两个：`../tmp/build_ms.sh`（`bash -l`）。Overleaf 里一次只能编译一个根文档，要编译补充文件时在 Menu → Main document 切到 `supplementary.tex`。
 路径约定：不带前缀的路径相对 `Manuscript/`；`../` 开头的是项目根 `/scratch/user/tfcui2025/CIMA/Claude_project/` 下的路径。
 
 **更新规则**（详见 `AGENTS.md`）：图表有任何变动 → 改 C 节；LaTeX 的某个 section 有改动 → 核对实际 `.tex` 后改 D 节（包括 CodeX 改过的段落）；每次 Claude Code 的工作 → 在 E 节记一行（日期 | 工具 | 内容）。科学判断、公式核对和段落结构的讨论不记在这里，去 `CODEX_METHODS_NOTES.md`。
@@ -184,8 +184,8 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 ### Title Page（`sections/title_page.tex`）— Initial draft
 已写：全标题 “Mendelian randomization and multi-omic evidence for regulatory peak–gene links in human immune cells”，作者 Tengfei Cui¹、Yang Ni²\*、Yuchao Jiang¹\*，两个单位（Texas A&M 统计系；UT Austin 统计与数据科学系），通讯邮箱 yang.ni@austin.utexas.edu、yuchaojiang@tamu.edu。2026-10-29：用户删去了标题页上的 “Short title” 行（`main.tex` 里 `\ShortTitle` 的定义仍在，目前未使用）。缺：作者顺序和单位需作者确认；ORCID（如需要）。
 
-### Abstract（`abstract.tex`）— Not started
-只有一句占位（“will be written after the Results narrative…”），无 TODO。≤ 300 词。
+### Abstract（`abstract.tex`）— Initial draft
+2026-11-01 从 Overleaf 同步：一段摘要（Mendelian randomization 框架 + CIMA 428 人 + PCHi-C / HiChIP 验证 + motif 和血液性状遗传力富集），无 TODO。≤ 300 词。
 
 ### Author Summary（`author_summary.tex`）— Not started
 空（只有标题）。150–200 词，非技术性，第一人称。
@@ -194,6 +194,7 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 空（2026-10-29 用户删去了五段提纲和 TODO，只剩标题和 label）。
 
 ### Results（`results.tex`）— Under revision（1 个 TODO）
+2026-11-01 从 Overleaf 同步（以下 10-29 的逐条描述已过时，以实际 `.tex` 为准）：小节改为 5 个——Study overview and comparison of peak–gene linking methods / Concordance and discordance between MR estimates and marginal correlations（4 个示例，引用 Fig 2A–D）/ Functional characterization and regulatory network support / Disease heritability enrichment and GWAS overlap / Motif enrichment highlights candidate regulators；正文已写完整段落，含若干 `(reference)` 占位和待改拼写。
 - **A common analysis set enables comparison of six linking methods**：只有 6 个方法定义一段，引用 Fig 1A。Fig 1、Fig 2 两个 float 放在这一小节。（原先的 q 定义、发现数比较段落和 “Shared links can have different MR and marginal effect directions” 小节已被用户删除。）
 - **Fig 1 caption**（用户改写）：A = 框架（MR 用 caQTL/eQTL；Marginal multiomics 用外部 PBMC metacell；Marginal pseudobulk 用 CIMA 个体；均为 Spearman），B = CD4 UpSet（BH p.adj < 0.1），C = 1,259 个六方法都显著 link 的方向扇区；Bn / CD8 见 S3 Fig。不再写 50,704、扇区数量和 SMR/IVW/Egger 一致比例。
 - **Fig 2 caption**（用户改写）：按列说明（第 1 列 caQTL/eQTL 轨道，第 2 列 MR 拟合与 4 个 p 值，第 3 列 80 个 WNN metacell，第 4 列个体层 pseudobulk）；不再写 A–D 的基因名。**正文目前没有引用 Fig 2**（`fig:examples` 无 `\ref`）。
@@ -203,10 +204,11 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 - **Fig 4 caption**（用户改写）：A 星号 = p < 0.1；B 只写轨道 / 颜色 / 线宽 / 星号说明，去掉了疾病缩写表、位点列表、标题说明和 “//” 轴断说明；2026-10-29 颜色句改为 “Significant links are drawn in red”（图中不再分红 / 蓝）。
 - **末尾 TODO**：补 S2 Fig（flip 对比）、Fig 3C（GRN，原 S5 Fig）和 Table 1（MR 特异 motif）的结果文字。
 
-### Discussion（`discussion.tex`）— Outline
-三条空提纲标题：Principal findings / Complementary biological information / Limitations and future directions（2026-10-29 用户清空内容，删去 “Scope of inference” 条和 TODO）。
+### Discussion（`discussion.tex`）— Initial draft
+2026-11-01 从 Overleaf 同步：在三条提纲标题之后新增两段——（1）局限：caQTL / eQTL 来自同一人群（样本重叠），用 null-SNP 的 z 分数相关性做敏感性分析（S1 Fig）；（2）等位基因方向：IVW 与方向无关，Egger 按 beta_x > 0 定向（S2 Fig）。以下为 2026-10-29 的旧记录：三条空提纲标题：Principal findings / Complementary biological information / Limitations and future directions（2026-10-29 用户清空内容，删去 “Scope of inference” 条和 TODO）。
 
 ### Materials and Methods（`methods.tex` + `data_preprocessing.tex`）— Under revision（1 个 TODO）
+2026-11-01 从 Overleaf 同步：`methods.tex` 末尾新增 “Sensitivity analysis: Overlapping samples” 小节（caQTL / eQTL 同人群的偏倚、LD pruning + null SNP、z 分数相关，对应 S1 Fig）。
 2026-10-29 Overleaf 版本的 15 个小节：
 1. **Data sources**：用户新写：CIMA（OMIX009786）提供的 caQTL / eQTL 汇总统计与单细胞计数；三个 naive 细胞类型（Bn_TCL1A、CD4_Tn_CCR7、CD8_Tn_CCR7）及简称；“External multiome data for WNN” 只有标题句。占位 `(Citation)`。不再引用 S4 Table。
 2. **Data Preprocessing**（`data_preprocessing.tex`）：用户重写为提纲（6 条空 bullet）+ 五段草稿：候选 pair 与过滤（caQTL p < 1e-8、去重复 IV（差 < 1e-3）、≥ 3 个 IV、两边数据可用；pair 数 3 个 `XXX`，段末自注要移到最后）；LD clumping（clump_r2 = 0.99，clump_kb = 200000，hg38 EAS）；LD 矩阵（PLINK `--keep-allele-order`、`--r`，按 exposure 方向翻转）；Pseudobulk（≥ 100 细胞、median + 3 scaled MAD，335 / 372 / 346 个体，CPM + log1p）；WNN metacell（Signac 重新计数 CIMA peak，RNA PC 1–50 + ATAC LSI 2–50，80 个 metacell；含 “Add how to get … later” 自注）。原先的 LD 参数冲突 TODO 已删除（用户写的是 0.99；项目文档为 20 Mb = 20000 kb，正文写的 200000 待核对）。
@@ -266,3 +268,138 @@ FIG 里每个图另有 `.svg`（文字可编辑）；论文只用 PDF。
 - 2026-10-29 | Claude Code | Fig 4A 去掉 Asthma、PBC（`Plot10_Combined.R` 的 `SL_TRAITS`，7 个 GWAS），重出 `Figures_20261102/Figure_4.pdf` 并复制到论文；`results.tex` “nine GWAS” → “seven GWAS”。Methods 的 S-LDSC 段仍列 9 个 GWAS（用户文字，未改）。
 - 2026-10-29 | Claude Code | S1 / S2 Fig 更新：S1 只改图例细胞类型名（`Plot_Sup1_OneSampleMR.R`）；S2（`QC2_2_FlipPoints_plot.R`）去掉 lead SNP 金三角、小图标题改为 No flipping / Flipping、panel 字母由 A–F 改为 A（左半，差别小）/ B（右半，差别大）、行名用 `CELL_LAB`；两张图只出 PDF 到 `Figures_20261102/`，复制为 `figures/Figure_S1.pdf`、`Figure_S2.pdf`；`supplementary.tex` S2 caption 改为 A / B。编译通过：正文 21 页、补充 9 页，无未定义引用，补充仍只有原有 13 处 <1 pt overfull。
 - 2026-10-29 | Claude Code | Tables：MR 特异 motif 表由 S3 Table 移入正文 Table 1（`tables/motif.tex`，label `tab:motif`，`results.tex` TODO 后 `\input`，TODO 引用改 `Table~\ref{tab:motif}`；`main.tex` graphicspath 加 motif_logos）：每个 CT 取 MR p.adj 最小的 2 个（6 行），每个 motif 一篇文献（PMID 已核对），解释改写并与 PubMed 链接合为 “Brief interpretation & link” 列，去掉 Reference 列；`Valid3_Motif_3_table.R` → `Figures_20261102/Table_1.xlsx`，新增 `Motif_table_main.tsv`。补充表重编号：数据概览 S4 → S3（`supporting_info.tex`、`supplementary.tex` “S1--S3 Tables”，删除 `tables/supplementary_motif.tex`）；`Table_1_2.*` / `Table_4.*` 复制为 `Figures_20261102/Table_S1_S2.*` / `Table_S3.*`。编译通过：正文 23 页（Table 1 在第 7 页）、补充 7 页，无未定义引用，两边都无 overfull（补充原有 13 处 <1 pt overfull 来自旧 motif longtable，随之消失）。
+- 2026-11-01 | Claude Code | 建立 Overleaf git 同步：`tmp/overleaf_sync.sh`（status / pull / push，克隆在 `tmp/overleaf_draft/my_paper/`）。首次 pull 把 Overleaf 的 5 个文件（`main.tex` 标题、abstract / discussion / methods / results）同步回 `Manuscript/`；push 往返测试通过（测试注释已还原）；编译通过，无未定义引用。图表无改动，C 节无变化。
+- 2026-11-01 | Claude Code | 新增本文件 F 节 “Overleaf 同步操作手册”（结构、命令、日常流程 A/B/C、冲突与故障、与 GitHub 的关系、从零重建 + 脚本全文）；`AGENTS.md` 第 3 步加 Overleaf 同步提示；`CLAUDE.md` 第 11 节规则 6 指向 F 节。
+
+---
+
+## F. Overleaf 同步操作手册（2026-11-01 建立）
+
+**回答 “Overleaf 是怎么更新的” 就看这一节。** 一句话：Overleaf 项目有一个 git 地址，服务器上有它的一份克隆；`tmp/overleaf_sync.sh` 在 `Manuscript/` 和这份克隆之间 rsync 论文源文件，再用 git 从 Overleaf 拉取 / 推送到 Overleaf。
+
+### F1. 结构
+```
+Overleaf 项目 6ae4b2115cc5cee7da165450          https://www.overleaf.com/project/6ae4b2115cc5cee7da165450
+   │  git：https://git.overleaf.com/6ae4b2115cc5cee7da165450（用户名 git，密码 = Overleaf git token）
+   ▼
+../tmp/overleaf_draft/my_paper/    ← Overleaf 的 git 克隆（分支 main）；不要在这里直接改文件
+   ▲ rsync（只同步白名单）
+   ▼
+Manuscript/                         ← 服务器上的工作目录（Claude Code / CodeX 在这里改）
+```
+- 同步白名单 = Overleaf 上现有的 7 项：`main.tex supplementary.tex references.bib plos2025.bst sections/ figures/ tables/`。`Manuscript/` 里其余的（`Notes_Claude_Code.md`、`CODEX_METHODS_NOTES.md`、`AGENTS.md`、`main.pdf`、aux/bbl/log、`template_reference/`）**不会**传到 Overleaf，Overleaf 上的这些也不受影响。
+- 文件比较按**内容**（rsync `-c`），不看修改时间。
+- 默认只增改不删（不加 `--delete`）。要同步删除（例如论文里删了一个图）：先 `DELETE=1 bash ../tmp/overleaf_sync.sh status` 看预览，确认后 `DELETE=1 bash ../tmp/overleaf_sync.sh push`；注意 `DELETE=1 pull` 会删掉 `Manuscript/` 白名单目录里 Overleaf 没有的文件。
+- 凭证：token 在 `../tmp/.overleaf_token`（权限 600，`tmp/` 不入 git），由 `../tmp/overleaf_askpass.sh` 通过 `GIT_ASKPASS` 提供；不在 remote URL、git config 或命令行里。**不要读出、打印或提交 token。** 换 token：Overleaf → Account Settings → Git Integration 重新生成，然后 `printf '%s' '新token' > ../tmp/.overleaf_token; chmod 600 ../tmp/.overleaf_token`。
+
+### F2. 命令（在项目根 `Claude_project/` 下运行）
+```
+bash tmp/overleaf_sync.sh status   # 先 fetch，列出 Overleaf 上新增的提交，再 dry-run 显示 push 会改哪些文件（不改任何东西）
+bash tmp/overleaf_sync.sh pull     # Overleaf → Manuscript/（克隆 git pull --ff-only，再 rsync）
+bash tmp/overleaf_sync.sh push     # Manuscript/ → Overleaf（先 pull，再 rsync、commit、git push；无变化则提示 nothing to sync）
+```
+`push` 的提交信息是 `Sync from server <日期 时间>`，在 Overleaf 的 History 里能看到。
+
+### F3. 日常流程
+**A. 用户在 Overleaf 网页上改了论文，要同步到服务器**（用户说 “pull / 我在 Overleaf 改了”）：
+1. `bash tmp/overleaf_sync.sh status`；确认服务器 `Manuscript/` 在 git 里没有未保存的独有改动（`git status --short Manuscript`）。若有，先和用户商量，不要直接 pull 覆盖。
+2. `bash tmp/overleaf_sync.sh pull`，用 `git diff --stat Manuscript` 和逐文件 `git diff` 看改了什么，汇报给用户。
+3. `bash -l tmp/build_ms.sh` 编译，检查无未定义引用 / overfull。
+4. 更新本文件 D 节（改过的 section）和 E 节（一行）；Overleaf 上新增 / 改了图表则同步 C 节。
+
+**B. 服务器上改完论文（Claude Code / CodeX 改了 `.tex`、换了图），要推到 Overleaf**（只在用户明确说 “push / 推到 Overleaf” 时执行）：
+1. 先编译通过（`bash -l tmp/build_ms.sh`）。
+2. `bash tmp/overleaf_sync.sh status` 看会改哪些文件，向用户汇报。
+3. `bash tmp/overleaf_sync.sh push`。让用户刷新 Overleaf 页面检查（Overleaf 正在编辑时网页可能要刷新才显示）。
+
+**C. 换图 / 加图**：把新 PDF 复制到 `figures/`（改 C 节台账），编译，再按 B 推送。Overleaf 对单文件和项目总大小有限制；现在 `figures/` 只有 3 MB，注意别放几十 MB 的原图。
+
+### F4. 冲突与故障
+- **`pull` 报 “Not possible to fast-forward”或 `push` 被拒（non-fast-forward）**：服务器克隆和 Overleaf 各自有新提交（通常是克隆里残留了本地提交，或同时改过）。不要 force。把 `tmp/overleaf_draft/my_paper` 的 `git log --oneline --all` 和 `git status` 发给用户，一起决定谁为准。
+- **`克隆目录有未提交改动`**：有人直接改了克隆里的文件。`git -C tmp/overleaf_draft/my_paper status`，把改动并回 `Manuscript/` 或丢弃（需用户确认），然后重跑。
+- **两边同一文件都改了**：脚本不会自动合并；push 前必须先 pull，所以一般是 “服务器改 `Manuscript/` 的同时用户也在 Overleaf 改同一个文件”。处理：先把 `Manuscript/` 里对应文件备份到 `tmp/`，`pull` 拿 Overleaf 版本，再把备份里需要的改动手工合回去，再 push。
+- **认证失败（`Authentication failed` / `could not read Username`）**：token 失效或被换。按 F1 换 token。
+- **Overleaf 编译与本地不一致**：Overleaf 一次只编译一个根文档，补充文件要在 Menu → Main document 切到 `supplementary.tex`；本地用 `build_ms.sh` 一次编译两个。
+- 同步的是**源文件**，不是 PDF：Overleaf 上看到的 PDF 是它自己编译的。
+
+### F5. 与 GitHub 备份的关系
+两件事互相独立：`Manuscript/` 进主仓库 `MR_PeakGene`（GitHub）是备份，需用户要求才 commit / push；Overleaf 的 git 是论文协作平台。`tmp/overleaf_draft/`、token、`overleaf_sync.sh` 都在 `tmp/`，**不入 git**；所以下面附上脚本全文，丢了可按 F6 重建。
+
+### F6. 从零重建
+1. 在 Overleaf 拿 git token（Account Settings → Git Integration）。
+2. `umask 077; printf '%s' '<token>' > tmp/.overleaf_token`；新建 `tmp/overleaf_askpass.sh`（`chmod 700`）：
+   ```bash
+   #!/bin/bash
+   case "$1" in
+     Username*) echo git ;;
+     Password*) cat "$(dirname "$(readlink -f "$0")")/.overleaf_token" ;;
+   esac
+   ```
+3. 克隆：`GIT_ASKPASS=$PWD/tmp/overleaf_askpass.sh GIT_TERMINAL_PROMPT=0 git clone https://git.overleaf.com/6ae4b2115cc5cee7da165450 tmp/overleaf_draft/my_paper`，并在克隆里 `git config user.name "Tengfei Cui"`、`git config user.email "tfcui2025@tamu.edu"`。
+4. 把下面的脚本存为 `tmp/overleaf_sync.sh`（`chmod +x`），先 `status` 再 `pull`。若脚本有改动，同步更新这里的全文。
+
+```bash
+#!/bin/bash
+# Overleaf <-> Manuscript/ 同步
+#   bash tmp/overleaf_sync.sh status   # 对比两边（dry-run，不改任何东西）
+#   bash tmp/overleaf_sync.sh pull     # Overleaf -> Manuscript/
+#   bash tmp/overleaf_sync.sh push     # Manuscript/ -> Overleaf（先自动 pull 检查）
+# 加 DELETE=1 才会同步删除（先用 status 看 dry-run）。
+set -euo pipefail
+
+PROJ=/scratch/user/tfcui2025/CIMA/Claude_project
+MS=$PROJ/Manuscript
+CLONE=$PROJ/tmp/overleaf_draft/my_paper
+ITEMS=(main.tex supplementary.tex references.bib plos2025.bst sections figures tables)
+
+export GIT_ASKPASS=$PROJ/tmp/overleaf_askpass.sh
+export GIT_TERMINAL_PROMPT=0
+
+RSYNC_OPTS=(-rcv --exclude='*.before' --exclude='.DS_Store')
+[ "${DELETE:-0}" = 1 ] && RSYNC_OPTS+=(--delete)
+
+# rsync 白名单：每一项 src -> dst
+sync_items() {  # $1=src root  $2=dst root  $3...=额外 rsync 参数
+  local src=$1 dst=$2; shift 2
+  for it in "${ITEMS[@]}"; do
+    if [ -d "$src/$it" ]; then
+      rsync "${RSYNC_OPTS[@]}" "$@" "$src/$it/" "$dst/$it/"
+    else
+      rsync "${RSYNC_OPTS[@]}" "$@" "$src/$it" "$dst/$it"
+    fi
+  done
+}
+
+git_pull_clone() {
+  git -C "$CLONE" diff --quiet && git -C "$CLONE" diff --cached --quiet \
+    || { echo "克隆目录有未提交改动，请先处理：$CLONE"; exit 1; }
+  git -C "$CLONE" pull --ff-only
+}
+
+case "${1:-}" in
+  status)
+    git -C "$CLONE" fetch origin
+    echo "== Overleaf 上有、本地克隆没有的提交："; git -C "$CLONE" log --oneline HEAD..origin/main
+    echo "== Manuscript/ -> 克隆 的差异（dry-run，即 push 会改的内容）："
+    sync_items "$MS" "$CLONE" -n -i | grep -E '^[<>c*][fLDS]' || echo "(无)"
+    ;;
+  pull)
+    git_pull_clone
+    sync_items "$CLONE" "$MS" -i | grep -E '^[<>c*][fLDS]' || echo "(Manuscript/ 已是最新)"
+    ;;
+  push)
+    git_pull_clone
+    sync_items "$MS" "$CLONE"  > /dev/null
+    if [ -z "$(git -C "$CLONE" status --porcelain)" ]; then
+      echo "nothing to sync"; exit 0
+    fi
+    git -C "$CLONE" status --short
+    git -C "$CLONE" add -A
+    git -C "$CLONE" commit -q -m "Sync from server $(date +%F\ %H:%M)"
+    git -C "$CLONE" push origin HEAD:main
+    echo "pushed: $(git -C "$CLONE" log --oneline -1)"
+    ;;
+  *)
+    sed -n '2,6p' "$0"; exit 1 ;;
+esac
+```

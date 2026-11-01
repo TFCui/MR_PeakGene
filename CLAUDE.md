@@ -124,6 +124,7 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
   3. 科学判断、公式核对、段落结构的讨论记在 `CODEX_METHODS_NOTES.md`，不记在 Notes_Claude_Code.md。
   4. 论文工作只改 `Manuscript/`（生成表格的辅助脚本放 `tmp/Manuscript_tables/`）；`Scripts/`、`Results/`、`paper_reference/` 只读。
   5. 不 commit / push，除非用户明确要求；编译中间文件已在 `.gitignore` 中排除。
+  6. **Overleaf 同步**（git 集成）：脚本 `bash tmp/overleaf_sync.sh status|pull|push`，Overleaf 克隆在 `tmp/overleaf_draft/my_paper/`，token 在 `tmp/.overleaf_token`（经 `tmp/overleaf_askpass.sh` 提供，不进 remote URL / git config，勿读出或打印）。只同步 `main.tex supplementary.tex references.bib plos2025.bst sections/ figures/ tables/`，笔记 / PDF / 编译中间文件不同步。用户在 Overleaf 上改过就先 `pull`；`push` 会自动先 `pull`，无变化时提示 `nothing to sync`。`push` 会改动用户的 Overleaf 项目，**只在用户明确要求时执行**；删除同步需 `DELETE=1`，先 `status` 看 dry-run。完整流程、冲突处理和从零重建见 `Manuscript/Notes_Claude_Code.md` F 节（用户问 “Overleaf 怎么更新” 时读它）；`tmp/` 不入 git，脚本全文也存在 F 节。
 
 ## 12. Update History（更新备忘）
 每次对脚本或整体代码做了更新，在这里用一句话记录：日期 + 改了什么。
@@ -144,3 +145,4 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 - 2026-10-20：论文补充图表拆成独立文件 `Manuscript/supplementary.tex`（`supplementary.pdf`）；正文末尾只保留 Supporting information 标题列表，用 `\nameref` 引用；补充表格统一编号为 S1 / S2 / S3 Table。
 - 2026-10-29：第 6 节记录 S-LDSC reference 和 107 套 GWAS 的来源（Zenodo 10515792，已核对文件大小 / md5）；`Scripts/Pipeline.md` 3.2 同步。
 - 2026-10-29：细胞类型名称统一为 Bn / CD4 T cell / CD8 T cell（第 1 节，图和论文全文已改）；新一轮论文图放 `Results/Figures/Figures_20261102/`，除 `Figure_1B_C` 只出 SVG 外所有图只出 PDF（见 `Scripts/Visualization.md`）；Fig 1B–C / S3 重画（环形图恢复图例和中心文字）。
+- 2026-11-01：建立 Overleaf git 同步（`tmp/overleaf_sync.sh` pull / push，第 11 节规则 6）；首次 `pull` 把 Overleaf 的标题、摘要、Results、Discussion、Methods 新文字同步回 `Manuscript/`。
