@@ -74,7 +74,7 @@
 \showtodostrue % Change to \showtodosfalse to hide editorial TODO paragraphs.
 \newcommand{\TODO}[1]{\ifshowtodos\par\smallskip
   {\small\textbf{TODO:} #1}\par\smallskip\fi}
-\newcommand{\q}{q}
+\newcommand{\q}{P_{\mathrm{adj}}} % within-gene BH-adjusted P value (notes/2_BOARD.md 1.1)
 % Keep research graphics visible for drafting. This switch hides images only;
 % captions, labels, and cross-references remain when preparing submission files.
 \newif\ifdraftfigures
@@ -83,7 +83,7 @@
 \renewcommand{\includegraphics}[2][]{%
   \ifdraftfigures\PLOSincludegraphics[#1]{#2}\fi}
 
-\newcommand{\ManuscriptTitle}{Demystifying ehancer-gene linkage using population-scale single-cell multiomics}
+\newcommand{\ManuscriptTitle}{Demystifying enhancer-gene linkage using population-scale single-cell multiomics}
 \newcommand{\ShortTitle}{Genetic evidence for immune-cell peak--gene links}
 
 \begin{document}

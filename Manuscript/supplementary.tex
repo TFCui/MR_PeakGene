@@ -1,5 +1,5 @@
-% Supporting Information for the manuscript in main.tex (compiled separately).
-% Numbering follows PLOS item names: S1--S3 Fig, S1--S4 Table.
+% Supplementary Information for the manuscript in main.tex (compiled separately).
+% Numbering follows PLOS item names: S1--S5 Fig, S6.1--S6.3 Fig, S1--S3 Table.
 % References to the main text (Fig 1B--C) are fixed text; update them
 % if the main-text figure numbers change (see Notes_Claude_Code.md, section C).
 \documentclass[10pt,letterpaper]{article}
@@ -29,11 +29,13 @@
 \DeclareCaptionLabelFormat{plossupporttable}{#2 Table}
 \usepackage{graphicx}
 \usepackage{lastpage,fancyhdr}
+\usepackage{cite}
+\let\citep\cite
 \usepackage{nameref,hyperref}
 \hypersetup{hidelinks}
 \pagestyle{fancy}
 \fancyhf{}
-\chead{\small Supporting Information}
+\chead{\small Supplementary Information}
 \rfoot{\thepage/\pageref{LastPage}}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
@@ -54,7 +56,7 @@
 \showtodostrue % Change to \showtodosfalse to hide editorial TODO paragraphs.
 \newcommand{\TODO}[1]{\ifshowtodos\par\smallskip
   {\small\textbf{TODO:} #1}\par\smallskip\fi}
-\newcommand{\q}{q}
+\newcommand{\q}{P_{\mathrm{adj}}} % within-gene BH-adjusted P value (notes/2_BOARD.md 1.1)
 % Keep research graphics visible for drafting (hides images only).
 \newif\ifdraftfigures
 \draftfigurestrue
@@ -62,32 +64,40 @@
 \renewcommand{\includegraphics}[2][]{%
   \ifdraftfigures\PLOSincludegraphics[#1]{#2}\fi}
 
-\newcommand{\ManuscriptTitle}{Mendelian randomization and multi-omic evidence for regulatory
-peak--gene links in human immune cells}
+% Contents list for S1 Text: \SoneTOC makes each \subsection* of S1 Text also add a
+% contents entry (used only around \input{sections/s1_text}; s1_text.tex is unchanged).
+\makeatletter
+\newcommand{\SoneTOC}{\let\origsubsection\subsection
+  \renewcommand{\subsection}{\@ifstar{\SoneSubStar}{\origsubsection}}}
+\makeatother
+\newcommand{\SoneSubStar}[1]{\origsubsection*{#1}\phantomsection\addcontentsline{toc}{subsection}{#1}}
 
-% Supporting item numbering: S1 Fig, S1 Table, ...
+% Supplementary item numbering: S1 Fig, S1 Table, ...
 \renewcommand{\thefigure}{S\arabic{figure}}
 \renewcommand{\theHfigure}{supp.\arabic{figure}}
 \captionsetup[figure]{labelformat=plossupport}
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\theHtable}{supp.\arabic{table}}
 \captionsetup[table]{labelformat=plossupporttable}
-\renewcommand{\listfigurename}{Supporting figures}
-\renewcommand{\listtablename}{Supporting tables}
+\renewcommand{\contentsname}{Supplementary text}
+\renewcommand{\listfigurename}{Supplementary figures}
+\renewcommand{\listtablename}{Supplementary tables}
 
 \begin{document}
 
 \begin{center}
-{\Large\textbf{Supporting Information}\par}
-\medskip
-{\large\textbf{\ManuscriptTitle}\par}
+{\Large\textbf{Supplementary Information}\par}
 \end{center}
 
-\noindent S1--S3 Figs and S1--S3 Tables accompany the main manuscript
-(\texttt{main.tex}).
-
+\tableofcontents
 \listoffigures
 \listoftables
+\clearpage
+
+\section*{S1 Text. Supplementary Methods}
+\label{sec:s1-text}
+\phantomsection\addcontentsline{toc}{section}{S1 Text. Supplementary Methods}
+{\SoneTOC\input{sections/s1_text}}
 \clearpage
 
 \begin{figure}[htbp]
@@ -139,8 +149,193 @@ sign. ``Causal Joint'' denotes CCT. The corresponding CD4 T cell comparison is s
 \label{fig:supp-bn-cd8}
 \end{figure}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{Figure_S4.pdf}
+\caption[Sharing of significant links among Bn, CD4 T cells, and CD8 T cells for each method]{Sharing of significant links among Bn, CD4 T cells, and CD8 T cells for each method.
+\textbf{A--F,} causal SMR, causal IVW, causal Egger, causal joint, marginal multiomics, and
+marginal pseudobulk. To compare the same pairs across cell types, each diagram is restricted to
+the 14,890 candidate peak--gene pairs that were tested in all three cell types (of 40,087,
+85,527, and 50,931 pairs tested in Bn, CD4 T cells, and CD8 T cells, respectively). For each
+method, the circle of a cell type contains the common pairs with \(\q<0.1\) in that cell type, where
+\(\q\) is the within-gene BH-adjusted P value of that cell type's own analysis; pairs were matched
+by peak and gene. Numbers inside the diagram give the number of links in each region and, in
+parentheses, its percentage of all links significant in at least one cell type for that method.
+Labels outside each circle give the number of that cell type's links that fall in the common
+pairs over the total number of links of that method in that cell type (all pairs tested in that
+cell type), with the percentage in parentheses. Circle areas are not proportional to set sizes.
+Marginal multiomics correlations were computed on WNN metacells from an external PBMC dataset
+without cell-type separation, so a common pair has the same unadjusted P value in all three
+cell types and differs only in the within-gene BH adjustment.}
+\label{fig:supp-venn}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{Figure_S5.pdf}
+\caption[Overlap of MR-only links with regulatory references compared with all candidate peaks]{Overlap of MR-only links with regulatory references compared with all candidate peaks.
+\textbf{A--F,} GTEx, EnhancerAtlas, FANTOM5, 4DGenome, HiChIP, and PCHi-C (PCHiC in the
+figure). MR-only links (\(\q<0.1\) for at least one of causal IVW, causal Egger, and causal SMR,
+and \(\q\geq0.1\) for both marginal methods; see Methods) were pooled across the three cell types.
+For each gene, \(N\) is the number of candidate peaks (union across cell types), \(K\) the number
+of these peaks that overlap the gene's reference regions, \(n_{\mathrm{sig}}\) the number of
+peaks of the gene's MR-only links (union across cell types), and \(k\) the number of these
+MR-only peaks that overlap the reference regions. For HiChIP and PCHi-C, the reference regions
+are the union of the B cell, CD4 T cell, and CD8 T cell interactions. Genes with \(K>0\) and
+\(N>K\) were included. The x-axis is the background overlap ratio \(K/N\) and the y-axis the
+MR-only overlap ratio \(k/n_{\mathrm{sig}}\); both axes are on a square-root scale. Light green
+points are individual genes; genes outside the plotted range are not shown. About 55\% of genes
+have a single MR-only peak, so per-gene ratios take few distinct values and form horizontal
+bands, including the band at zero. Dark blue points: in each panel, genes were divided into
+eight groups of equal size by \(K/N\), and each point gives the pooled ratios \(\sum K/\sum N\)
+and \(\sum k/\sum n_{\mathrm{sig}}\) of a group. Error bars are 95\% bootstrap confidence intervals
+of \(\sum k/\sum n_{\mathrm{sig}}\) (2,000 resamples of genes within each group, percentile
+method). The dashed line is \(y=x\), the overlap expected if MR-only peaks overlapped the
+references at the background rate; the shaded area above it marks higher overlap among
+MR-only peaks. The lower right of each panel gives the pooled fold enrichment
+\((\sum k/\sum n_{\mathrm{sig}})/(\sum K/\sum N)\) and the P value of a hypergeometric test on
+the summed counts, computed as in \ref{tab:supp-hyper-p} and \ref{tab:supp-hyper-fold} Tables.
+Panel E is also shown as Fig~3D of the main text.}
+\label{fig:supp-mronly-ref}
+\end{figure}
+
+% S6.1--S6.3 Fig: Figure_S6.pdf has one page per cell type (Bn, CD4 T cells, CD8 T cells).
+% The three pages are numbered S6.1, S6.2 and S6.3 Fig: \SixSub sets the number inside each
+% figure environment (local), and the figure counter stays at 6 for S6.2 and S6.3.
+% All three use the same graphic height; the full legend shared by the three figures is on
+% its own page before them, and each caption is short.
+\newcommand{\SixSub}[1]{\renewcommand{\thefigure}{S6.#1}\renewcommand{\theHfigure}{supp.6.#1}}
+\clearpage
+{\small
+\noindent\textbf{Legend for S6.1--S6.3 Figs. Pairwise relationships among the five methods
+with an effect estimate in Bn, CD4 T cells, and CD8 T cells.}
+S6.1, S6.2, and S6.3 Figs show Bn, CD4 T cells, and CD8 T cells, respectively, each using all
+candidate peak--gene pairs tested in that cell type (40,087, 85,527, and 50,931 pairs). Causal joint is not shown because it combines
+P values and has no effect estimate. \textbf{A,} effect estimates: the MR estimate \(\beta\) for
+causal SMR, causal IVW, and causal Egger, and the Spearman correlation coefficient \(\rho\) for
+marginal multiomics and marginal pseudobulk. \textbf{B,} signed \(-\log_{10}P\), that is, the sign
+of the effect estimate multiplied by \(-\log_{10}P\). In each matrix, the diagonal gives the
+method name and the distribution of that method's values across pairs (kernel density; the curve
+height is rescaled within the panel, so only its shape is informative). Panels below the diagonal
+show the two-dimensional kernel density of pairs, with the method of the column on the x-axis and
+the method of the row on the y-axis; color intensity increases with the fourth root of the density
+so that low-density regions remain visible. Panels above the diagonal give the Spearman
+correlation \(r\) between the two methods across all pairs; text size and background shade
+increase with \(r\). Dotted lines mark zero. The dashed line is \(y=x\); in A it is drawn only
+between MR methods, whose estimates share units, and in B it is drawn in all panels. Axes are
+symmetric around zero and cover the 99th percentile of absolute values across the three cell
+types: in A, each method has its own range (\(\pm1.5\) for causal SMR and causal IVW, \(\pm2.5\)
+for causal Egger, \(\pm0.75\) for marginal multiomics, and \(\pm0.35\) for marginal pseudobulk);
+in B, all methods share \(\pm11\). Pairs outside these ranges (0.3--1.9\% per method and cell
+type) are omitted from the density panels but included in \(r\). Marginal multiomics correlations
+were computed on WNN metacells from an external PBMC dataset without cell-type separation.\par}
+\clearpage
+
+\begin{figure}[p]
+\SixSub{1}
+\centering
+\includegraphics[height=0.86\textheight,page=1]{Figure_S6.pdf}
+\caption[Pairwise relationships among the five methods with an effect estimate in Bn]{Pairwise relationships among the five methods with an effect estimate in Bn.
+Based on the 40,087 candidate peak--gene pairs tested in Bn. \textbf{A,} effect estimates;
+\textbf{B,} signed \(-\log_{10}P\). See the shared legend for S6.1--S6.3 Figs.}
+\label{fig:supp-method-cor}
+\end{figure}
+
+\begin{figure}[p]
+\SixSub{2}\addtocounter{figure}{-1}
+\centering
+\includegraphics[height=0.86\textheight,page=2]{Figure_S6.pdf}
+\caption[Pairwise relationships among the five methods with an effect estimate in CD4 T cells]{Pairwise relationships among the five methods with an effect estimate in CD4 T cells.
+Based on the 85,527 candidate peak--gene pairs tested in CD4 T cells. \textbf{A,} effect estimates;
+\textbf{B,} signed \(-\log_{10}P\). See the shared legend for S6.1--S6.3 Figs.}
+\label{fig:supp-method-cor-cd4}
+\end{figure}
+
+\begin{figure}[p]
+\SixSub{3}\addtocounter{figure}{-1}
+\centering
+\includegraphics[height=0.86\textheight,page=3]{Figure_S6.pdf}
+\caption[Pairwise relationships among the five methods with an effect estimate in CD8 T cells]{Pairwise relationships among the five methods with an effect estimate in CD8 T cells.
+Based on the 50,931 candidate peak--gene pairs tested in CD8 T cells. \textbf{A,} effect estimates;
+\textbf{B,} signed \(-\log_{10}P\). See the shared legend for S6.1--S6.3 Figs.}
+\label{fig:supp-method-cor-cd8}
+\end{figure}
+\FloatBarrier % keep S6.1--S6.3 right after their legend page (before the tables)
+
+% S7.1--S7.3 Fig: Figure_S7.pdf has one page per cell type (Bn, CD4 T cells, CD8 T cells);
+% numbered like S6.1--S6.3 (\SevenSub is local to each figure; the counter stays at 7).
+\newcommand{\SevenSub}[1]{\renewcommand{\thefigure}{S7.#1}\renewcommand{\theHfigure}{supp.7.#1}}
+\clearpage
+{\small
+\noindent\textbf{Legend for S7.1--S7.3 Figs. Genome-wide association signals of the six methods
+in Bn, CD4 T cells, and CD8 T cells.}
+S7.1, S7.2, and S7.3 Figs show Bn, CD4 T cells, and CD8 T cells, respectively, each using all
+candidate peak--gene pairs tested in that cell type (40,087, 85,527, and 50,931 pairs). Each track
+is one method (causal SMR, causal IVW, causal Egger, causal joint, marginal multiomics, and
+marginal pseudobulk). Each point is a pair placed at the center of its peak along chromosomes 1--22
+(hg38); the y-axis gives \(-\log_{10}P\) on a linear scale with a separate range for each track.
+The dashed line marks the Bonferroni threshold (0.05 divided by the number of pairs tested in that
+cell type); pairs above it are colored orange for causal methods and green for marginal methods,
+and the other pairs are shown in alternating shades of gray by chromosome. In each track, up to
+eight genes above the threshold are labeled at their strongest pair, with at most one label per
+5 Mb on a chromosome. Magenta diamonds mark the example pairs of Fig~2 in the cell type in which
+they were shown (\textit{SIDT2} in Bn; \textit{RPL11}, \textit{ERAP2}, and \textit{ARPC1B} in CD4 T
+cells), labeled in every track at their actual position whether or not they pass the threshold.
+CD8 T cells have no example pair.\par}
+\clearpage
+
+\begin{figure}[p]
+\SevenSub{1}
+\centering
+\includegraphics[height=0.86\textheight,page=1]{Figure_S7.pdf}
+\caption[Genome-wide association signals of the six methods in Bn]{Genome-wide association signals of the six methods in Bn.
+Based on the 40,087 candidate peak--gene pairs tested in Bn. See the shared legend for S7.1--S7.3 Figs.}
+\label{fig:supp-manhattan}
+\end{figure}
+
+\begin{figure}[p]
+\SevenSub{2}\addtocounter{figure}{-1}
+\centering
+\includegraphics[height=0.86\textheight,page=2]{Figure_S7.pdf}
+\caption[Genome-wide association signals of the six methods in CD4 T cells]{Genome-wide association signals of the six methods in CD4 T cells.
+Based on the 85,527 candidate peak--gene pairs tested in CD4 T cells. See the shared legend for S7.1--S7.3 Figs.}
+\label{fig:supp-manhattan-cd4}
+\end{figure}
+
+\begin{figure}[p]
+\SevenSub{3}\addtocounter{figure}{-1}
+\centering
+\includegraphics[height=0.86\textheight,page=3]{Figure_S7.pdf}
+\caption[Genome-wide association signals of the six methods in CD8 T cells]{Genome-wide association signals of the six methods in CD8 T cells.
+Based on the 50,931 candidate peak--gene pairs tested in CD8 T cells. See the shared legend for S7.1--S7.3 Figs.}
+\label{fig:supp-manhattan-cd8}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{Figure_S8.pdf}
+\caption[Overlap of significant links with the CIMA regulatory network in Bn and CD8 T cells]{Overlap of significant links with the CIMA regulatory network in Bn and CD8 T cells.
+Odds ratio for a link significant for each method (within-gene \(\q<0.05\)) being present in the
+CIMA SCENIC+ regulatory network, compared with links not in the network (\(2\times2\) table; all
+tested pairs in the cell type as background), as in Fig~3E for CD4 T cells. Light bars use
+eRegulons active in the cell type (cell-type eRegulons; 864 and 1,364 tested pairs in Bn and CD8
+T cells), and dark bars the subset of these that belong to the high-quality eRegulons of the
+corresponding lineage (high-quality eRegulons; 817 and 382 tested pairs). Fisher's exact test
+\(P<10^{-30}\) for every bar; the dashed line marks an odds ratio of 1.}
+\label{fig:supp-grn}
+\end{figure}
+\FloatBarrier
+
 \input{tables/supplementary_hyper_p}
 \input{tables/supplementary_hyper_fold}
 \clearpage
 \input{tables/supplementary_data_overview}
+
+\clearpage
+\input{tables/supplementary_gwas}
+
+\clearpage
+\bibliographystyle{plos2025}
+\bibliography{references}
 \end{document}

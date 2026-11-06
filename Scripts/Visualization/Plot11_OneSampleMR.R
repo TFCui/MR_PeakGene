@@ -1,9 +1,9 @@
-# Sup1: QC_OneSampleMR — null SNP (caQTL、eQTL 都不显著) 上 caQTL z 与 eQTL z 的相关性
+# Plot11 (论文当前 S1 Fig): QC_OneSampleMR — null SNP (caQTL、eQTL 都不显著) 上 caQTL z 与 eQTL z 的相关性
 # Figure S1: 1 页, 2 个 panel: A = pair 内相关 rho_hat, B = 相关性检验的 P 值; 横轴为 pair 内共享 null SNP 数分组,
 #            每组 3 根并排箱子 = 3 个细胞类型 (图例写各细胞类型的全基因组整体 rho 和 P); 说明 (虚线含义 / pair 数) 写在论文 caption
 # 输入: Results/QC/1_OneSampleMR/<CT>_pair_corr.tsv.gz, <CT>_global_rho.tsv
 # 输出: Results/Figures/Figures_20261102/Figure_S1.pdf (只出 PDF)
-# 运行: Rscript Scripts/Visualization/Plot_Sup1_OneSampleMR.R
+# 运行: Rscript Scripts/Visualization/Plot11_OneSampleMR.R
 
 source("/scratch/user/tfcui2025/CIMA/Claude_project/Scripts/Visualization/00_common.R")
 suppressPackageStartupMessages(library(patchwork))

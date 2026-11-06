@@ -43,3 +43,14 @@ theme_paper <- function(base = 10) theme_classic(base_size = base) + theme(
 read_mr <- function(ct) fread(file.path(MR_DIR, paste0(ct, "_AllPairs_results.tsv.gz")))
 
 msg <- function(...) cat(format(Sys.time(), "[%H:%M:%S] "), ..., "\n", sep = "")
+
+# ---------- Figure 3 薄荷色板 (2026-11-04; Plot9 / Plot13 / Plot15 共用) ----------
+PAL_MINT <- c(m1 = "#EBF5E6", m2 = "#C4E9CA", m3 = "#9ACDA2", m4 = "#6FBD8F", m5 = "#47A49D", m6 = "#336E99", m7 = "#2E4E77")
+COL_AX3  <- "#374151"   # Figure 3 轴线 / 刻度 / 文字
+# 统一的小标签条 (facet strip): 浅薄荷底 + 薄荷边 + 粗体深色字
+theme_strip_mint <- function(size = 10) theme(
+  strip.background = element_rect(fill = PAL_MINT[["m1"]], colour = PAL_MINT[["m3"]], linewidth = 0.5),
+  strip.text = element_text(face = "bold", size = size, colour = "#1F2937", margin = margin(3, 4, 3, 4)))
+# 论文写法的方法名 (只首字母大写; SMR / IVW / Egger 不变); Figure 3 / S8 用 (2026-11-04)
+lab_paper <- function(x) { x <- sub("Causal Joint", "Causal joint", x, fixed = TRUE)
+  x <- sub("Marginal Multiomics", "Marginal multiomics", x, fixed = TRUE); sub("Marginal Pseudobulk", "Marginal pseudobulk", x, fixed = TRUE) }

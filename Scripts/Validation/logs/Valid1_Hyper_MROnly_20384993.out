@@ -1,0 +1,28 @@
+job = 20384993 | cores = 2 | node = c041
+[Bn_TCL1A] MR pairs 40,087; MR-Only links 2,262 (1,581 genes)
+[CD4_Tn_CCR7] MR pairs 85,527; MR-Only links 4,749 (2,834 genes)
+[CD8_Tn_CCR7] MR pairs 50,931; MR-Only links 2,886 (1,903 genes)
+
+[combined] MR-Only links (按 gene + peak 去重) 8,715, genes 4,509; 来自 1 / 2 / 3 个 CT 的 gene: 3,025 / 1,159 /   325
+[check] MR-Only peak 落在自身 gene 的背景 (3 CT 并集) 内: 8,715 / 8,715 (100.00%)
+
+[db] 合并后 (只算 MR-Only gene):
+  enhancerAtlas  4,107 genes, 中位区间数   16
+  FANTOM5        2,682 genes, 中位区间数    3
+  4DGenome       2,311 genes, 中位区间数    2
+  GTEx           4,376 genes, 中位区间数  162
+  HiChIP         4,110 genes, 中位区间数   16
+  PCHiC          3,607 genes, 中位区间数   12
+
+[done] 21,193 行 -> /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid1_Hyper/MROnly_gene_overlap_combined.tsv (5.9 min)
+Key: <database>
+        database n_gene  n_K0 n_used   sum_N  sum_K sum_nsig sum_k
+          <fctr>  <int> <int>  <int>   <int>  <int>    <int> <int>
+1: enhancerAtlas   4107    91   4016 1594027  71372     7951   835
+2:       FANTOM5   2682   487   2195 1055068  12035     5125   163
+3:      4DGenome   2311   318   1993  900069  11147     4305   150
+4:          GTEx   4376    60   4316 1689746  60383     8435   655
+5:        HiChIP   4110    20   4082 1587994 149202     7933  2437
+6:         PCHiC   3607   235   3372 1384376  76298     6829   708
+
+全部完成

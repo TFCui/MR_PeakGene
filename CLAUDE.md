@@ -4,7 +4,7 @@
 用 CIMA（OMIX009786）细胞类型特异的 caQTL 和 eQTL 做 MR，推断 peak → gene 的因果调控连接，
 并和 marginal 相关方法比较，用外部证据验证。
 - 细胞类型只做：`Bn_TCL1A`、`CD4_Tn_CCR7`、`CD8_Tn_CCR7`
-- **细胞类型名称（画图和论文统一）**：图中标签写 `Bn`、`CD4 T cell`、`CD8 T cell`（代码用 `Scripts/Visualization/00_common.R` 的 `CELL_LAB`）。论文在首次出现处定义：naive B cells（Bn_TCL1A，简称 Bn）、naive CD4⁺ T cells（CD4_Tn_CCR7，简称 CD4 T cells）、naive CD8⁺ T cells（CD8_Tn_CCR7，简称 CD8 T cells）；之后正文写 Bn / CD4 T cells / CD8 T cells，作定语或表头用单数（“CD4 T cell links”）。不再单独用 CD4、CD8、CD4 Tn 或 CIMA 原始标签指代细胞类型。
+- **细胞类型名称（画图和论文统一）**：图中标签写 `Bn`、`CD4 T cell`、`CD8 T cell`（代码用 `Scripts/Visualization/00_common.R` 的 `CELL_LAB`）。论文在首次出现处定义：naive B cells（Bn_TCL1A，简称 Bn cells）、naive CD4⁺ T cells（CD4_Tn_CCR7，简称 CD4 T cells）、naive CD8⁺ T cells（CD8_Tn_CCR7，简称 CD8 T cells）；之后正文写 Bn cells / CD4 T cells / CD8 T cells，作定语或表头用单数（“Bn cell links”、“CD4 T cell links”）；正文不单独写 “Bn”（图中标签仍为 `Bn`，图不改）。不再单独用 CD4、CD8、CD4 Tn 或 CIMA 原始标签指代细胞类型。
 - 6 个方法：IVW、Egger、SMR、CCT（Causal），WNN、Pseudobulk（Marginal）
 
 ## 2. 文件安全规则（必须遵守）
@@ -31,7 +31,7 @@
 | `Results/` | 新结果 |
 | `tmp/` | 中间文件、缓存、临时文件 |
 | `data/ref_chr/hg38` | LD 参考面板（软链接，只读） |
-| `Manuscript/` | 论文 LaTeX 源；笔记见 `Notes_Claude_Code.md`（Claude Code）和 `CODEX_METHODS_NOTES.md`（CodeX），规则见 `AGENTS.md`（见第 11 节） |
+| `Manuscript/` | 论文 LaTeX 源；规则 `AGENTS.md`，管理文件在 `notes/`（`1_WORKFLOW` / `2_BOARD` / `3_LEDGER`，见第 11 节） |
 | `paper_reference/` | 核心参考论文 PDF（MR-Egger：Burgess & Thompson 2017 + 附录、GRIP、SMR：Zhu 2016、CIMA Science）；**只读**，Claude Code 和 CodeX 写论文 / 核对方法时可查阅 |
 
 外部数据直接从 `/scratch/user/tfcui2025/CIMA/` 读取，不复制。
@@ -113,18 +113,12 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 
 
 ## 11. Manuscript 论文稿件
-- 目录 `Manuscript/`：论文 LaTeX 源（主入口 `main.tex`，与 Overleaf 同步）。本地编译：`bash -l tmp/build_ms.sh`（同时编译 `main.tex` 正文和独立的 `supplementary.tex` 补充文件）。
-- **Claude Code 与 CodeX 协同工作**，各有分工和各自的笔记文件（共同规则见 `Manuscript/AGENTS.md`，CodeX 的入口是它）：
-  - **Claude Code**：整理 LaTeX、修改格式、检查交叉引用、编译论文；维护 `Manuscript/Notes_Claude_Code.md`。它记录论文里每个 figure / table 的来源、进入论文前的修改、含义（C 节），每个 section 的 LaTeX 现状和 TODO（D 节），Claude Code 的更新记录（E 节）。
-  - **CodeX**：阅读 Methods、检查公式、讨论科学逻辑、拟定段落结构；记录在 `Manuscript/CODEX_METHODS_NOTES.md`（按论文章节组织）。
-  - 两边互相读对方的文件，各自只写自己的；开始论文工作前先读这两个文件。
-- 规则：
-  1. 论文里任何图表新增 / 替换 / 修改，必须同步更新 `Notes_Claude_Code.md` 的 C 节台账（来源、改动、含义、hash）。
-  2. LaTeX 的某个 section 有改动（包括 CodeX 改的段落），核对实际 `.tex` 后更新 D 节；每次 Claude Code 的工作在 E 节记一行：日期 | 工具 | 内容。
-  3. 科学判断、公式核对、段落结构的讨论记在 `CODEX_METHODS_NOTES.md`，不记在 Notes_Claude_Code.md。
-  4. 论文工作只改 `Manuscript/`（生成表格的辅助脚本放 `tmp/Manuscript_tables/`）；`Scripts/`、`Results/`、`paper_reference/` 只读。
-  5. 不 commit / push，除非用户明确要求；编译中间文件已在 `.gitignore` 中排除。
-  6. **Overleaf 同步**（git 集成）：脚本 `bash tmp/overleaf_sync.sh status|pull|push`，Overleaf 克隆在 `tmp/overleaf_draft/my_paper/`，token 在 `tmp/.overleaf_token`（经 `tmp/overleaf_askpass.sh` 提供，不进 remote URL / git config，勿读出或打印）。只同步 `main.tex supplementary.tex references.bib plos2025.bst sections/ figures/ tables/`，笔记 / PDF / 编译中间文件不同步。用户在 Overleaf 上改过就先 `pull`；`push` 会自动先 `pull`，无变化时提示 `nothing to sync`。`push` 会改动用户的 Overleaf 项目，**只在用户明确要求时执行**；删除同步需 `DELETE=1`，先 `status` 看 dry-run。完整流程、冲突处理和从零重建见 `Manuscript/Notes_Claude_Code.md` F 节（用户问 “Overleaf 怎么更新” 时读它）；`tmp/` 不入 git，脚本全文也存在 F 节。
+- 目录 `Manuscript/`：论文 LaTeX 源（主入口 `main.tex`，与 Overleaf 同步）。本地编译：`bash -l tmp/build_ms.sh`（同时编译 `main.tex` 和 `supplementary.tex`）。
+- **论文工作先读 `Manuscript/AGENTS.md`**（规则入口），再读 `Manuscript/notes/1_WORKFLOW.md`（分工、一轮工作卡流程 W1 审读 → 作者回答 → W2 润色 → W3 收卡、润色规范和 scMultiMap 写法对照、prompt）和 `Manuscript/notes/2_BOARD.md`（统一表达、全文地图、全文问题、各小节工作区）。已核对数字、图表台账、投稿要求、Overleaf 同步手册和更新记录在 `Manuscript/notes/3_LEDGER.md`（Figures、格式等改动也记在它的第 5 节）。只有这 4 个 md，不新建零散的笔记文件。
+- 分工：文章架构由作者决定，Claude 实施；Claude 的核心任务是润色英文，并联系全文提醒每段该写 / 不该写什么。作者看过合格的改动直接留在正文；commit 和 Overleaf push 隔一段时间由作者提出后再做。
+- Claude Code 负责全部论文工作；CodeX 只在最后做一次独立审阅。
+- 论文工作只改 `Manuscript/`（生成表格的辅助脚本放 `tmp/Manuscript_tables/`）；`Scripts/`、`Results/`、`paper_reference/` 只读。不 commit / push，除非用户明确要求。
+- Overleaf 同步：`bash tmp/overleaf_sync.sh status|pull|push`；`push` 只在用户明确要求时执行；token 勿读出或打印。手册和脚本全文见 `Manuscript/notes/3_LEDGER.md` 第 4 节。
 
 ## 12. Update History（更新备忘）
 每次对脚本或整体代码做了更新，在这里用一句话记录：日期 + 改了什么。
@@ -146,3 +140,29 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 - 2026-10-29：第 6 节记录 S-LDSC reference 和 107 套 GWAS 的来源（Zenodo 10515792，已核对文件大小 / md5）；`Scripts/Pipeline.md` 3.2 同步。
 - 2026-10-29：细胞类型名称统一为 Bn / CD4 T cell / CD8 T cell（第 1 节，图和论文全文已改）；新一轮论文图放 `Results/Figures/Figures_20261102/`，除 `Figure_1B_C` 只出 SVG 外所有图只出 PDF（见 `Scripts/Visualization.md`）；Fig 1B–C / S3 重画（环形图恢复图例和中心文字）。
 - 2026-11-01：建立 Overleaf git 同步（`tmp/overleaf_sync.sh` pull / push，第 11 节规则 6）；首次 `pull` 把 Overleaf 的标题、摘要、Results、Discussion、Methods 新文字同步回 `Manuscript/`。
+- 2026-11-01：论文笔记精简为 4 个 md（`Manuscript/AGENTS.md`、`polish/PLAYBOOK.md`、`polish/REVISION_PLAN.md`、`notes/REFERENCE.md`），旧笔记、证据卡和 A1 审计删除（备份在 `tmp/manuscript_notes_backup_20261101.tar.gz`）；第 11 节随之改写。
+- 2026-11-01：论文正文的细胞类型改写为 Bn cells / CD4 T cells / CD8 T cells（第 1 节）；图中标签不变。
+- 2026-11-03：新增 Figure S4（`Scripts/Visualization/Plot12_Venn.R`）：各方法显著 link 在 3 个细胞类型之间的 Venn 图，输出 `Results/Figures/Figures_20261102/Figure_S4.pdf`。
+- 2026-11-03：画图脚本统一按 `Plot<N>_` 顺序编号、不跟论文图号（`Plot_Sup1_OneSampleMR.R` → `Plot11_OneSampleMR.R`，`Plot_Sup4_Venn.R` → `Plot12_Venn.R`），对应关系记在 `Scripts/Visualization.md` 第 3 节。
+- 2026-11-03：新增 `Scripts/Validation/Valid1_Hyper_MROnly.R`（MR-Only link 金标准命中，3 个 CT 合并、HiChIP / PCHiC 取并集）和 `Plot13_MROnly_ObsExp.R`（Figure S5：观测 vs 背景；2026-11-04 改为按 K/N 分箱的校准图，因为单个 gene 的 MR-Only peak 太少，无法画逐 gene 密度）。
+- 2026-11-04：微调 Figure S4 / S5 的版式：精简图中文字，S4 加并集数和细胞类型图例，S5 的点更清楚（详见 `Scripts/Visualization.md` 3.13、3.14）。
+- 2026-11-04：Figure S5 的分箱 CI 改为按 gene 的 bootstrap（B = 2000）；去掉 “enriched” 文字，线条调细，配色统一为蓝色系（`Scripts/Visualization.md` 3.14）。
+- 2026-11-04：Figure S4 改为只统计 3 个细胞类型都检验过的 14,890 个候选 pair，圆外标注各 CT 显著 link 落在共有 pair 中的数量和占比（`Scripts/Visualization.md` 3.13）。
+- 2026-11-04：Figure S4 去掉 panel 标题下的并集数；S4、S5 加入 `Manuscript/supplementary.tex`，写好 caption（`Manuscript/notes/REFERENCE.md` 第 1、4 节）。
+- 2026-11-04：新增 Figure S6 / S7（`Scripts/Visualization/Plot14_MethodCorr.R`）：5 个方法两两的 effect / signed −log10 P 密度矩阵和 Spearman r，每个 CT 一页（`Scripts/Visualization.md` 3.15）。
+- 2026-11-04：Figure S6 / S7 合并为一个 `Figure_S6.pdf`（每个 CT 一页，A effect / B signed −log10 P 上下排）。
+- 2026-11-04：Figure S6 加入 `Manuscript/supplementary.tex`（3 页，第 2–3 页为 continued），写好 caption（`Manuscript/notes/REFERENCE.md` 第 1、4 节）。
+- 2026-11-04：补充材料中 Figure S6 的三页编号为 S6.1 / S6.2 / S6.3 Fig（Bn / CD4 T cells / CD8 T cells）。
+- 2026-11-04：S6.1–S6.3 Fig 统一图的大小，共用的完整说明单独一页放在三张图之前。
+- 2026-11-04：补充材料首页去掉论文标题和说明句，“Supporting” 改为 “Supplementary”，加 S1 Text 的目录。
+- 2026-11-04：新增 Figure S7（`Scripts/Visualization/Plot15_Manhattan.R`）：MR 方法的全基因组 Manhattan 图，第 1 页 Causal Joint × 3 CT，第 2–4 页每 CT 4 个方法（`Scripts/Visualization.md` 3.16）。
+- 2026-11-04：Figure S7 第 1 页只画 Causal Joint 的 CD4 T cell，例子 pair 用洋红色高亮，散点放大。
+- 2026-11-04：Figure S7 图中去掉 pair 数 / 过线数，数据合并为一个 `Figure_S7_data.tsv`。
+- 2026-11-04：Figure S7 改版：y 轴线性；第 1 页为 CD4 T cell 的 Miami 图（Causal Joint / Marginal Multiomics）；第 2–4 页每页 6 个方法；causal 亮橙、marginal 亮绿。
+- 2026-11-04：Figure 3 加入 CD4 T cell 的 Miami 图作为 panel A（原 A–C 改为 B–D），GO 改暖色、GRN 改藏蓝；Figure S7 去掉 Miami 页，只留 3 页（`Scripts/Visualization.md` 3.10、3.16）。
+- 2026-11-04：Figure 3 改版：A Miami 图加高，B/C GO 压缩，D HiChIP 校准图（取自 S5，暖色）+ E GRN odds ratio（只画 CD4 T cell）；Bn / CD8 T cell 的 GRN 结果移到新的 Figure S8（`Scripts/Visualization.md` 3.10、3.14）。
+- 2026-11-04：Figure 3 微调为 A 通栏 + 2×2 网格（B / C GO，D HiChIP，E GRN），去掉 title / subtitle、统一用浅薄荷色标签条，整体换为薄荷色板（`00_common.R` 的 `PAL_MINT`）；修正 Miami 图两半 y 轴错位（`Scripts/Visualization.md` 3.10、3.16）。
+- 2026-11-04：Figure S5 改为 Figure 3D 的风格（`Scripts/Visualization.md` 3.14）；Figure 3、S5、S7、S8 更新到论文（S7.1–S7.3、S8 Fig 新进 `Manuscript/supplementary.tex`）。
+- 2026-11-04：论文管理文件重组为 `Manuscript/notes/1_WORKFLOW.md`、`2_BOARD.md`、`3_LEDGER.md`（替代 `polish/PLAYBOOK.md`、`polish/REVISION_PLAN.md`、`notes/REFERENCE.md`）；流程改为每个小节一轮工作卡，润色参照 scMultiMap；`tools/ms_check.py invariants` 新增 `--snapshot DIR`；第 4、11 节随之改写。
+- 2026-11-05：新增补充表 S4 Table（7 个 GWAS 性状汇总）：`Scripts/Visualization/Table5_GWASTraits.R` → `Results/Figures/Figures_20261102/Table_S4.xlsx` / `.tsv`；暂未进 `Manuscript/`。
+- 2026-11-06：Fig 4（`Plot10_Combined.R`）微调：B 去掉 Asthma / UBAC2 换成 ERAP1，A 图例入图、字号放大，Set3 配色（`Scripts/Visualization.md` 3.9）。

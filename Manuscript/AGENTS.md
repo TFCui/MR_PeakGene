@@ -1,112 +1,38 @@
-# Manuscript collaboration instructions
+# Manuscript rules (Claude Code; CodeX for the final review only)
 
-Rules for the AI assistants working in `Manuscript/` (Claude Code and CodeX).
-This file holds shared rules only and should stay stable. Paper facts and
-progress live in each tool's own notes file (see Roles).
+Project MR_PeakGene: MR-based peak–gene links from CIMA single-cell QTLs. Target: PLOS Genetics,
+Research Article. Academic English, LaTeX; the author writes on Overleaf. The author decides the
+structure; Claude's core job is polishing the English (fluent, idiomatic, precise, academic) while
+keeping track of what each paragraph should and should not say given the whole paper.
 
-## Roles
+## Read first
+1. `notes/1_WORKFLOW.md`: roles, one-round workflow (W1 review → author answers → W2 polish →
+   W3 close), polishing rules (incl. scMultiMap as a style model), red lines, prompt templates.
+2. `notes/2_BOARD.md`: sections 1–2 (unified wording, whole-paper map), then only the current unit
+   in section 4.
+3. `notes/3_LEDGER.md` when needed: verified numbers (section 1), figure ledger, submission,
+   Overleaf sync, update log.
+Do not create other notes files. Continue from the actual files, not from chat history.
 
-| Tool | Responsible for | Own notes file |
-|---|---|---|
-| Claude Code | Organizing LaTeX, formatting, checking cross-references, compiling the paper; figure and table provenance | `Notes_Claude_Code.md` |
-| CodeX | Reading Methods, checking equations, discussing scientific logic, drafting paragraph structure | `CODEX_METHODS_NOTES.md` (organized by paper section) |
+## Red lines
+- Never change numbers, P values, thresholds, sample sizes, `\cite` keys, `\label`s, equations or
+  figure/table content; report suspected errors instead.
+- Never invent results, method details, citations or conclusions; use `\TODO{}` or `[CITE: claim]`.
+- Interpretive sentences come only from the author's points.
+- Write only inside `Manuscript/` (helper scripts: `../tmp/Manuscript_tables/`; round snapshots:
+  `../tmp/ms_rounds/`). `../Scripts/`, `../Results/`, `../paper_reference/` and all data are
+  read-only; no analyses or SLURM jobs unless asked. If a step needs a write elsewhere, stop and ask.
+- No commit or push (GitHub or Overleaf) unless the author asks in this session.
 
-- Each tool reads both files but writes only its own. Do not edit the other
-  tool's notes file.
-- Editing `sections/*.tex`: CodeX edits Methods/Results/Discussion wording and
-  equations when the user asks; Claude Code does everything else in LaTeX
-  (layout, floats, labels, `\ref`/`\cite` checks, tables, figure inclusion,
-  build). Never revert the other tool's text changes; if something looks
-  wrong, say so to the user.
-- `Notes_Claude_Code.md` section D describes what the `.tex` files currently
-  contain; Claude Code refreshes it from the actual files, including text
-  that CodeX changed. CodeX records its scientific reasoning, formula checks,
-  and paragraph plans in `CODEX_METHODS_NOTES.md`.
+## Build and sync
+- Build both documents: `bash -l ../tmp/build_ms.sh` (`main.tex` and `supplementary.tex`).
+  Supporting items live in `supplementary.tex` and are cited with `\nameref{S1_Fig}`.
+- Checks: `python tools/ms_check.py invariants [--snapshot DIR | --base REF]` and `placeholders`.
+- Overleaf: before editing, run `bash tmp/overleaf_sync.sh status` from the project root and
+  `pull` if Overleaf is newer. `push` only when asked. Never print the token. Details:
+  `notes/3_LEDGER.md` section 4.
 
-## Project identity
-
-- Project: **MR_Peak_Gene**.
-- Field: Statistical Genetics and Computational Genomics.
-- Target: **PLOS Genetics**, Research Article.
-- Language: Academic English. Format: LaTeX.
-- Primary manuscript editing platform: Overleaf.
-
-## Start and finish of every task
-
-1. Read your own notes file, then skim the other tool's notes file.
-   `Notes_Claude_Code.md` records, for every figure and table, where it comes
-   from, how it was changed before entering the paper, and what it means
-   (section C), and what each manuscript section currently contains and still
-   needs (section D).
-2. Inspect the relevant LaTeX sections and `main.tex`.
-3. Verify which version is current, including any newer Overleaf revisions;
-   do not overwrite newer work with an older local copy or ZIP. The server is
-   linked to Overleaf by git: run `bash tmp/overleaf_sync.sh status` (from the
-   project root) to see whether Overleaf has newer commits, and `pull` before
-   editing if it does. `push` changes the user's Overleaf project, so run it
-   only when the user explicitly asks. Details, conflict handling and rebuild
-   steps: section F of `Notes_Claude_Code.md`.
-4. Continue from the actual files, not solely from conversation history.
-5. When finished, update your own notes file:
-   - Claude Code: a figure or table added, replaced, or changed -> its entry in
-     section C of `Notes_Claude_Code.md` (source, modification, meaning, hash;
-     refresh hashes with `sha256sum figures/*.pdf`); a section changed ->
-     section D; always one line in section E (date | tool | what changed).
-   - CodeX: add the discussion, checks, and decisions under the matching
-     section heading in `CODEX_METHODS_NOTES.md`, with the date and what was
-     changed in LaTeX, if anything.
-6. Summarize important modifications and relevant validation to the user.
-
-Platforms do not share session history. Hand work across tools through the two
-notes files and the manuscript sources, not through chat history.
-
-## Writing principles
-
-- Follow PLOS Genetics author guidelines and preserve the official PLOS
-  formatting conventions already adopted here.
-- Preserve scientific accuracy. Never invent results, methods, references,
-  authorship details, declarations, or scientific conclusions.
-- Use actual project results as evidence. Documentation is background;
-  verify important methodological details against the relevant source code
-  when writing them. Distinguish verified, documented, exploratory, and
-  missing information. Use TODO placeholders where information is missing.
-- Preserve existing scientific content unless its revision is requested.
-  Preserve LaTeX labels, citation keys, and cross-references.
-- Keep sources modular and editable. Retain visible figures during drafting;
-  prepare a separate submission version when requested. Preserve research
-  figure assets and the official bibliography style.
-
-## File safety
-
-- Edit files only inside `Manuscript/`; work incrementally and touch only
-  files relevant to the current task. Do not rewrite unrelated sections.
-- Everything outside `Manuscript/` is read-only: `../Scripts/`, `../Results/`,
-  `../paper_reference/`, `../Scripts_reference/`, and all data. Do not modify
-  research scripts or analysis results as part of manuscript work, and do not
-  run analyses or submit SLURM jobs without an explicit task. If a step seems
-  to require writing outside `Manuscript/`, stop and ask the user.
-- Temporary files and generator scripts for manuscript tables belong in
-  `../tmp/` (for example `../tmp/Manuscript_tables/`); compilation products
-  stay inside `Manuscript/`.
-- Build: `bash -l ../tmp/build_ms.sh` (loads the TeX module and builds both
-  root documents: `main.tex` with pdfLaTeX/BibTeX, and `supplementary.tex`
-  with pdfLaTeX twice; the script documents its own settings). Supporting
-  figures and tables live in `supplementary.tex`; `main.tex` only lists them
-  in `sections/supporting_info.tex` and cites them with `\nameref{S1_Fig}`.
-- Do not commit or push without explicit permission.
-
-## Reference papers
-
-`../paper_reference/` holds the core papers behind the Methods: MR-Egger
-(Burgess and Thompson 2017 and appendix), GRIP, SMR (Zhu et al. 2016), and the
-CIMA Science paper. Read-only. `Notes_Claude_Code.md` section A says where
-each is used and which `references.bib` key it maps to. Prefer them over
-memory when writing or checking Methods, Introduction, and Discussion.
-
-## Network access
-
-- Prefer local documentation and the existing `template_reference/` files.
-  Avoid unnecessary network requests from the HPC server.
-- Respect task-specific network restrictions. If access is necessary and
-  permitted, use explicit, bounded timeouts; do not repeatedly retry failures.
-  Report unavailable resources instead of leaving requests hanging.
+## End of every task
+W2: report the change log, expression notes, checklist and diff command. W3: close the work card,
+update `2_BOARD` 2.2 / 2.3, and append one line to `notes/3_LEDGER.md` section 5
+(date | tool and model | what | how checked). Figure, format and sync changes are logged there too.

@@ -1,0 +1,38 @@
+\begin{table}[htbp]
+\centering
+\caption{GWAS used in the S-LDSC analysis (Fig~4A) and in the GWAS-overlap tracks (Fig~4B).}
+\label{tab:supp-gwas}
+\begingroup
+\footnotesize
+\singlespacing
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.45in}>{\raggedright\arraybackslash}p{1.75in}>{\raggedright\arraybackslash}p{1.35in}r>{\raggedright\arraybackslash}p{0.8in}@{}}
+\toprule
+Trait & Study or data source & N & SNPs & \(h^2\) (SE) \\
+\midrule
+Ankylosing spondylitis (AS) & Pan-UK Biobank (\url{https://pan.ukbb.broadinstitute.org/}) & 420,473\newline (1,185 cases / 419,288 controls) & 1,188,036 & 0.0052\newline (0.0017) \\
+Crohn's disease (CD) & International IBD Genetics Consortium (\url{https://www.ibdgenetics.org/}) & 367,592\newline (20,873 cases / 346,719 controls) & 1,188,159 & 0.0649\newline (0.0058) \\
+Inflammatory bowel disease (IBD) & de Lange et al.~\cite{delange2017ibd} & 59,957 & 1,150,510 & 0.3202\newline (0.0243) \\
+Rheumatoid arthritis (RA) & Saevarsdottir et al.~\cite{saevarsdottir2022ra} & 1,026,690 & 1,184,671 & 0.0132\newline (0.0011) \\
+Systemic lupus erythematosus (SLE) & Bentham et al.~\cite{bentham2015sle} & 14,267 & 1,163,805 & 0.4567\newline (0.0957) \\
+Multiple sclerosis (MS) & International Multiple Sclerosis Genetics Consortium~\cite{sawcer2011ms} & 27,148 & 450,159 & 0.0800\newline (0.0373) \\
+Type 1 diabetes (T1D) & Chiou et al.~\cite{chiou2021t1d} & 511,056\newline (median; range 25,452--520,580) & 1,192,414 & 0.0397\newline (0.0054) \\
+\bottomrule
+\end{tabular}
+\par\medskip
+\begin{minipage}{\linewidth}
+\footnotesize
+All seven GWAS were analyzed in S-LDSC (Fig~4A). N and SNPs are those of the
+summary statistics read by S-LDSC (HapMap3 SNPs; variants with a missing \(Z\) or N are dropped);
+for AS and CD, the numbers of cases and controls are given. The sample size of the T1D summary
+statistics varies across variants (median and range given).
+\(h^2\) is the observed-scale SNP heritability estimated by S-LDSC with the
+97 baselineLD v2.2 annotations and the 1000 Genomes Phase 3 European LD reference (all-candidate-peak model; standard error in parentheses).
+The summary statistics for IBD, RA, SLE and T1D were obtained from the collection of 107
+independent GWAS on Zenodo (doi:10.5281/zenodo.10515792), those for AS from the Pan-UK Biobank,
+those for CD from the International IBD Genetics Consortium website, and those for MS from ImmunoBase
+(protected data; approval from the International Multiple Sclerosis Genetics Consortium is required).
+\end{minipage}
+\endgroup
+\end{table}

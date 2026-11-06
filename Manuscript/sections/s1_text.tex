@@ -1,0 +1,334 @@
+% S1 Text: Supplementary Methods. Input by supplementary.tex.
+% Moved from sections/methods.tex (MR framework, IVW / MR-Egger for
+% uncorrelated variants, GLS truncation details) on 2026-11-01 (see notes/2_BOARD.md, S1 Text).
+% Restructured and expanded 2026-11-02 (P5): NOME, consistency of IVW, InSIDE,
+% correlated variants (Burgess & Thompson 2017, Appendix A.2 and A.4), random effects.
+
+\subsection*{MR model and summary statistics}
+
+\noindent The expressions in this section are given for uncorrelated variants, for exposition. All reported estimates use the correlated-variant (GLS) versions described in the main Methods, which reduce to these expressions when $\boldsymbol R=\boldsymbol I$.
+
+\noindent To connect individual-level associations with the summary statistics used in MR, consider a peak--gene pair with \(J\) candidate instruments. Let \(G_{ij}\in\{0,1,2\}\) denote the number of copies of the effect allele of SNP \(j\) carried by individual \(i\), where \(j=1,\ldots,J\) and \(i=1,\ldots,N\), and let \(X_i\) and \(Y_i\) denote the corresponding accessibility and expression measurements. For each SNP separately, the marginal associations can be written as
+\begin{align*}
+X_i &= \mu_{Xj} + \gamma_j G_{ij} + \varepsilon_{ij}^{X}, \\
+Y_i &= \mu_{Yj} + \Gamma_j G_{ij} + \varepsilon_{ij}^{Y},
+\end{align*}
+where \(\mu_{Xj}\) and \(\mu_{Yj}\) are intercepts, and \(\gamma_j\) and \(\Gamma_j\) are the population-level SNP--exposure and SNP--outcome associations, respectively. Covariate terms are omitted for simplicity. The two associations are related by
+\begin{equation}
+\Gamma_j = \beta\gamma_j + \alpha_j,
+\end{equation}
+where \(\beta\) is the causal effect of the exposure on the outcome and \(\alpha_j\) is the direct (pleiotropic) effect of SNP \(j\) on the outcome that is not mediated by the exposure. SNP \(j\) is a valid instrument only if \(\alpha_j=0\) \cite{burgess2017interpreting}.
+
+\subsection*{The NOME assumption}
+
+\noindent Both IVW and MR-Egger regress the estimated SNP--outcome associations \(\hat{\Gamma}_j\) on the estimated SNP--exposure associations \(\hat{\gamma}_j\) and treat the \(\hat{\gamma}_j\) as fixed regressors. This is the NO Measurement Error (NOME) assumption: the sampling error of \(\hat{\gamma}_j\) (standard error \(s_{Xj}\)) is assumed to be negligible, so that only the uncertainty in \(\hat{\Gamma}_j\) enters the weights and the residual variance. When the SNP--exposure associations are imprecise, NOME is violated and the regressor is measured with error. MR-Egger is then subject to weak-instrument bias, which can be assessed with the \(I^2\) statistic proposed by Bowden et al.; values close to one indicate that the MR-Egger estimate does not suffer from weak-instrument bias \cite{burgess2017interpreting} [CITE: Bowden et al., $I^2$ statistic for MR-Egger]. All instruments in this study had caQTL nominal $P<10^{-8}$ (main text, Methods, ``Data Preprocessing'').
+
+\subsection*{Inverse-variance weighted method}
+
+\noindent For uncorrelated variants, the IVW method combines the SNP-specific ratio estimates \(\hat{\beta}_j=\hat{\Gamma}_j/\hat{\gamma}_j\) into a single estimate of the causal effect. Under NOME and conditional on the \(\hat{\gamma}_j\), IVW is a weighted linear regression through the origin \cite{burgess2017interpreting,dudbridge2025grip}:
+\begin{equation}
+\hat{\Gamma}_j = \beta\hat{\gamma}_j + \varepsilon_j,
+\qquad
+\varepsilon_j \stackrel{\mathrm{ind}}{\sim}
+\mathcal{N}(0,\phi s_{Yj}^{2}),
+\quad j=1,\ldots,J,
+\end{equation}
+where $s_{Yj}$ is the standard error of $\hat{\Gamma}_j$ and $\phi$ is a residual variance multiplier. The fixed-effect model sets $\phi=1$, whereas the multiplicative random-effects model estimates $\phi$ to allow for overdispersion (see ``Multiplicative random effects and overdispersion'' below). IVW can accommodate balanced pleiotropy with $E(\alpha_j\mid\gamma_j)=0$ \cite{dudbridge2025grip}.
+
+\noindent The IVW estimate minimizes the weighted residual sum of squares
+\begin{equation}
+Q(\beta) = \sum_{j=1}^{J} \frac{(\hat{\Gamma}_j-\beta\hat{\gamma}_j)^2}{s_{Yj}^{2}},
+\end{equation}
+\noindent which gives
+\begin{equation}
+\hat{\beta}_{\mathrm{IVW}} = \frac{\sum_{j=1}^{J}s_{Yj}^{-2} \hat{\gamma}_j\hat{\Gamma}_j} {\sum_{j=1}^{J}s_{Yj}^{-2}\hat{\gamma}_j^2}
+= \frac{\sum_{j=1}^{J}w_j\hat{\beta}_j} {\sum_{j=1}^{J}w_j},
+\end{equation}
+\noindent where $w_j=\hat{\gamma}_j^2/s_{Yj}^{2}$. Thus, the IVW estimate is a weighted average of the SNP-specific ratio estimates, with weights equal to their inverse first-order variances \cite{burgess2017interpreting}. Its conditional variance is
+\begin{equation}
+\operatorname{Var}(\hat{\beta}_{\mathrm{IVW}} \mid\hat{\boldsymbol{\gamma}}) =
+\frac{\phi} {\sum_{j=1}^{J}s_{Yj}^{-2}\hat{\gamma}_j^2},
+\end{equation}
+\noindent where $\hat{\boldsymbol{\gamma}}$ is the vector of estimated SNP--exposure associations, and the residual dispersion is estimated by
+\begin{equation}
+\hat{\phi} = \frac{Q(\hat{\beta}_{\mathrm{IVW}})}{J-1}.
+\end{equation}
+
+\subsection*{Consistency of the IVW estimator}
+
+\noindent Substituting \(\Gamma_j=\beta\gamma_j+\alpha_j\), the ratio estimate of SNP \(j\) converges, as the sample size \(N\) increases, to
+\begin{equation}
+\frac{\hat{\Gamma}_j}{\hat{\gamma}_j}
+\xrightarrow{N\to\infty}
+\frac{\Gamma_j}{\gamma_j}
+=\beta+\frac{\alpha_j}{\gamma_j}.
+\end{equation}
+The ratio estimate of a valid instrument (\(\alpha_j=0\)) is therefore consistent for \(\beta\), and so is the IVW estimate, a weighted average of the ratio estimates, when all instruments are valid. More generally,
+\begin{equation}
+\hat{\beta}_{\mathrm{IVW}}
+\xrightarrow{N\to\infty}
+\beta+\frac{\sum_{j=1}^{J}s_{Yj}^{-2}\alpha_j\gamma_j}{\sum_{j=1}^{J}s_{Yj}^{-2}\gamma_j^2},
+\end{equation}
+so the asymptotic bias of the IVW estimate is zero if \(\sum_{j}s_{Yj}^{-2}\alpha_j\gamma_j=0\); otherwise, the IVW estimate is biased \cite{burgess2017interpreting}.
+
+\subsection*{MR-Egger regression and the InSIDE assumption}
+
+\noindent MR-Egger extends the zero-intercept IVW regression by estimating an intercept, thereby allowing for a nonzero average pleiotropic effect. For uncorrelated SNPs, and treating the estimated SNP--exposure associations as fixed under NOME, the working model is
+\begin{equation}
+\hat{\Gamma}_j =
+\alpha_0+\beta\hat{\gamma}_j+\varepsilon_{\mathrm{Egger},j},
+\qquad
+\varepsilon_{\mathrm{Egger},j}
+\stackrel{\mathrm{ind}}{\sim}
+\mathcal{N}(0,\phi_{\mathrm{Egger}}s_{Yj}^{2}),
+\end{equation}
+\noindent where $\alpha_0$ is the intercept and $\phi_{\mathrm{Egger}}$ is a residual variance multiplier \cite{burgess2017interpreting}.
+
+\noindent \textit{Allele orientation.} Changing the coded allele of a SNP reverses the signs of both $\hat{\gamma}_j$ and $\hat{\Gamma}_j$. This leaves the IVW regression through the origin unchanged, but in MR-Egger it changes the definition of $\alpha_j$, and therefore the intercept, the slope and the InSIDE assumption itself. Both associations are therefore oriented to the exposure-increasing allele, so that $\hat{\gamma}_j>0$ for all $j$; MR-Egger then does not depend on the original allele coding, and directional pleiotropy is defined with respect to the exposure-increasing allele \cite{burgess2017interpreting} (main text, Methods, ``Allele orientation'').
+
+\noindent \textit{Estimation.} Let $v_j=s_{Yj}^{-2}$ denote the regression weights and define the weighted means
+\begin{equation}
+\bar{\gamma}_v =
+\frac{\sum_{j=1}^{J}v_j\hat{\gamma}_j} {\sum_{j=1}^{J}v_j},
+\qquad
+\bar{\Gamma}_v = \frac{\sum_{j=1}^{J}v_j\hat{\Gamma}_j} {\sum_{j=1}^{J}v_j}.
+\end{equation}
+\noindent The weighted least-squares estimates minimize
+\begin{equation}
+Q_{\mathrm{Egger}}(\alpha_0,\beta) =
+\sum_{j=1}^{J}v_j (\hat{\Gamma}_j-\alpha_0-\beta\hat{\gamma}_j)^2.
+\end{equation}
+\noindent Writing $S_{\gamma\gamma} =\sum_{j=1}^{J}v_j(\hat{\gamma}_j-\bar{\gamma}_v)^2$, the estimates are
+\begin{equation}
+\begin{aligned}
+\hat{\beta}_{\mathrm{Egger}} &=
+\frac{\sum_{j=1}^{J}v_j
+(\hat{\gamma}_j-\bar{\gamma}_v)
+(\hat{\Gamma}_j-\bar{\Gamma}_v)}
+     {S_{\gamma\gamma}},\\
+\hat{\alpha}_0
+&=\bar{\Gamma}_v-\hat{\beta}_{\mathrm{Egger}}\bar{\gamma}_v.
+\end{aligned}
+\end{equation}
+
+\noindent \textit{Consistency and the InSIDE assumption.} The MR-Egger slope is the weighted covariance between $\hat{\Gamma}_j$ and $\hat{\gamma}_j$ divided by the weighted variance of $\hat{\gamma}_j$, with weights $v_j$. For a fixed set of $J$ instruments, as $N$ increases,
+\begin{equation}
+\hat{\beta}_{\mathrm{Egger}}
+=\frac{\operatorname{cov}_v(\hat{\boldsymbol{\Gamma}},\hat{\boldsymbol{\gamma}})}{\operatorname{var}_v(\hat{\boldsymbol{\gamma}})}
+\xrightarrow{N\to\infty}
+\frac{\operatorname{cov}_v(\boldsymbol{\Gamma},\boldsymbol{\gamma})}{\operatorname{var}_v(\boldsymbol{\gamma})}
+=\beta+\frac{\operatorname{cov}_v(\boldsymbol{\alpha},\boldsymbol{\gamma})}{\operatorname{var}_v(\boldsymbol{\gamma})},
+\end{equation}
+where bold symbols denote vectors across instruments and, for any two such vectors $\boldsymbol a$ and $\boldsymbol b$,
+\begin{equation}
+\operatorname{cov}_v(\boldsymbol a,\boldsymbol b)
+=\frac{\sum_{j=1}^{J}v_j(a_j-\bar{a}_v)(b_j-\bar{b}_v)}{\sum_{j=1}^{J}v_j},
+\qquad
+\operatorname{var}_v(\boldsymbol a)=\operatorname{cov}_v(\boldsymbol a,\boldsymbol a),
+\end{equation}
+with $\bar{a}_v$ and $\bar{b}_v$ the $v$-weighted means. The MR-Egger slope is therefore consistent for $\beta$ if $\operatorname{cov}_v(\boldsymbol{\alpha},\boldsymbol{\gamma})=0$, that is, if across the instruments in the analysis the pleiotropic effects are uncorrelated with the instrument strengths. This is the Instrument Strength Independent of Direct Effect (InSIDE) assumption \cite{burgess2017interpreting,dudbridge2025grip}.
+
+\noindent Under InSIDE, the intercept converges to the weighted average pleiotropic effect $\bar{\alpha}_v=\sum_j v_j\alpha_j/\sum_j v_j$. When pleiotropy is balanced ($\bar{\alpha}_v=0$) and InSIDE holds, the intercept is zero, the MR-Egger and IVW estimates coincide, and the IVW estimate is also consistent, because the two conditions together imply that the IVW bias term $\sum_j s_{Yj}^{-2}\alpha_j\gamma_j$ is zero. Conversely, a nonzero intercept indicates that the average pleiotropic effect differs from zero (directional pleiotropy), that InSIDE is violated, or both \cite{burgess2017interpreting}.
+
+\noindent The condition above is a finite-sample version of InSIDE: the weighted covariance is zero for the particular set of instruments analyzed, and consistency holds as $N$ increases with $J$ fixed. In the original description of MR-Egger \cite{bowden2015egger}, InSIDE was stated as independence between the distribution of pleiotropic effects and the distribution of SNP--exposure associations, with the instruments regarded as a sample from a population of variants; under this population version, consistency also requires the number of instruments to tend to infinity. Balanced and directional pleiotropy are defined correspondingly, as a zero or nonzero weighted mean of the distribution of pleiotropic effects (population version) or of the pleiotropic effects of the instruments analyzed (finite-sample version) \cite{burgess2017interpreting}.
+
+\noindent InSIDE is plausible when the pleiotropic effects act through variables that do not confound the exposure--outcome relationship. It is likely to be violated when the pleiotropic effects act through confounders: a variant with a larger effect on a confounder then has both a larger association with the exposure and a larger pleiotropic effect on the outcome, so that instrument strength and pleiotropy are correlated \cite{burgess2017interpreting}.
+
+\noindent \textit{Precision.} Under the working model, the conditional slope variance is
+\begin{equation}
+\operatorname{Var}(\hat{\beta}_{\mathrm{Egger}}
+                  \mid\hat{\boldsymbol{\gamma}})
+= \frac{\phi_{\mathrm{Egger}}}{S_{\gamma\gamma}}.
+\end{equation}
+\noindent The precision of the slope therefore depends on the variation in the SNP--exposure associations, not only on their overall magnitude. When the exposure associations are similar across SNPs, the MR-Egger estimate can be imprecise even if each association is strong \cite{burgess2017interpreting}. Because the regression estimates both an intercept and a slope, the residual dispersion is estimated with $J-2$ degrees of freedom:
+\begin{equation}
+\hat{\phi}_{\mathrm{Egger}} =
+\frac{Q_{\mathrm{Egger}}(\hat{\alpha}_0,\hat{\beta}_{\mathrm{Egger}})} {J-2}.
+\end{equation}
+
+\subsection*{Correlated variants}
+
+\noindent For correlated instruments, both regressions are fitted by generalized weighted least squares with weight matrix $\boldsymbol{\Psi}=\boldsymbol{\Sigma}^{-1}$, where $\boldsymbol{\Sigma}=\boldsymbol D_Y\boldsymbol R\boldsymbol D_Y$ (main text, Methods, ``Causal IVW''). For a fixed set of $J$ instruments, the causal IVW estimate converges to
+\begin{equation}
+\hat{\beta}_{\text{GLS-IVW}}
+\xrightarrow{N\to\infty}
+\beta+\frac{\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol{\alpha}}{\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol{\gamma}},
+\end{equation}
+and the causal Egger slope converges to
+\begin{equation}
+\hat{\beta}_{\text{GLS-Egger}}
+\xrightarrow{N\to\infty}
+\frac{(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol{\Gamma})(\boldsymbol 1^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)-(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)(\boldsymbol{\Gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)}
+{(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol{\gamma})(\boldsymbol 1^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)-(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)^2}
+=\beta+
+\frac{(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol{\alpha})(\boldsymbol 1^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)-(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)(\boldsymbol{\alpha}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)}
+{(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol{\gamma})(\boldsymbol 1^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)-(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)^2},
+\end{equation}
+where the second equality uses $\boldsymbol{\Gamma}=\beta\boldsymbol{\gamma}+\boldsymbol{\alpha}$. The correlated-variant InSIDE condition is therefore
+\begin{equation}
+(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol{\alpha})(\boldsymbol 1^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)-(\boldsymbol{\gamma}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)(\boldsymbol{\alpha}^{\mathsf T}\boldsymbol{\Psi}\boldsymbol 1)=0.
+\end{equation}
+When the variants are uncorrelated, $\boldsymbol{\Psi}=\operatorname{diag}(v_1,\ldots,v_J)$, and this condition reduces to $\operatorname{cov}_v(\boldsymbol{\alpha},\boldsymbol{\gamma})=0$ \cite{burgess2017interpreting}. In our implementation, $\boldsymbol{\Sigma}^{-1}$ is replaced by the truncated pseudoinverse $\widetilde{\boldsymbol{\Sigma}}^{+}$ (see ``Truncated eigendecomposition for the GLS estimators'' below); the expressions above hold with $\boldsymbol{\Psi}=\widetilde{\boldsymbol{\Sigma}}^{+}$ because they depend on the weighting only through $\boldsymbol{\Psi}$. Burgess and Thompson noted that this criterion is unlikely to be satisfied if all variants are mutually correlated, because correlation between variants is likely to induce correlation between their exposure associations and pleiotropic effects \cite{burgess2017interpreting}.
+
+\subsection*{Multiplicative random effects and overdispersion}
+
+\noindent \textit{Rationale.} The fixed-effect model ($\phi=1$) assumes that the residuals reflect only the sampling error of the $\hat{\Gamma}_j$, which holds when all instruments estimate the same causal effect. Pleiotropic effects ($\alpha_j\neq0$) add variation among the SNP-specific ratio estimates beyond sampling error. This heterogeneity appears as overdispersion: the residual variance exceeds that implied by the $s_{Yj}^{2}$ (or by $\boldsymbol{\Sigma}$ for correlated variants). In our setting, many instruments may affect gene expression through pathways other than accessibility at the tested peak, so heterogeneity among the ratio estimates is expected. Ignoring it would give standard errors that are too small and inflate the type I error. A random-effects model that allows for multiplicative overdispersion is therefore preferred for IVW when pleiotropy is suspected, and should always be used for MR-Egger \cite{burgess2017interpreting}.
+
+\noindent \textit{Procedure.} For both methods, we proceeded in four steps.
+\begin{enumerate}
+\item Fit the regression. The point estimates do not depend on $\phi$ and are therefore identical under the fixed-effect and random-effects models.
+\item Estimate the residual dispersion from the residual quadratic form $Q$ at the fitted values, $\hat{\phi}=Q/(J-p)$, with $p=1$ for IVW and $p=2$ for MR-Egger. In the absence of heterogeneity, $\hat{\phi}$ is expected to be close to one; $\hat{\phi}>1$ indicates overdispersion.
+\item Set $\widetilde{\phi}=\max(1,\hat{\phi})$. For uncorrelated variants, underdispersion ($\hat{\phi}<1$) has no plausible biological mechanism and may arise by chance; scaling by $\hat{\phi}<1$ would make the random-effects estimate more precise than the fixed-effect estimate, so standard errors are inflated under overdispersion but never reduced \cite{burgess2017interpreting}.
+\item Multiply the fixed-effect standard errors by $\widetilde{\phi}^{1/2}$ and compare the resulting test statistic with a $t$ distribution with $J-p$ degrees of freedom.
+\end{enumerate}
+
+\noindent For IVW, the resulting standard error is
+\begin{equation}
+\widehat{\mathrm{SE}}(\hat{\beta}_{\mathrm{IVW}}) =
+\left\{
+\frac{\widetilde{\phi}} {\sum_{j=1}^{J}s_{Yj}^{-2}\hat{\gamma}_j^2}
+\right\}^{1/2},
+\end{equation}
+\noindent and inference is based on
+\begin{equation}
+T_{\mathrm{IVW}} =
+\frac{\hat{\beta}_{\mathrm{IVW}}} {\widehat{\mathrm{SE}}(\hat{\beta}_{\mathrm{IVW}})}
+\end{equation}
+\noindent with a $t_{J-1}$ reference distribution. For MR-Egger, with $J>2$ and $S_{\gamma\gamma}>0$, $\widetilde{\phi}_{\mathrm{Egger}}=\max(1,\hat{\phi}_{\mathrm{Egger}})$, and the slope and intercept standard errors are
+\begin{equation}
+\begin{aligned}
+\widehat{\mathrm{SE}}(\hat{\beta}_{\mathrm{Egger}})
+&=
+\left(
+\frac{\widetilde{\phi}_{\mathrm{Egger}}}{S_{\gamma\gamma}}
+\right)^{1/2},\\
+\widehat{\mathrm{SE}}(\hat{\alpha}_0)
+&=
+\left\{
+\widetilde{\phi}_{\mathrm{Egger}}
+\left[
+\frac{1}{\sum_{j=1}^{J}v_j}
++
+\frac{\bar{\gamma}_v^2}{S_{\gamma\gamma}}
+\right]
+\right\}^{1/2}.
+\end{aligned}
+\end{equation}
+\noindent The slope test evaluates $H_0:\beta=0$ using
+\begin{equation}
+T_{\mathrm{Egger}} =
+\frac{\hat{\beta}_{\mathrm{Egger}}} {\widehat{\mathrm{SE}}(\hat{\beta}_{\mathrm{Egger}})},
+\end{equation}
+\noindent with two-sided $P$ values from a $t_{J-2}$ reference distribution.
+
+\noindent The same procedure was applied to causal IVW and causal Egger, with the residual quadratic forms weighted by $\widetilde{\boldsymbol{\Sigma}}^{+}$ and with $J$ equal to the number of instruments after LD filtering (main text, Methods, ``Causal IVW'' and ``Causal Egger''). Pairs with $\hat{\phi}_{\mathrm{IVW}}>10$ were removed before multiple-testing correction (main text, Methods, ``Filtering and multiple testing'').
+
+\subsection*{Truncated eigendecomposition for the GLS estimators}
+
+\noindent
+Strong LD can make $\boldsymbol{\Sigma}$ nearly singular, so that direct inversion is numerically unstable. Without truncation, the GLS estimate of causal IVW would minimize
+\begin{equation}
+Q_{\mathrm{GLS}}(\beta)
+=
+(\hat{\boldsymbol{\Gamma}}-\beta\hat{\boldsymbol{\gamma}})
+^{\mathsf T}
+\boldsymbol{\Sigma}^{-1}
+(\hat{\boldsymbol{\Gamma}}-\beta\hat{\boldsymbol{\gamma}}).
+\end{equation}
+We therefore regularized the covariance weighting with a truncated eigendecomposition:
+\begin{equation}
+\boldsymbol{\Sigma}
+=
+\boldsymbol V\boldsymbol{\Lambda}\boldsymbol V^{\mathsf T},
+\qquad
+\boldsymbol{\Lambda}
+=
+\operatorname{diag}(\lambda_1,\ldots,\lambda_J),
+\end{equation}
+where $\boldsymbol V$ is orthogonal and
+$\lambda_1\geq\lambda_2\geq\cdots\geq\lambda_J$.
+Let $\lambda_\ell^{+}=\max(\lambda_\ell,0)$ and define
+\begin{equation}
+m_{\eta}
+=
+\min\left\{
+m\in\{1,\ldots,J\}:
+\frac{\sum_{\ell=1}^{m}\lambda_\ell^{+}}
+     {\sum_{\ell=1}^{J}\lambda_\ell^{+}}
+\geq\eta
+\right\},
+\qquad \eta=0.999.
+\end{equation}
+The retained directions are
+\begin{equation}
+\mathcal K
+=
+\left\{
+\ell:1\leq\ell\leq \max(m_{\eta},5),\
+\lambda_\ell>10^{-10}\lambda_1
+\right\},
+\qquad k=|\mathcal K|.
+\end{equation}
+That is, at least five directions are retained when $J\geq5$, and the relative eigenvalue threshold excludes directions with very small or non-positive eigenvalues. Because the eigenvalues are sorted, $\mathcal K$ consists of the $k$ leading directions.
+
+\noindent
+We denote the truncated covariance approximation by
+\begin{equation}
+\widetilde{\boldsymbol{\Sigma}}
+=
+\boldsymbol V
+\operatorname{diag}(\widetilde{\lambda}_1,\ldots,
+                   \widetilde{\lambda}_J)
+\boldsymbol V^{\mathsf T},
+\qquad
+\widetilde{\lambda}_\ell
+=
+\begin{cases}
+\lambda_\ell, & \ell\in\mathcal K,\\
+0, & \ell\notin\mathcal K.
+\end{cases}
+\label{eq:gls-truncated-covariance}
+\end{equation}
+By the Eckart--Young theorem, $\widetilde{\boldsymbol{\Sigma}}$ is the best rank-$k$ approximation of $\boldsymbol{\Sigma}$ in both the Frobenius and spectral norms [CITE: Eckart--Young theorem]. When $k<J$, this matrix is singular. We therefore use its Moore--Penrose pseudoinverse,
+\begin{equation}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+=
+\boldsymbol V
+\operatorname{diag}(d_1,\ldots,d_J)
+\boldsymbol V^{\mathsf T},
+\qquad
+d_\ell
+=
+\begin{cases}
+\lambda_\ell^{-1}, & \ell\in\mathcal K,\\
+0, & \ell\notin\mathcal K,
+\end{cases}
+\label{eq:gls-truncated-precision}
+\end{equation}
+which inverts the covariance on the retained eigenspace and assigns zero weight to the discarded directions.
+
+\noindent
+With this weighting, causal IVW minimizes
+\begin{equation}
+Q_{\mathcal K}(\beta)
+=
+(\hat{\boldsymbol{\Gamma}}
+ -\beta\hat{\boldsymbol{\gamma}})^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+(\hat{\boldsymbol{\Gamma}}
+ -\beta\hat{\boldsymbol{\gamma}}),
+\end{equation}
+and causal Egger, with $\boldsymbol X=[\boldsymbol 1_J,\hat{\boldsymbol{\gamma}}]$ and $\boldsymbol{\theta}=(\alpha_0,\beta)^{\mathsf T}$, minimizes
+\begin{equation}
+Q_{\mathrm{Egger}}(\boldsymbol{\theta})
+=
+(\hat{\boldsymbol{\Gamma}}
+ -\boldsymbol X\boldsymbol{\theta})^{\mathsf T}
+\widetilde{\boldsymbol{\Sigma}}^{+}
+(\hat{\boldsymbol{\Gamma}}
+ -\boldsymbol X\boldsymbol{\theta}).
+\end{equation}
+The closed-form solutions and their conditional variances are given in the main Methods; the residual quadratic forms at the solutions are the $Q$ used for $\hat{\phi}$.
+
+\noindent
+In the implementation, the estimates were computed by symmetric whitening on $\mathcal K$, $\boldsymbol W=\boldsymbol V\operatorname{diag}(d_1^{1/2},\ldots,d_J^{1/2})\boldsymbol V^{\mathsf T}$, followed by ordinary least squares of $\boldsymbol W\hat{\boldsymbol{\Gamma}}$ on $\boldsymbol W\hat{\boldsymbol{\gamma}}$ (causal IVW, through the origin) or on $\boldsymbol W[\boldsymbol 1_J,\hat{\boldsymbol{\gamma}}]$ (causal Egger); this is equivalent to the pseudoinverse form above. The residual degrees of freedom are $J-1$ (causal IVW) and $J-2$ (causal Egger), where $J$ is the number of instruments after LD filtering, not the number of retained directions $k$.

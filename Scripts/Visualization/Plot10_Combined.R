@@ -44,12 +44,12 @@ W_PEAK <- 0.30; W_GENE <- 0.10        # x 轴宽度权重 (归一化): Peak 区 
 W_GAP  <- 0.20; GAP_FULL_BP <- 20000  # Peak 区与 Gene 区之间的 gap (短于 GAP_FULL_BP 时按比例缩小, 避免被拉伸)
 W_FLANK <- 0.12; FLANK_BP <- 20000    # 两侧 flank: 宽度权重 W_FLANK, 至少覆盖 FLANK_BP; MR SNP 不够 N_SNP_TARGET 时向外延伸 (最多 FLANK_MAX)
 FLANK_MAX  <- 300000
-TICK_SEP   <- 0.14                    # 刻度最小间距 (x 轴比例)
+TICK_SEP   <- 0.27                    # 刻度最小间距 (x 轴比例; 2026-11-06 字号放大后由 0.14 加大)
 N_SNP_TARGET <- 6; SNP_MIN_SEP <- 0.025 # SNP 轨: 每页目标 SNP 数 (含 GWAS SNP) / 最小间距 (x 轴比例)
-LW_RANGE   <- c(1, 3.2); LW_NS <- 0.6 # 显著 link 线宽范围; 不显著 link 线宽
-BASE_SIZE  <- 12
+LW_RANGE   <- c(1.4, 4.4); LW_NS <- 0.85 # 显著 link 线宽范围; 不显著 link 线宽 (2026-11-06 字号放大后同比加粗)
+BASE_SIZE  <- 16                      # 2026-11-06: 12 -> 16 (图 24 in 宽, 论文里缩到约 0.27 倍, 原 12 pt 缩后只有约 3 pt)
 PAGE_W     <- 24                      # 页宽; 页高 = PAGE_H_A (panel A) + PAGE_H_ROW x panel B 的行数 (每行 5 个 pair)
-PAGE_H_A   <- 4.5; PAGE_H_ROW <- 7.0; PAIRS_PER_ROW <- 5
+PAGE_H_A   <- 5.0; PAGE_H_ROW <- 7.0; PAIRS_PER_ROW <- 5
 page_h     <- function(n_pair) PAGE_H_A + PAGE_H_ROW * ceiling(n_pair / PAIRS_PER_ROW)
 
 # MR 固定参数 (与 MR 结果一致)
@@ -62,19 +62,21 @@ METHODS <- data.table(method  = c("Causal SMR", "Causal IVW", "Causal Egger", "M
                       col     = c("#F0A14A", "#E64B35", "#3C5488", "#4DBBD5", "#00A087"))
 DIR_COL   <- c("Positive" = "#D7191C", "Negative" = "#D7191C")   # 2026-10-29: 显著 link 统一红色, 不再按效应方向分红 / 蓝
 NS_COL    <- "grey65"
-GENE_COL  <- "#4E79A7"; PEAK_FILL <- "#E1B13F"
-SNP_COL   <- "#3C5488"; GWAS_COL <- "#7E1F86"
+# 2026-11-06: 配色改用 Set3 色板 (#8dd3c7 #ffffb3 #bebada #fb8072 #80b1d3 #fdb462 #b3de69 #fccde5 #d9d9d9 #bc80bd #ccebc5 #ffed6f); 红色 link 不变
+# 粉彩色在白底上偏淡: 填充用原色, 文字 (基因名 / rsID) 用同色相加深版本
+GENE_COL  <- "#80b1d3"; GENE_TXT <- "#3F7BA6"; PEAK_FILL <- "#fdb462"
+SNP_COL   <- "#a29cc9"; GWAS_COL <- "#bc80bd"; GWAS_TXT <- "#8A4E8C"
 
 ###----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Pairs 与 GWAS SNP
 
-EX <- fread(PAIR_FILE)[, ord := rleid(cell_type, gene_id, peak_id)]
+EX <- fread(PAIR_FILE)[trait != "Asthma"][, ord := rleid(cell_type, gene_id, peak_id)]   # 2026-11-06: 不再展示 Asthma (A 里也没有), 只有 Asthma 的 pair (UBAC2 等) 随之去掉
 ALL_PAIRS <- unique(EX[, .(ord, cell_type, gene_id, peak_id, mr_methods_sig)], by = "ord")[order(ord)]
 CELL_LAB  <- local({ source(file.path(PROJ, "Scripts/Visualization/00_common.R"), local = TRUE); CELL_LAB })   # 图中细胞类型标签 (Bn / CD4 T cell / CD8 T cell)
 # 一页 = Figure_4 (正文), 5 个 pair (cell_type, gene); 改这里即可换 pair (候选见 GWAS_MRonly_overlap.tsv)
 # 2026-10-29: 加入 GNAS (CD8, 原 Figure_S4); Figure_S4 不再输出 (原第 2 页: GLS2, GNAS (CD4), UBA7, TMBIM1, ERAP1, TMPRSS3, ZSCAN16)
 PAGES <- list(
-  list(c("Bn_TCL1A", "RGL2"), c("CD4_Tn_CCR7", "ERBB3"), c("CD4_Tn_CCR7", "POLR2E"), c("CD4_Tn_CCR7", "UBAC2"), c("CD8_Tn_CCR7", "GNAS")))
+  list(c("Bn_TCL1A", "RGL2"), c("CD4_Tn_CCR7", "ERBB3"), c("CD4_Tn_CCR7", "POLR2E"), c("Bn_TCL1A", "ERAP1"), c("CD8_Tn_CCR7", "GNAS")))   # 2026-11-06: UBAC2 (只有 Asthma) -> ERAP1 (Bn, CD)
 SEL <- rbindlist(lapply(seq_along(PAGES), function(pg) rbindlist(lapply(seq_along(PAGES[[pg]]), function(k)
   data.table(page = pg, slot = k, cell_type = PAGES[[pg]][[k]][1], gene_id = PAGES[[pg]][[k]][2])))))
 PAIRS <- ALL_PAIRS[SEL, on = .(cell_type, gene_id), nomatch = NULL][order(page, slot)]
@@ -248,12 +250,12 @@ track_gene <- function(S) {
   g1 <- fx(max(tg$start, win[1])); g2 <- fx(min(tg$end, win[2])); xt <- fx(tg$tss)
   arr <- xt + ifelse(tg$strand == "+", 1, -1) * 0.035
   track_base(S, c(-0.5, 1.1)) +
-    annotate("segment", x = g1, xend = g2, y = 0, yend = 0, color = GENE_COL, linewidth = 0.8) +
+    annotate("segment", x = g1, xend = g2, y = 0, yend = 0, color = GENE_COL, linewidth = 1.1) +
     geom_rect(data = gx[type != "cds"], aes(xmin = x1, xmax = x2, ymin = -0.16, ymax = 0.16), fill = GENE_COL, color = NA) +
     geom_rect(data = gx[type == "cds"], aes(xmin = x1, xmax = x2, ymin = -0.3, ymax = 0.3), fill = GENE_COL, color = NA) +
-    annotate("segment", x = xt, xend = xt, y = 0, yend = 0.5, color = GENE_COL, linewidth = 0.9) +
-    annotate("segment", x = xt, xend = arr, y = 0.5, yend = 0.5, color = GENE_COL, linewidth = 0.9, arrow = arrow(length = unit(0.2, "cm"))) +
-    annotate("text", x = (g1 + g2) / 2, y = 0.85, label = S$g, fontface = "bold.italic", size = 4.2, color = GENE_COL) +
+    annotate("segment", x = xt, xend = xt, y = 0, yend = 0.5, color = GENE_COL, linewidth = 1.2) +
+    annotate("segment", x = xt, xend = arr, y = 0.5, yend = 0.5, color = GENE_COL, linewidth = 1.2, arrow = arrow(length = unit(0.28, "cm"))) +
+    annotate("text", x = (g1 + g2) / 2, y = 0.85, label = S$g, fontface = "bold.italic", size = 6, color = GENE_TXT) +
     ylab_axis(0, "Gene")
 }
 
@@ -272,11 +274,11 @@ pick_mr_snps <- function(sd, gw, A, pk_mid) {
 track_snps <- function(S) {
   fx <- S$A$fx; sd <- S$mr; gw <- S$gw
   p <- track_base(S, c(-0.15, 1.5))
-  if (nrow(sd)) p <- p + geom_segment(data = sd, aes(x = fx(pos), xend = fx(pos), y = 0, yend = 0.55), color = SNP_COL, linewidth = 0.7)
+  if (nrow(sd)) p <- p + geom_segment(data = sd, aes(x = fx(pos), xend = fx(pos), y = 0, yend = 0.55), color = SNP_COL, linewidth = 1.1)
   if (nrow(gw)) p <- p +
-    geom_point(data = gw, aes(fx(pos), 0.28), shape = 23, fill = GWAS_COL, color = "white", size = 3.4, stroke = 0.5) +
-    geom_text_repel(data = gw, aes(fx(pos), 0.28, label = rsid), size = 3, fontface = "bold", color = GWAS_COL,
-                    nudge_y = 0.8, direction = "both", min.segment.length = 0, segment.size = 0.3, box.padding = 0.4, seed = 2)
+    geom_point(data = gw, aes(fx(pos), 0.28), shape = 23, fill = GWAS_COL, color = "white", size = 4.6, stroke = 0.6) +
+    geom_text_repel(data = gw, aes(fx(pos), 0.28, label = rsid), size = 4.7, fontface = "bold", color = GWAS_TXT,
+                    nudge_y = 0.8, direction = "both", min.segment.length = 0, segment.size = 0.4, segment.color = GWAS_COL, box.padding = 0.4, seed = 2)
   p + ylab_axis(0.3, "SNPs")
 }
 
@@ -310,7 +312,7 @@ track_links <- function(S, score_max) {
     scale_color_manual(values = DIR_COL, drop = FALSE, guide = "none") +
     scale_linewidth_continuous(range = LW_RANGE, limits = c(s_lo, score_max), guide = "none") +
     geom_text(data = st, aes(sx, sy, label = star, color = direction), hjust = if (wide) 0.5 else 0, vjust = 0.5,
-              size = 6, fontface = "bold") +
+              size = 8.5, fontface = "bold") +
     theme(legend.position = "none"))
 }
 
@@ -322,18 +324,18 @@ track_axis <- function(S) {
   ln <- data.table(x = cuts[seq(1, length(cuts), 2)], xend = cuts[seq(2, length(cuts), 2)])
   track_base(S, c(0, 1)) +
     geom_segment(data = ln, aes(x = x, xend = xend, y = 0, yend = 0), linewidth = 0.4, color = "black") +
-    { if (length(gm)) annotate("text", x = gm, y = 0, label = "//", size = 4.5, fontface = "bold") } +
+    { if (length(gm)) annotate("text", x = gm, y = 0, label = "//", size = 6, fontface = "bold") } +
     scale_x_continuous(breaks = br$x, labels = br$label) +
     labs(x = sprintf("%s (Mb)", S$tg$chr)) +
     theme(axis.ticks.x = element_line(linewidth = 0.4), axis.ticks.length.x = unit(1.5, "mm"),
-          axis.text.x = element_text(size = BASE_SIZE - 2, color = "black"), axis.title.x = element_text(size = BASE_SIZE - 1, face = "bold"),
+          axis.text.x = element_text(size = BASE_SIZE - 3, color = "black"), axis.title.x = element_text(size = BASE_SIZE - 1, face = "bold", margin = margin(t = 4)),
           axis.text.y = element_blank(), panel.background = element_blank())
 }
 
 dist_lab <- function(d) if (d < 1e3) sprintf("%.0f bp", d) else sprintf("%.1f kb", d / 1e3)
 
 PAIR_HEIGHTS <- c(1.0, 1.3, 0.4, 4.4, 0.01, 0.55)   # Gene | SNPs | Peak | 5 个方法 link | x 轴 | 底部 CT | trait (label_column 同高; 2026-10-29 去掉顶部 Gene/Peak 文字轨)
-LABEL_SIZE   <- BASE_SIZE + 2                              # 行名字号 (pt)
+LABEL_SIZE   <- BASE_SIZE + 3                             # 行名字号 (pt)
 text_track <- function(txt, x = 0.5, hjust = 0.5, parse = FALSE, size = BASE_SIZE + 1) {   # 只放一行文字的窄轨 (pair 顶部 / 底部)
   ggplot() + annotate("text", x = x, y = 0.5, label = txt, hjust = hjust, parse = parse, color = "#1F2937", size = size / .pt) +
     coord_cartesian(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE, clip = "off") + theme_void(base_size = BASE_SIZE) +
@@ -392,8 +394,8 @@ SLD <- fread(file.path(PROJ, "Results/Validation/Valid2_SLDSC/SLDSC_all.tsv"))
 SL_KEYS   <- c("MROnly", "pool")
 SL_TRAITS <- c("AS", "CD", "IBD", "RA", "SLE", "MS", "T1D")   # 2026-10-29: 去掉 Asthma、PBC (用户决定不再展示; S-LDSC 本身仍跑了 9 个 GWAS)
 sl_lab    <- c(MROnly = "MR-Only", pool = "All peaks")
-sl_fill   <- c(`MR-Only` = "#1F78B4", `All peaks` = "#D5DDE5")   # MR-Only = 亮蓝 (与 Fig 3C 同色)
-sl_line   <- c(`MR-Only` = "#17609A", `All peaks` = "#A3AFBC")
+sl_fill   <- c(`MR-Only` = "#8dd3c7", `All peaks` = "#d9d9d9")   # 2026-11-06: Set3 色板; MR-Only = 薄荷青 (与 Figure 3 薄荷板同族), All peaks = 灰
+sl_line   <- c(`MR-Only` = "#47A49D", `All peaks` = "#A6A6A6")
 
 dt_sl <- SLD[trait %in% SL_TRAITS & set %in% SL_KEYS & cell_type == "Combined"]
 stopifnot(nrow(dt_sl) == length(SL_TRAITS) * length(SL_KEYS))
@@ -401,17 +403,17 @@ dt_sl[, `:=`(method = factor(sl_lab[set], levels = sl_lab[SL_KEYS]), trait = fac
 print(dcast(dt_sl[, .(trait, method, e = sprintf("%.1f%s (p=%.3f)", enrich, ifelse(enrich_p < 0.1, "*", ""), enrich_p))], trait ~ method, value.var = "e"))
 
 # 2026-10-23: 单个面板, 所有 GWAS 共用同一个 y 轴; GWAS 名写在 x 轴, 每个 trait 的 MR-Only / All peaks 两根柱紧贴
-BS <- 12; BAR_W <- 0.42
+BS <- 18; BAR_W <- 0.42   # 2026-11-06: BS 12 -> 18 (同 BASE_SIZE 说明)
 dt_sl[, xpos := as.integer(trait) + c(-0.5, 0.5)[as.integer(method)] * BAR_W]   # 显式 x 位置 (两根柱中心相距 = 柱宽); 不用 dodge, 避免只有一根柱显著时星号居中错位
 p_sldsc <- ggplot(dt_sl, aes(x = xpos, y = val)) +
   geom_hline(yintercept = 1, linetype = "22", colour = "#9CA3AF", linewidth = 0.35) +
   geom_col(aes(fill = method, colour = method), width = BAR_W, linewidth = 0.3, alpha = 0.95) +
-  geom_text(data = dt_sl[enrich_p < 0.1], aes(y = star_y), label = "*", fontface = "bold", colour = "black", size = 6, vjust = 0.3) +
+  geom_text(data = dt_sl[enrich_p < 0.1], aes(y = star_y), label = "*", fontface = "bold", colour = "black", size = 10, vjust = 0.3) +
   scale_x_continuous(breaks = seq_along(SL_TRAITS), labels = SL_TRAITS, expand = expansion(add = 0.6)) +
   scale_fill_manual(values = sl_fill, name = NULL) +
   scale_colour_manual(values = sl_line, guide = "none") +
   scale_y_continuous(expand = expansion(mult = c(0, 0.06)), breaks = scales::pretty_breaks(n = 5)) +
-  guides(fill = guide_legend(nrow = 1, override.aes = list(colour = sl_line[sl_lab[SL_KEYS]]))) +
+  guides(fill = guide_legend(ncol = 1, override.aes = list(colour = sl_line[sl_lab[SL_KEYS]]))) +
   labs(x = NULL, y = "Heritability enrichment") +
   theme_classic(base_size = BS, base_family = "sans") +
   theme(axis.line = element_line(colour = "#9CA3AF", linewidth = 0.3), axis.ticks = element_line(colour = "#9CA3AF", linewidth = 0.3),
@@ -419,8 +421,10 @@ p_sldsc <- ggplot(dt_sl, aes(x = xpos, y = val)) +
         axis.text.y = element_text(size = BS - 1, colour = "#4B5563"),
         axis.title.y = element_text(face = "bold", size = BS, colour = "#1F2937", margin = margin(r = 5)),
         panel.grid.major.y = element_line(colour = "#EEF0F3", linewidth = 0.3),
-        legend.position = "top", legend.justification = "left", legend.text = element_text(size = BS), legend.key.size = unit(0.4, "cm"),
-        plot.margin = margin(6, 10, 6, 6))
+        legend.position = "inside", legend.position.inside = c(0.015, 0.99), legend.justification = c(0, 1),   # 2026-11-06: 图例放进图内左上角空白处
+        legend.text = element_text(size = BS), legend.key.size = unit(0.65, "cm"), legend.background = element_blank(), legend.key = element_blank(),
+        legend.spacing.y = unit(0.1, "cm"), legend.margin = margin(0, 0, 0, 0),
+        plot.margin = margin(14, 10, 6, 6))
 
 ###----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### 运行: 每页 = panel a (S-LDSC) + panel b (1 x 4 pairs)
@@ -451,11 +455,11 @@ build_page <- function(pg) {
     idx <- ((r - 1) * PAIRS_PER_ROW + 1):(r * PAIRS_PER_ROW)
     c(list(boxed(label_column(), sep = FALSE)), lapply(idx, function(i) if (i <= length(ps)) ps[[i]] else plot_spacer()))
   }), recursive = FALSE)
-  grid_b <- wrap_elements(full = grid::grobTree(patchwork::patchworkGrob(wrap_plots(cells, nrow = n_row, widths = c(0.3, rep(1, PAIRS_PER_ROW)))),
-                                              vp = grid::viewport(y = 0, height = 0.96, just = "bottom")))   # 顶部留出 tag "B" 的位置
+  grid_b <- wrap_elements(full = grid::grobTree(patchwork::patchworkGrob(wrap_plots(cells, nrow = n_row, widths = c(0.4, rep(1, PAIRS_PER_ROW)))),
+                                              vp = grid::viewport(y = 0, height = 0.93, just = "bottom")))   # 顶部留出 tag "B" 的位置 (2026-11-06: 字母放大, 0.96 -> 0.93)
   (wrap_elements(full = p_sldsc) / grid_b) + plot_layout(heights = c(PAGE_H_A, PAGE_H_ROW * n_row)) +
     plot_annotation(tag_levels = "A") &
-    theme(plot.tag = element_text(face = "bold", size = 18))
+    theme(plot.tag = element_text(face = "bold", size = 32))   # 2026-11-06: 18 -> 32
 }
 
 # patchworkGrob 构图时要在当前设备上量尺寸, 所以每页在设备打开后再构建; 第一页 print(newpage = FALSE) 防止多出空白页

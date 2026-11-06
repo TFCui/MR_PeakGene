@@ -1,0 +1,8 @@
+Trait	Study / data source	Reference	Data access	S-LDSC input file	N (S-LDSC input file)	SNPs (S-LDSC input file)	h2 (obs) (SE)	In Fig 4A (S-LDSC)
+Ankylosing spondylitis (AS)	Pan-UK Biobank	https://pan.ukbb.broadinstitute.org/	Pan-UK Biobank website	CUSTOM.AS.sumstats.gz	420,473 (1,185 cases / 419,288 controls)	1,188,036	0.0052 (0.0017)	Yes
+Crohn's disease (CD)	International IBD Genetics Consortium (IIBDGC)	https://www.ibdgenetics.org/	IIBDGC website	CUSTOM.CD.sumstats.gz	367,592 (20,873 cases / 346,719 controls)	1,188,159	0.0649 (0.0058)	Yes
+Inflammatory bowel disease (IBD)	de Lange et al. 2017, Nat Genet	PMID 28067908	Zenodo 10515792 (sumstats_indep107)	PASS.Inflammatory_Bowel_Disease.deLange2017.sumstats.gz	59,957	1,150,510	0.3202 (0.0243)	Yes
+Rheumatoid arthritis (RA)	Saevarsdottir et al. 2022, Ann Rheum Dis	PMID 35470158	Zenodo 10515792 (sumstats_indep107)	PASS.Rheumatoid_Arthritis.Saevarsdottir2022.sumstats.gz	1,026,690	1,184,671	0.0132 (0.0011)	Yes
+Systemic lupus erythematosus (SLE)	Bentham et al. 2015, Nat Genet	PMID 26502338	Zenodo 10515792 (sumstats_indep107)	PASS.Lupus.Bentham2015.sumstats.gz	14,267	1,163,805	0.4567 (0.0957)	Yes
+Multiple sclerosis (MS)	International Multiple Sclerosis Genetics Consortium, 2011, Nature (Sawcer et al.)	PMID 21833088; ImmunoBase (protected data)	ImmunoBase protected download (approval required)	PASS_Multiple_sclerosis.sumstats.gz	27,148	450,159	0.0800 (0.0373)	Yes
+Type 1 diabetes (T1D)	Chiou et al. 2021, Nature	PMID 34012112	Zenodo 10515792 (sumstats_indep107)	PASS.Type_1_Diabetes.Chiou2021.sumstats.gz	511,056 (median; range 25,452–520,580)	1,192,414	0.0397 (0.0054)	Yes

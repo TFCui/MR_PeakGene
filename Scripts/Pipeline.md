@@ -264,6 +264,12 @@ sbatch Scripts/Model/MR_AllPairs_slurm.sh
 
 **与旧脚本的差异**：读新表，不再 `na.omit`；金标准另存一份给 Valid4；不画直方图。
 
+**MR-Only 合并扩展**（2026-11-03，`Valid1_Hyper_MROnly.R` + `_slurm.sh`，1 个 job，几分钟；Plot13 / 论文当前 S5 Fig 用）
+- MR-Only link（每个 CT 内）：IVW / Egger / SMR 任一 `*_fdr < 0.1`，且 `wnn_fdr`、`pseudo_fdr` 都 ≥ 0.1（与 Valid2 相同；CCT 不参与）。
+- 3 个 CT 合并，每个 gene 一行：背景 N = 3 个 CT All_GenePeak 中该 gene 候选 peak 的并集；n_sig = 3 个 CT MR-Only peak 的并集；金标准 = 3 个 CT 的 `<CT>_gold_standard.rds` 按 gene 取并集（HiChIP / PCHiC = 3 个 CT loop 的并集，其余 4 个库本来不分 CT）。K / k、超几何 P 与上面相同。
+- 与 `<CT>_hyper_long.tsv` 的区别：那里按 CT 分开，HiChIP / PCHiC 用各 CT 自己的 loop。
+- 输出：`Results/Validation/Valid1_Hyper/MROnly_gene_overlap_combined.tsv`（`gene_id, database, N, K, n_sig, k, pval, n_ct`；`n_ct` = 该 gene 的 MR-Only link 来自几个 CT）。
+
 ---
 
 ### 3.2 Valid2_SLDSC：S-LDSC 遗传力富集
@@ -453,7 +459,7 @@ MR_only 且 peak 含 GWAS SNP 的 pair 共 27 个（Bn 7 / CD4 10 / CD8 10；21 
 **输出**
 - `Results/QC/1_OneSampleMR/<CT>_pair_corr.tsv.gz`：每行一个 pair（`peak`、`gene`、`snp_count`、`rho_hat`、`t_stat`、`p_value`）。
 - `Results/QC/1_OneSampleMR/<CT>_global_rho.tsv`：整体 ρ、p、参与的 SNP 数和 pair 数（另附去重阈值 0.01 的对照）。
-- 图：`Results/Figures/Figures_20261026/Figure_S1.{pdf,svg}`（`Scripts/Visualization/Plot_Sup1_OneSampleMR.R`）。
+- 图：`Results/Figures/Figures_20261026/Figure_S1.{pdf,svg}`（`Scripts/Visualization/Plot11_OneSampleMR.R`，原 `Plot_Sup1_OneSampleMR.R`）。
 
 **位置**：代码 `Scripts/QC/`（`QC1_1_OneSampleMR_prune.R`、`QC1_2_OneSampleMR.R`、对应 `*_slurm.sh`，日志 `Scripts/QC/logs/`）；中间文件 `tmp/QC_OneSampleMR/`。
 

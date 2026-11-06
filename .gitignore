@@ -20,3 +20,6 @@ Manuscript/plos_draft.*
 Manuscript/overleaf_project.zip
 Manuscript/*.before
 Manuscript/**/*.before
+
+# Python 缓存
+__pycache__/

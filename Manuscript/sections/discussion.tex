@@ -1,69 +1,16 @@
 \section{Discussion}
 \label{sec:discussion}
-\textit{Preliminary outline only.}
-\begin{itemize}
-  \item \textbf{Principal findings.} 
-  \item \textbf{Complementary biological information.} 
-  \item \textbf{Limitations and future directions.} 
-\end{itemize}
+% Paragraph plan: notes/2_BOARD.md, Discussion (D1-D8). Candidate points are chosen by the author.
+% D1 Principal findings
+% D2 Relation to prior work
+% D3 Biological information from MR-only links
+% D4 Limitation: meaning of "causal" and the instrumental-variable assumptions
 
-There is one limit of our study. MR usually study Two sample data, where the variants-exposure and variants-outcome comes from two independent study. The two sample setting is important to get the causal effects. However, in our study, caQTL and eQTL data come from the same population. This might introduce some bias towards the true causal effects. We did sensitivity analysis by selecting SNPs under the null hypothesis and checked the correlations of residuals (Figure S1). Both of global and peak-gene pair-specific correlation support that there is little correlations between the two marginal associations in our study. The boxplots show the p values and correlation estimates for different number of SNPs, where more SNPs in one peak-gene pairs indicate the clearer independence of residuals. The correlation between two residuals might be negligible. In the further study, we can also borrow eQTL data and caQTL from two separately study to eliminate the poential bias.  
+% D5 Limitation: caQTL and eQTL from the same population (S1 Fig)
+There is one limit of our study. MR usually study Two sample data, where the variants-exposure and variants-outcome comes from two independent study. The two sample setting is important to get the causal effects. However, in our study, caQTL and eQTL data come from the same population. This might introduce some bias towards the true causal effects. We did sensitivity analysis by selecting SNPs under the null hypothesis and checked the correlations of residuals (\nameref{S1_Fig}). Both of global and peak-gene pair-specific correlation support that there is little correlations between the two marginal associations in our study. The boxplots show the p values and correlation estimates for different number of SNPs, where more SNPs in one peak-gene pairs indicate the clearer independence of residuals. The correlation between two residuals might be negligible. In the further study, we can also borrow eQTL data and caQTL from two separately study to eliminate the poential bias.
 
-\noindent  Another issue we want to discuss is the orientation of the genetics variants. Association of genetics variants can be quoted with respecrt to either the major or the minor allele.  Causal IVW, which lack of intecept in the regression, provide exactly the same estimates using different of orientation of alleles (Figure S2). However, causal Egger results would be different. we follow the common setting of MR Egger (reference), and orientate the genetic variants so that the association with the risk factor all have the positive sign. This means that the directional pleitropy is define with respect to the risk factor-increasing allele. (Figure S2)
+% D6 Limitation: number of instruments, LD reference panel, choice of estimators (allele orientation, S2 Fig)
+\noindent  Another issue we want to discuss is the orientation of the genetics variants. Association of genetics variants can be quoted with respecrt to either the major or the minor allele.  Causal IVW, which lack of intecept in the regression, provide exactly the same estimates using different of orientation of alleles (\nameref{S2_Fig}). However, causal Egger results would be different. we follow the common setting of MR Egger [CITE: MR-Egger allele orientation convention], and orientate the genetic variants so that the association with the risk factor all have the positive sign. This means that the directional pleitropy is define with respect to the risk factor-increasing allele. (\nameref{S2_Fig})
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+% D7 Limitation: comparison and validation (external cross-cell-type WNN data, S-LDSC, GRN, GWAS overlap)
+% D8 Future work and closing

@@ -429,7 +429,7 @@ build_page <- function(pg) {
   msg(sprintf("page %d: %s", pg, paste(s_pg$gene_id, collapse = ", ")))
   rows <- lapply(seq_len(nrow(s_pg)), function(j) make_row(s_pg[j]))
   if (length(rows) < ROWS_PER_PAGE) rows <- c(rows, rep(list(plot_spacer()), ROWS_PER_PAGE - length(rows)))   # 行高保持一致
-  ttl <- if (all(is.na(s_pg$type))) "Example peak-gene pairs" else sprintf("Example peak-gene pairs by type (set %d)", match(pg, pages[pages != 1]))
+  ttl <- if (all(is.na(s_pg$type))) NULL else sprintf("Example peak-gene pairs by type (set %d)", match(pg, pages[pages != 1]))
   wrap_plots(rows, ncol = 1) +   # 每行 (一个 pair) 一个大写标签 A-D; 行内 panel 不再标 a-d
     plot_annotation(title = ttl, tag_levels = "A", theme = theme(plot.title = element_text(size = BASE + 6, face = "bold", hjust = 0))) &
     theme(plot.tag = element_text(face = "bold", size = BASE + 8))

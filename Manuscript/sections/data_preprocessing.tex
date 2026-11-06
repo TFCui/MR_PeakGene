@@ -1,49 +1,12 @@
 \subsection{Data Preprocessing}
 \label{sec:data-preprocessing}
-% Adapted from manuscript_20260708.docx, Data Preprocessing (paragraphs 65--71).
-% Cell-type scope follows the current manuscript and the author's confirmation.
+% Rewritten 2026-11-01 in the order of the actual pipeline (see notes/2_BOARD.md, Methods M2); polished 2026-11-02 (P5).
 
-\begin{itemize}
-  \item \textbf{caQTL filteration} 
-  \item \textbf{LD Clumping; allele must be mateched} 
-  \item \textbf{LD matrix calculation from PLINK} 
-  \item \textbf{Marginal Analysis, WNN, the external PBMC information }
-  \item \textbf{Marginal Analysis, Pseudobulk, scRNA/snATAC matrix QC}
-  \item \textbf{Candidate Peak-Gene Pairs} 
-\end{itemize}
+\noindent \textbf{Candidate peak--gene pairs.} CIMA mapped eQTLs for each gene using all SNPs within 1 Mb of its transcription start site (TSS), and caQTLs for each chromatin accessibility peak using all SNPs within 1 Mb of the peak midpoint \cite{yin2026cima}. We considered all genes that had CIMA eQTL results and were present in the pseudobulk RNA data, together with all peaks in the CIMA ATAC data. The TSS of each gene was recovered from the eQTL results as the variant position minus the reported distance to the gene start. A peak--gene pair was retained as a candidate if the distance between the TSS and the peak center was at most 1 Mb.
 
-\noindent CIMA conducted eQTL study for each gene and all SNPs within 1MB of the TSS of the genes. Similarly, caQTL study was performed for each detected chromatin accessibility peaks and all SNPs within 1MB of the midpoint of the peaks. We choose to study all genes provided by CIMA eQTL study and all chromatin accessibility peaks which are 1MB within the TSS of the genes. In other words, we choose to study the association of all peak-gene pairs whose distance was less or equal to 1MB on the genome. However, several filtering steps were necessary. First, because under the MR framework, instrument variables (IVs) should be associated with the exposure. For each cell type, we only selected significant caQTLs (nominal p value < 1e-8). Second, for each peak-gene pairs, we deleted duplicate instrumental variables. That is, there might be some SNPs as instrumental variables which has identical or highly samilar caQTL and eQTL. For those SNPs with the highly samilar caQTL and eQTL data (difference of both results are < 1e-3), we randomly keep one SNP. Third, we dropped the chromatin accessibility peaks with less than three significant caQTLs (nominal p value < 1e-8), since we needed sufficient instrument variables to fit the causal IVW and causal MR Egger models discussed below. Fourth, we only selected the peak-gene pairs in which both cell-type specific eQTL and caQTL data were available, and the pseudobulk ATAC and gene expression matrix were available, and the external PBMC data were also available. In the end, we got XXX peak-gene pairs for Bn, XXX peak-gene pairs for CD4 T cells, and XXX peak-gene pairs for CD8 T cells. (we need to move this part to the end, how to construct peak-gene pairs. )
+\noindent \textbf{Instrument selection.} To satisfy the relevance assumption, we retained only caQTL variants with nominal $P<10^{-8}$ in each cell type. We then performed LD clumping separately for each peak--gene pair with PLINK (v1.90b7.2) through \texttt{ieugwasr::ld\_clump\_local} (ieugwasr 1.1.0), using an $r^2$ threshold of 0.99, a window of 20,000 kb that covers the entire \textit{cis} region, index variants ranked by caQTL $P$ value, and \texttt{clump\_p} = 1. The purpose of clumping was not to obtain independent SNPs but to avoid near-perfect collinearity among highly correlated instruments; the remaining correlation was modeled by GLS (\nameref{sec:gls-ivw}). We kept pairs for which the caQTL and eQTL data shared at least three variants and for which both the gene and the peak were present in the pseudobulk and WNN data (\nameref{sec:pseudobulk-correlations} and \nameref{sec:wnn-correlations}). At least three instruments were required to remain after each subsequent filtering step.
 
+\noindent \textbf{Allele harmonization and duplicate instruments.} In both the caQTL and eQTL summary statistics, the alternative (ALT) allele was the effect allele. CIMA had harmonized the two sets of summary statistics, and we verified that their effect and non-effect alleles agreed; variants with discordant alleles would have been removed. Some SNPs had nearly identical caQTL and eQTL associations. A SNP was removed if both its caQTL and eQTL slopes differed by at most $10^{-3}$ from those of a previously retained SNP. Because SNPs were processed in variant-ID order, the first SNP of each such set was kept.
 
-\noindent LD clumping: We did more steps on caQTL data. After we select significant caQTL data (nominal caQTL p value < 1e-8), we needed to perform LD clumping. We did the LD clumping for each peak-gene pairs separately using PLINK (version) with 'clump\_r2=0.99', 'clump\_kb =200000'. Variants were matched to the hg38 East Asian reference panel (version). The LD clumping step was not used to select independent SNPs, but to avoid perfect collinearity among highly correlated instrument variables. 
- 
-\noindent LD matrix calculation: Since we implemented the extended version of IVW and MR-Egger models with correlated instrument variable, we needed to calculate the covariance matrix. The covariance matrix was obtained by the PLINK (version) with parameter --keep-allele-order, --r square, --write-snplist. PLINK would calculate the pairwise correlations between genotype allele counts based on the same reference panel (hg38 East Asian, version). The parameter 'keep-allele-order' was important to keep the effect allele of instrument variables and reference genome the same during LD matrix calculation. Moreover, because MR-Egger assumed the SNP-exposure effect were all positive (supplementary files, method section), we would orientate the genetics variants so that all caQTL effects were positive. The LD matrix was reoriented consistently with the exposure and outcome effects. In the end, we get the LD matrix. 
-
-\noindent Get Pseudobulk matrix: We directly used the cell-type specific scRNA and scATAC matrix provied by CIMA paper, and calculated the number of cells per individual. The individuals meeting the upper cutoff and the lower cutoff criteria in both two modalities could be retained. Specifically, the lower cutoff was at least 100 cells for each individuals, and the upper cutoff was the median cell numbers of individuals plus three scaled median absolute deviations. After filtering out unqualified individuals, we got 335 individuals in Bn, 372 individuals in CD4 T cells, 346 individual in CD8 T cells. We separately summed gene expression and peak accessibility. We further performed CPM normalization and log1p transformation. Finnaly, we get cell-type specific, individual level pseudobulk matrix used for the marginal pseudobulk method. 
-
-
-\noindent WNN meta cells: Add how to get the ATAC\_RNA\_WNN.rda later. 
-We used a previously processed PBMC multiome dataset, and the ATAC fragment accounts were requantified over CIMA-defined peak intervals by Signac (version) CreateFragmentObject function. The CIMA-define peaks were all peaks available in the caQTL data provided by CIMA. Then we conducted the weighted nearest-neighbor analysis using RNA principal components 1–50 and ATAC LSI dimensions 2–50 and get new WNN metacells. We summed ATAC counts and RNA expression across cells within each WNN cluster, and normalized to one million total counts per cluster. We get 80 metacells. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\noindent \textbf{LD matrix.} The signed LD correlation matrix $\boldsymbol R$ among the retained instruments was computed with PLINK (v1.90b7.2) using \texttt{--r square --keep-allele-order --write-snplist}, so that the correlations refer to the same effect alleles as the summary statistics. Variants absent from the reference panel, as well as rows and columns with undefined (NaN) correlations, were removed. The covariance matrix used in GLS was $\boldsymbol{\Sigma}=\operatorname{diag}(s_{Y})\,\boldsymbol R\,\operatorname{diag}(s_{Y})$ (\nameref{sec:gls-ivw}). Instruments were then oriented so that all caQTL effects were positive, and $\boldsymbol R$ was reoriented accordingly (\nameref{sec:orientation}). For both clumping and LD estimation, the reference panel was the East Asian (EAS) subset ($n=585$) of the 1000 Genomes Project GRCh38 release (3,202 individuals) [CITE: 1000 Genomes GRCh38 high-coverage release]; chromosome X was coded as 23.
+\TODO{Confirm that the two EAS panel files used for clumping and for the LD matrix contain the same variant set (A1-09).}

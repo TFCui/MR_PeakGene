@@ -1,0 +1,91 @@
+type	scale	cell_type	method1	method2	value	n	pct_shown
+cor	effect	Bn_TCL1A	Causal SMR	Causal IVW	0.8622	40087	
+cor	effect	Bn_TCL1A	Causal SMR	Causal Egger	0.3948	40087	
+cor	effect	Bn_TCL1A	Causal SMR	Marginal Multiomics	0.0349	40087	
+cor	effect	Bn_TCL1A	Causal SMR	Marginal Pseudobulk	0.2958	40087	
+cor	effect	Bn_TCL1A	Causal IVW	Causal Egger	0.563	40087	
+cor	effect	Bn_TCL1A	Causal IVW	Marginal Multiomics	0.0341	40087	
+cor	effect	Bn_TCL1A	Causal IVW	Marginal Pseudobulk	0.2968	40087	
+cor	effect	Bn_TCL1A	Causal Egger	Marginal Multiomics	0.0277	40087	
+cor	effect	Bn_TCL1A	Causal Egger	Marginal Pseudobulk	0.1752	40087	
+cor	effect	Bn_TCL1A	Marginal Multiomics	Marginal Pseudobulk	0.0379	40087	
+cor	signedP	Bn_TCL1A	Causal SMR	Causal IVW	0.8484	40087	
+cor	signedP	Bn_TCL1A	Causal SMR	Causal Egger	0.4863	40087	
+cor	signedP	Bn_TCL1A	Causal SMR	Marginal Multiomics	0.0381	40087	
+cor	signedP	Bn_TCL1A	Causal SMR	Marginal Pseudobulk	0.3131	40087	
+cor	signedP	Bn_TCL1A	Causal IVW	Causal Egger	0.7042	40087	
+cor	signedP	Bn_TCL1A	Causal IVW	Marginal Multiomics	0.0366	40087	
+cor	signedP	Bn_TCL1A	Causal IVW	Marginal Pseudobulk	0.3117	40087	
+cor	signedP	Bn_TCL1A	Causal Egger	Marginal Multiomics	0.0308	40087	
+cor	signedP	Bn_TCL1A	Causal Egger	Marginal Pseudobulk	0.2151	40087	
+cor	signedP	Bn_TCL1A	Marginal Multiomics	Marginal Pseudobulk	0.0379	40087	
+cor	effect	CD4_Tn_CCR7	Causal SMR	Causal IVW	0.8655	85527	
+cor	effect	CD4_Tn_CCR7	Causal SMR	Causal Egger	0.4	85527	
+cor	effect	CD4_Tn_CCR7	Causal SMR	Marginal Multiomics	0.04	85527	
+cor	effect	CD4_Tn_CCR7	Causal SMR	Marginal Pseudobulk	0.2444	85527	
+cor	effect	CD4_Tn_CCR7	Causal IVW	Causal Egger	0.5625	85527	
+cor	effect	CD4_Tn_CCR7	Causal IVW	Marginal Multiomics	0.0418	85527	
+cor	effect	CD4_Tn_CCR7	Causal IVW	Marginal Pseudobulk	0.2445	85527	
+cor	effect	CD4_Tn_CCR7	Causal Egger	Marginal Multiomics	0.0288	85527	
+cor	effect	CD4_Tn_CCR7	Causal Egger	Marginal Pseudobulk	0.1591	85527	
+cor	effect	CD4_Tn_CCR7	Marginal Multiomics	Marginal Pseudobulk	0.0648	85527	
+cor	signedP	CD4_Tn_CCR7	Causal SMR	Causal IVW	0.854	85527	
+cor	signedP	CD4_Tn_CCR7	Causal SMR	Causal Egger	0.5004	85527	
+cor	signedP	CD4_Tn_CCR7	Causal SMR	Marginal Multiomics	0.0397	85527	
+cor	signedP	CD4_Tn_CCR7	Causal SMR	Marginal Pseudobulk	0.258	85527	
+cor	signedP	CD4_Tn_CCR7	Causal IVW	Causal Egger	0.7127	85527	
+cor	signedP	CD4_Tn_CCR7	Causal IVW	Marginal Multiomics	0.0406	85527	
+cor	signedP	CD4_Tn_CCR7	Causal IVW	Marginal Pseudobulk	0.2559	85527	
+cor	signedP	CD4_Tn_CCR7	Causal Egger	Marginal Multiomics	0.0294	85527	
+cor	signedP	CD4_Tn_CCR7	Causal Egger	Marginal Pseudobulk	0.1896	85527	
+cor	signedP	CD4_Tn_CCR7	Marginal Multiomics	Marginal Pseudobulk	0.0648	85527	
+cor	effect	CD8_Tn_CCR7	Causal SMR	Causal IVW	0.8723	50931	
+cor	effect	CD8_Tn_CCR7	Causal SMR	Causal Egger	0.3893	50931	
+cor	effect	CD8_Tn_CCR7	Causal SMR	Marginal Multiomics	0.034	50931	
+cor	effect	CD8_Tn_CCR7	Causal SMR	Marginal Pseudobulk	0.2652	50931	
+cor	effect	CD8_Tn_CCR7	Causal IVW	Causal Egger	0.546	50931	
+cor	effect	CD8_Tn_CCR7	Causal IVW	Marginal Multiomics	0.0414	50931	
+cor	effect	CD8_Tn_CCR7	Causal IVW	Marginal Pseudobulk	0.2677	50931	
+cor	effect	CD8_Tn_CCR7	Causal Egger	Marginal Multiomics	0.0302	50931	
+cor	effect	CD8_Tn_CCR7	Causal Egger	Marginal Pseudobulk	0.157	50931	
+cor	effect	CD8_Tn_CCR7	Marginal Multiomics	Marginal Pseudobulk	0.0482	50931	
+cor	signedP	CD8_Tn_CCR7	Causal SMR	Causal IVW	0.8567	50931	
+cor	signedP	CD8_Tn_CCR7	Causal SMR	Causal Egger	0.4893	50931	
+cor	signedP	CD8_Tn_CCR7	Causal SMR	Marginal Multiomics	0.0345	50931	
+cor	signedP	CD8_Tn_CCR7	Causal SMR	Marginal Pseudobulk	0.2801	50931	
+cor	signedP	CD8_Tn_CCR7	Causal IVW	Causal Egger	0.6997	50931	
+cor	signedP	CD8_Tn_CCR7	Causal IVW	Marginal Multiomics	0.0424	50931	
+cor	signedP	CD8_Tn_CCR7	Causal IVW	Marginal Pseudobulk	0.2793	50931	
+cor	signedP	CD8_Tn_CCR7	Causal Egger	Marginal Multiomics	0.0336	50931	
+cor	signedP	CD8_Tn_CCR7	Causal Egger	Marginal Pseudobulk	0.1923	50931	
+cor	signedP	CD8_Tn_CCR7	Marginal Multiomics	Marginal Pseudobulk	0.0482	50931	
+range	effect	Bn_TCL1A	Causal SMR		1.5	40087	99.66
+range	effect	Bn_TCL1A	Causal IVW		1.5	40087	99.75
+range	effect	Bn_TCL1A	Causal Egger		2.5	40087	99.23
+range	effect	Bn_TCL1A	Marginal Multiomics		0.75	40087	99.48
+range	effect	Bn_TCL1A	Marginal Pseudobulk		0.35	40087	99.63
+range	signedP	Bn_TCL1A	Causal SMR		11	40087	99.36
+range	signedP	Bn_TCL1A	Causal IVW		11	40087	99.45
+range	signedP	Bn_TCL1A	Causal Egger		11	40087	99.63
+range	signedP	Bn_TCL1A	Marginal Multiomics		11	40087	98.06
+range	signedP	Bn_TCL1A	Marginal Pseudobulk		11	40087	99.66
+range	effect	CD4_Tn_CCR7	Causal SMR		1.5	85527	99.36
+range	effect	CD4_Tn_CCR7	Causal IVW		1.5	85527	99.46
+range	effect	CD4_Tn_CCR7	Causal Egger		2.5	85527	99.28
+range	effect	CD4_Tn_CCR7	Marginal Multiomics		0.75	85527	99.7
+range	effect	CD4_Tn_CCR7	Marginal Pseudobulk		0.35	85527	99.4
+range	signedP	CD4_Tn_CCR7	Causal SMR		11	85527	99.08
+range	signedP	CD4_Tn_CCR7	Causal IVW		11	85527	99.12
+range	signedP	CD4_Tn_CCR7	Causal Egger		11	85527	99.42
+range	signedP	CD4_Tn_CCR7	Marginal Multiomics		11	85527	98.69
+range	signedP	CD4_Tn_CCR7	Marginal Pseudobulk		11	85527	99.36
+range	effect	CD8_Tn_CCR7	Causal SMR		1.5	50931	99.48
+range	effect	CD8_Tn_CCR7	Causal IVW		1.5	50931	99.56
+range	effect	CD8_Tn_CCR7	Causal Egger		2.5	50931	99.09
+range	effect	CD8_Tn_CCR7	Marginal Multiomics		0.75	50931	99.6
+range	effect	CD8_Tn_CCR7	Marginal Pseudobulk		0.35	50931	99.47
+range	signedP	CD8_Tn_CCR7	Causal SMR		11	50931	99.21
+range	signedP	CD8_Tn_CCR7	Causal IVW		11	50931	99.25
+range	signedP	CD8_Tn_CCR7	Causal Egger		11	50931	99.5
+range	signedP	CD8_Tn_CCR7	Marginal Multiomics		11	50931	98.29
+range	signedP	CD8_Tn_CCR7	Marginal Pseudobulk		11	50931	99.5
