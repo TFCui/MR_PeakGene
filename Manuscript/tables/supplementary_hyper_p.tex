@@ -36,19 +36,15 @@ CD8 T cell & Causal SMR & \(2.1\times10^{-204}\) & \(1.8\times10^{-72}\) & \(2.4
 \par\medskip
 \begin{minipage}{\linewidth}
 \footnotesize
-For each cell type, method, and reference, an upper-tail hypergeometric
-test was applied to counts pooled over eligible genes. For each gene,
-\(N\) is the number of background candidate peaks, \(K\) the number
-overlapping the reference, \(n_{\mathrm{sig}}\) the number of selected
-significant peaks, and \(k\) the selected peaks overlapping the reference.
-Eligibility requires \(N>0\), \(K>0\), \(n_{\mathrm{sig}}>0\), and \(N>K\).
-The test uses \(\sum N,\sum K,\sum n_{\mathrm{sig}},\sum k\).
-Entries are hypergeometric p-values, with no additional adjustment
-across the displayed comparisons specified by the source workbook.
-Bn, naive B cells; CD4 T cell / CD8 T cell, naive CD4$^+$ / CD8$^+$ T cells.
-Causal Joint is the Cauchy combination (CCT) of SMR, IVW, and MR-Egger;
-Marginal Multiomics denotes the WNN metacell correlation and Marginal Pseudobulk
-the individual-level pseudobulk correlation.
+The table reports hypergeometric \(P\) values for each combination
+of cell type, method, and regulatory reference dataset. For a given gene,
+\(N\) is the number of candidate peaks in the background set, and \(K\)
+is the number of those peaks that overlap regions annotated for that gene
+in the reference dataset. Similarly, \(n\) is the number of peaks linked
+to the gene by a significant association for the given method, and \(k\)
+is the number of those peaks that overlap the same annotated regions.
+For each test, the four counts are summed across genes to obtain
+\(\sum N\), \(\sum K\), \(\sum n\), and \(\sum k\).
 \end{minipage}
 \endgroup
 \end{table}

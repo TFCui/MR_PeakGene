@@ -99,7 +99,7 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 | V4 | Motif 富集：Signac + JASPAR2020，背景按 GC 和可及性匹配；提取 MR 特异 motif（IVW/Egger/SMR 任一 BH < 0.05 且 fold > 1，WNN/Pseudo 都不显著），记录 % obs / % bg / fold；文献注释（PMID 已核对）+ logo 汇总为 `Results/Figures/Figures_20261026/Table_2.xlsx`；不再检查 TF 表达 |
 | V5 | 逐 gene ROC AUC，用同样的 6 个金标准 |
 | V6 | 与 CIMA SCENIC+ GRN 的重叠，做 Fisher 检验 |
-| Valid6_GWAS | MR-only 强 link（MR 任一 FDR < 0.001，WNN/Pseudo 不显著）的 peak 内是否有 GWAS P < 5e-8 的 SNP（9 个 GWAS）；Fig8 用 |
+| Valid6_GWAS | MR-only 强 link（MR 任一 FDR < 0.001，WNN/Pseudo 不显著）的 peak 内是否有 GWAS P < 5e-8 的 SNP（9 个 GWAS）；Fig8 用。Fig 4B 例子另行筛选（MR 任一 FDR < 0.05 的 MR-only link，外部证据 + 文献），最终清单为 `Results/Validation/Valid6_GWAS/GWAS_Fig4B_examples.tsv`（`Scripts/Pipeline.md` 3.6） |
 
 ## 9. Others（杂项）
 - 不好归到前面章节的小知识点放这里。
@@ -166,3 +166,15 @@ GWAS 只用 9 个：AS、CD、IBD(deLange2017)、RA(Saevarsdottir2022)、SLE(Ben
 - 2026-11-04：论文管理文件重组为 `Manuscript/notes/1_WORKFLOW.md`、`2_BOARD.md`、`3_LEDGER.md`（替代 `polish/PLAYBOOK.md`、`polish/REVISION_PLAN.md`、`notes/REFERENCE.md`）；流程改为每个小节一轮工作卡，润色参照 scMultiMap；`tools/ms_check.py invariants` 新增 `--snapshot DIR`；第 4、11 节随之改写。
 - 2026-11-05：新增补充表 S4 Table（7 个 GWAS 性状汇总）：`Scripts/Visualization/Table5_GWASTraits.R` → `Results/Figures/Figures_20261102/Table_S4.xlsx` / `.tsv`；暂未进 `Manuscript/`。
 - 2026-11-06：Fig 4（`Plot10_Combined.R`）微调：B 去掉 Asthma / UBAC2 换成 ERAP1，A 图例入图、字号放大，Set3 配色（`Scripts/Visualization.md` 3.9）。
+- 2026-11-06：Figure 3 改版：A 由 Miami 图改为 CD4 T cell 的三条同向 Manhattan（Causal joint / Marginal multiomics / Marginal pseudobulk），GO BP | MF 同一行，HiChIP 与 GRN 同一行等宽对齐（`Scripts/Visualization.md` 3.10、3.16）；已更新到 `Manuscript/`。
+- 2026-11-06：Figure 3 第 2 轮微调（新色板 `PAL_FRESH`、A 去标题加高、GO 合并为 B、HiChIP 箭头坐标轴、GRN 横向条形，字母改为 A–D）；只更新 `Figures_20261102/`，待作者确认后再进 `Manuscript/`。
+- 2026-11-06：Figure 3 第 3 轮（Joint / Pseudobulk 颜色互换、HiChIP 向左扩展、GRN 改箭头坐标轴、HQ 提亮）；仍未进 `Manuscript/`。
+- 2026-11-09：新增 `Scripts/Validation/Valid6_GWAS_2_annot.R`：Fig 4B 选例子用的候选注释表（MR 任一 FDR < 0.05 的 MR-only link，peak 内有 GWAS SNP；注释金标准、GWAS Catalog、QTL r² 等），输出 `Results/Validation/Valid6_GWAS/GWAS_example_candidates*.tsv`（`Scripts/Pipeline.md` 3.6）。
+- 2026-11-09：新增 `Scripts/Validation/Valid6_GWAS_3_external.py`（登录节点，联网）：Fig 4B 短名单的 ENCODE cCRE / GeneHancer / FAVOR / RegulomeDB 注释，以及核对过 PMID 的文献表 `GWAS_example_literature.tsv`（`Scripts/Pipeline.md` 3.6）。
+- 2026-11-09：外部注释扩展到全部 61 个候选；`Valid6_GWAS_2_annot.R` 新增 GWAS SNP 是否为 MR 的 SNP（`gwas_is_iv` / `max_r2_gwas_iv`）；新增 `Valid6_GWAS_4_select.py`：按 “peak 调控功能 / SNP 价值 / 靶基因” 三个问题汇总突出证据并筛选，输出 `GWAS_example_evidence.tsv`（`Scripts/Pipeline.md` 3.6）。
+- 2026-11-10：Fig 4B 例子补查 TTC33 / ZSWIM8 / MUC1 / PLEKHH2 / HCN3 的文献（PMID 用 NCBI E-utilities 核对）；Valid6_GWAS 的中间表移到 `tmp/Valid6_GWAS/annot/`，Results 里只留最终清单 `GWAS_Fig4B_examples.tsv`（推荐 7 个 + 备选 9 个，含 6 个方法的 FDR）。
+- 2026-11-06：补充图 S6.1–S6.3 / S7.1–S7.3 改为 S6 Fig / S7 Fig 各一张，三页作为 panel A / B / C（Bn / CD4 T cell / CD8 T cell）；脚本页标题加字母，`Manuscript/` 已同步。
+- 2026-11-10：Fig 4B 文献补充 DR1（Kang 2023，PMID 36687396，CD–PD pleiotropic locus）和 HCN3（Zhu 2025，PMID 41308126，MAGMA + DEPICT + SMR 优先基因）；更新 `Valid6_GWAS_4_select.py` 的 `LIT` / `CAVEAT` 并重跑 `GWAS_Fig4B_examples.tsv`（分档不变）。
+- 2026-11-10：Fig 4B 例子第 2 版：核对 CodeX 文献审阅（`Results/Validation/Valid6_GWAS/GWAS_Fig4B_literature_audit_20261110.md`）后文献表增至 102 条；新增 `Scripts/Validation/Valid6_GWAS_3b_opentargets.py`（lead SNP 的 Open Targets QTL 共定位）；`Valid6_GWAS_4_select.py` 加 `lit_support` / `lead_specific` 两列并重新分档（推荐 6 / 备选 6 / 不推荐 4，规则见 `Scripts/Pipeline.md` 3.6）。
+- 2026-11-10：Fig 4B 试看版 `Figure_4_CC1.pdf`（`Plot10_Combined.R`）：panel B 换成推荐的 5 个 example + 备选 Bn ERAP1（2 行 × 3），pair 数据改读 FDR < 0.05 候选池 SNP 表；旧 `Figure_4.pdf` 未覆盖（`Scripts/Visualization.md` 3.9）。
+- 2026-11-11：Fig 4B 定稿为 3 个例子（Bn ERAP1 / CD4 ERBB3 / CD8 THBS3，1 行，行高加大），输出 `Figures_20261102/Figure_4.pdf`，试看版已删除；论文 R4 段落同步只写这 3 个例子。

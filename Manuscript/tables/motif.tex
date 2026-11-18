@@ -29,17 +29,9 @@ Motif logo & Causal IVW & Causal Egger & Causal SMR & Causal Joint & Marginal Mu
 \par\medskip
 \begin{minipage}{\linewidth}
 \footnotesize
-Motif enrichment was tested for peaks selected by each method
-(within-gene BH-adjusted \(\q<0.1\)) against a background matched on GC content and accessibility
-(Signac, JASPAR2020 vertebrate CORE motifs). MR-specific motifs have p.adj \(<0.05\) and fold
-enrichment \(>1\) for at least one of causal IVW, causal Egger and causal SMR, with no significant
-enrichment (p.adj \(\ge0.05\)) for either marginal method; for each cell type, the two with the
-smallest p.adj among the causal methods and a clear literature-based interpretation are shown.
-Bold, p.adj \(<0.05\) with fold enrichment \(>1\). p.adj is the adjusted motif-enrichment p-value
-reported by Signac for each method. Each interpretation is based on the single paper cited in the same row.
-Causal joint, Cauchy combination of causal SMR, causal IVW and causal Egger; marginal multiomics,
-Spearman correlation across WNN metacells; marginal pseudobulk, Spearman correlation across
-individual pseudobulks.
+Motif enrichment analysis was performed on peaks selected by each
+method, using all available background peaks as the reference set.
+The two motifs with the smallest BH-adjusted $p$-values across for each cell types are shown.
 \end{minipage}
 \endgroup
 \end{adjustwidth}

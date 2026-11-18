@@ -2,149 +2,103 @@
 \label{sec:methods}
 
 \subsection{Data sources}
-We used data from the Chinese Immune Multi-Omics Atlas (CIMA; OMIX009786) \cite{yin2026cima}, which provides cell-type-specific caQTL and eQTL summary statistics together with single-cell RNA and ATAC count matrices. For the marginal multiomics method, we used an external single-cell multiome dataset of PBMCs (10x Genomics, granulocyte-sorted PBMCs, 10k cells [confirm]) [CITE: external PBMC multiome dataset].
-\TODO{Confirm the source of the external PBMC multiome dataset (notes/2\_BOARD.md section 3).}
 
-\noindent CIMA provides hierarchical cell-type annotations. We focused on three major naive lymphocyte populations: Bn\_TCL1A (naive B cells; marker gene \textit{TCL1A}), CD4\_Tn\_CCR7 (naive CD4$^+$ T cells; marker gene \textit{CCR7}), and CD8\_Tn\_CCR7 (naive CD8$^+$ T cells; marker gene \textit{CCR7}), hereafter referred to as Bn cells, CD4 T cells, and CD8 T cells.
+The Chinese Immune Multi-Omics Atlas (CIMA, accession OMIX009786) profiled peripheral blood immune cells from 428 Chinese individuals \cite{yin2026cima}. For our Mendelian randomization analyses, we used CIMA's cell-type-specific summary statistics for expression quantitative trait loci (eQTLs) and chromatin accessibility quantitative trait loci (caQTLs). To map cis-eQTLs, CIMA tested SNPs within 1~Mb of each gene's transcription start site (TSS) using TensorQTL (version 1.0.10) \cite{taylorweiner2019tensorqtl}. To map cis-caQTLs, CIMA tested SNPs within 1~Mb of each accessibility peak's midpoint \cite{yin2026cima}. Within each cell type, we considered genes with available CIMA eQTL summary statistics that were also present in the pseudobulk RNA matrix. For each such gene, we defined candidate peak--gene pairs by including every peak in the CIMA ATAC data whose midpoint lay within 1~Mb of the gene's TSS.
 
-\subsection{Study design and terminology}
-\label{sec:terminology}
-For each candidate peak--gene pair, we used caQTL variants as instruments for chromatin accessibility at the peak (the exposure) and eQTL summary statistics for expression of the gene (the outcome), and estimated the effect of accessibility on expression by Mendelian randomization (MR) within each cell type. We compared these MR estimates with two correlation-based measures of association between the same peak and gene. The MR estimators we used are established methods \cite{burgess2016combining,bowden2015egger,burgess2017interpreting,zhu2016smr,liu2020cauchy}; we retain their original names and describe our implementation in the following subsections.
+\noindent We also used the CIMA single-cell RNA and ATAC count matrices to construct donor-level pseudobulk profiles. Based on the CIMA level-4 annotations, we focused on three naive lymphocyte populations: naive B cells (Bn\_TCL1A), naive CD4$^+$ T cells (CD4\_Tn\_CCR7), and naive CD8$^+$ T cells (CD8\_Tn\_CCR7). We refer to these populations as Bn cells, CD4 T cells, and CD8 T cells, respectively.
 
-\noindent We refer to the four MR-based tests (causal IVW, causal Egger, causal SMR, and causal joint) collectively as the causal methods, and to the two correlation-based methods as the marginal methods. Causal IVW and causal Egger are the generalized least squares (GLS) versions of the inverse-variance weighted (IVW) and MR-Egger estimators for correlated instruments, causal SMR is summary-data-based MR, and causal joint combines the $P$ values of causal IVW, causal Egger, and causal SMR by the Cauchy combination test. The marginal methods are Spearman correlations between peak accessibility and gene expression, computed across WNN metacells of an external PBMC dataset (marginal multiomics) or across CIMA individuals within a cell type (marginal pseudobulk). The two labels reflect what each group estimates: MR estimates the causal effect of peak accessibility on gene expression under the instrumental-variable assumptions, whereas the marginal methods estimate associations. $P$ values were adjusted by the Benjamini--Hochberg (BH) procedure within each gene, separately for each method; we denote this BH-adjusted $P$ value by $\q$ and, unless stated otherwise, call a result significant when $\q<0.1$. Each tested peak--gene combination is a peak--gene pair, and a pair that is significant for a given method is a link of that method. An MR-only link is a pair with $\q<0.1$ for at least one of causal IVW, causal Egger, and causal SMR and with $\q\geq0.1$ for both marginal methods; causal joint is not used in this definition. MR-only links are thus supported by MR but not detected by either correlation-based method, and we used them in the gene ontology and heritability enrichment analyses. Details of each method and of the filtering are given in the following subsections.
+\noindent For the metacell correlation analysis, we used the publicly available 10k peripheral blood mononuclear cell (PBMC) dataset from 10x Genomics \cite{tenx2020pbmc10k}. PBMCs were obtained from a healthy 25-year-old female donor, and granulocytes were removed by cell sorting before nuclei isolation. The Chromium Single Cell Multiome ATAC + Gene Expression platform provided paired measurements of chromatin accessibility and gene expression from the same nuclei. We used the metacell assignments and RNA metacell profiles provided by Jiang et al.~\cite{jiang2022tripod} and quantified accessibility from the 10x ATAC fragments over CIMA peak intervals.
 
 \input{sections/data_preprocessing}
 
 \subsection{Mendelian randomization}
 \label{sec:mr-overview}
 
-Mendelian randomization (MR) uses genetic variants as instrumental variables (IVs) to estimate the causal effect of an exposure on an outcome. A SNP is a valid instrument if it satisfies three assumptions:
+Mendelian randomization (MR) uses single-nucleotide polymorphisms (SNPs) as instrumental variables (IVs) to estimate the causal effect of an exposure on an outcome. A SNP is a valid instrumental variable if it satisfies three assumptions \cite{lawlor2008mendelian}:
 \begin{enumerate}
     \item \textbf{Relevance:} the SNP is associated with the exposure.
     \item \textbf{Independence:} the SNP is independent of any confounder of the exposure--outcome relationship.
     \item \textbf{Exclusion restriction:} the SNP affects the outcome only through the exposure.
 \end{enumerate}
 
-\noindent MR can be performed with summary statistics. For SNP \(j\) (\(j=1,\ldots,J\)), these comprise the estimated SNP--exposure association \(\hat{\gamma}_j\) with standard error \(s_{Xj}\) and the estimated SNP--outcome association \(\hat{\Gamma}_j\) with standard error \(s_{Yj}\), both aligned to the same effect allele. Under a linear model with a common causal effect \(\beta\), the population-level associations satisfy
-\begin{equation}
-    \Gamma_j = \beta\gamma_j + \alpha_j,
-\end{equation}
-where \(\beta\gamma_j\) is the component mediated by the exposure and \(\alpha_j\) is the component not mediated by it. A SNP with \(\alpha_j\neq0\) is horizontally pleiotropic and violates the exclusion restriction. For a valid instrument, \(\alpha_j=0\), and the ratio \(\Gamma_j/\gamma_j\) identifies \(\beta\).
-
-\noindent With multiple instruments, MR-Egger regresses the SNP--outcome associations on the SNP--exposure associations with an intercept:
-\begin{equation}
+\noindent In this study, we investigated the causal effect of chromatin accessibility at candidate regulatory peaks on gene expression. The exposure was chromatin accessibility at an ATAC-seq peak, and the outcome was expression of the paired gene. For each candidate peak--gene pair within each cell type, let \(\hat{\gamma}_j\) and \(s_{Xj}\) denote the estimated SNP--exposure association and its standard error from the CIMA caQTL summary statistics, and let \(\hat{\Gamma}_j\) and \(s_{Yj}\) denote the corresponding SNP--outcome association and its standard error from the CIMA eQTL summary statistics (\nameref{sec:data-preprocessing}). Under the no measurement error (NOME) assumption \cite{bowden2016nome}, we treated the estimated SNP--exposure associations as fixed (\nameref{S1_Text}). The MR-Egger regression model relates the SNP--outcome associations to the SNP--exposure associations as follows:
+\begin{equation*}
     \hat{\Gamma}_j = \alpha_0 + \beta\hat{\gamma}_j + \varepsilon_j,
     \qquad
-    \varepsilon_j \sim \mathcal{N}(0,\phi s_{Yj}^{2}),
-\end{equation}
-where the slope \(\beta\) is the causal effect and \(\phi\) is a residual variance multiplier. Under the Instrument Strength Independent of Direct Effect (InSIDE) assumption, which requires the pleiotropic effects \(\alpha_j\) to be uncorrelated with the SNP--exposure associations \(\gamma_j\), the intercept \(\alpha_0\) can be interpreted as the average pleiotropic effect of the instruments. Constraining the intercept to zero (\(\alpha_0=0\)) gives the inverse-variance weighted (IVW) estimator, a weighted regression through the origin. IVW gives consistent estimates when all instruments are valid, and also when the average pleiotropic effect is zero (balanced pleiotropy) and InSIDE holds; MR-Egger additionally allows for directional pleiotropy under InSIDE \cite{bowden2015egger,burgess2017interpreting}. The IVW and MR-Egger estimators for uncorrelated variants and the conditions under which they are consistent are given in \nameref{S1_Text}.
+    \varepsilon_j \sim \mathcal{N}(0,\phi s_{Yj}^{2}).
+\end{equation*}
 
-\noindent In this study, the exposure was chromatin accessibility at an ATAC-seq peak and the outcome was expression of the paired gene. For each candidate peak--gene pair in each cell type, \(\hat{\gamma}_j\) and \(s_{Xj}\) were taken from the CIMA caQTL summary statistics, and \(\hat{\Gamma}_j\) and \(s_{Yj}\) from the CIMA eQTL summary statistics (\nameref{sec:data-preprocessing}). Because the instruments of a pair lie in the same \textit{cis} region and are correlated through LD, we used the GLS versions of IVW and MR-Egger described below.
+\noindent Here, \(\beta\hat{\gamma}_j\) represents the genetic component mediated by the exposure, and the intercept \(\alpha_0\) allows for an average pleiotropic effect not mediated by the exposure. Under the Instrument Strength Independent of Direct Effect (InSIDE) assumption (\nameref{S1_Text}), the slope \(\beta\) identifies the causal effect of the exposure on the outcome, and \(\alpha_0\) can be interpreted as the weighted average pleiotropic effect of the instruments (\nameref{S1_Text}). The parameter \(\phi\) is a residual variance multiplier, with \(\phi=1\) corresponding to the fixed-effect model (\nameref{S1_Text}).
 
+\noindent Constraining the intercept to zero (\(\alpha_0=0\)) yields the inverse-variance weighted (IVW) estimator. IVW provides consistent estimates when all instruments are valid, or under balanced pleiotropy when the weighted average pleiotropic effect is zero. MR-Egger additionally allows for directional pleiotropy (\(\alpha_0 \neq 0\)). \cite{bowden2015egger,burgess2017interpreting}.
 
-\subsection{Causal IVW: GLS-IVW with correlated instruments}
+\subsection{Causal IVW}
 \label{sec:gls-ivw}
 
-SNPs within \textit{cis}-regulatory regions are often correlated because of linkage disequilibrium (LD). Clumping stringently enough to obtain independent instruments can leave too few variants per peak--gene pair and thus limit statistical power. Causal IVW therefore uses the GLS extension of IVW, which accounts for the LD that remains among instruments after clumping~\cite{burgess2016combining,burgess2017interpreting}.
+SNPs within \textit{cis}-regulatory regions are often correlated because of linkage disequilibrium (LD). Stringent LD clumping to obtain independent instruments can leave too few variants per peak--gene pair, potentially limiting statistical power. We therefore used the generalized least squares (GLS) extension of IVW to account for correlations among instruments~\cite{burgess2016combining,burgess2017interpreting}.
 
-\noindent For a given peak--gene pair with \(J\) instruments, let \(\hat{\boldsymbol{\gamma}}=(\hat{\gamma}_1,\ldots,\hat{\gamma}_J)^{\mathsf T}\) and \(\hat{\boldsymbol{\Gamma}}=(\hat{\Gamma}_1,\ldots,\hat{\Gamma}_J)^{\mathsf T}\) be the vectors of estimated SNP--exposure and SNP--outcome associations, let \(\boldsymbol R\) be the signed genotype correlation matrix estimated from the 1000 Genomes East Asian reference panel (\nameref{sec:data-preprocessing}), and let \(\boldsymbol D_Y=\operatorname{diag}(s_{Y1},\ldots,s_{YJ})\) contain the standard errors of the SNP--outcome associations. We approximated the sampling covariance of \(\hat{\boldsymbol{\Gamma}}\) by \(\boldsymbol{\Sigma}=\boldsymbol D_Y\boldsymbol R\boldsymbol D_Y\). The IVW model then becomes
-\begin{equation}
-\hat{\boldsymbol{\Gamma}}
+\noindent sFor a given peak--gene pair with $J$ instruments, let $\boldsymbol{\gamma}=(\hat{\gamma}_1,\ldots,\hat{\gamma}_J)^{\mathsf T}$ and $\boldsymbol{\Gamma}=(\hat{\Gamma}_1,\ldots,\hat{\Gamma}_J)^{\mathsf T}$ denote the vectors of estimated SNP--exposure and SNP--outcome associations, respectively. Let $\boldsymbol R$ denote the signed genotype correlation matrix estimated from the reference panel (\nameref{sec:data-preprocessing}), and let $\boldsymbol D_Y=\operatorname{diag}(s_{Y1},\ldots,s_{YJ})$ contain the standard errors of the SNP--outcome associations. We approximated the sampling covariance matrix of $\boldsymbol{\Gamma}$ by $\boldsymbol{\Sigma}=\boldsymbol D_Y\boldsymbol R\boldsymbol D_Y$. The causal IVW model is
+\begin{equation*}
+\boldsymbol{\Gamma}
 =
-\beta\hat{\boldsymbol{\gamma}}+\boldsymbol{\varepsilon},
+\beta\boldsymbol{\gamma}+\boldsymbol{\varepsilon},
 \qquad
 \boldsymbol{\varepsilon}
 \sim\mathcal{N}_J
-(\boldsymbol 0,\phi\boldsymbol{\Sigma}),
-\end{equation}
-where $\phi$ is the residual variance multiplier of a multiplicative random-effects model. The GLS estimate of the causal effect is
-\begin{equation}
-\hat{\beta}_{\text{GLS-IVW}}
+(\boldsymbol 0,\phi\boldsymbol{\Sigma}).
+\end{equation*}
+Using standard results from generalized least squares regression, the causal effect estimator has the closed-form expression
+\begin{equation*}
+\hat{\beta}_{\text{IVW}}
 =
 \frac{
-\hat{\boldsymbol{\gamma}}^{\mathsf T}
-\boldsymbol{\Sigma}^{-1}\hat{\boldsymbol{\Gamma}}
+\boldsymbol{\gamma}^{\mathsf T}
+\boldsymbol{\Sigma}^{-1}\boldsymbol{\Gamma}
 }{
-\hat{\boldsymbol{\gamma}}^{\mathsf T}
-\boldsymbol{\Sigma}^{-1}\hat{\boldsymbol{\gamma}}
+\boldsymbol{\gamma}^{\mathsf T}
+\boldsymbol{\Sigma}^{-1}\boldsymbol{\gamma}
 }.
-\end{equation}
+\end{equation*}
 
-\noindent
-Under strong LD, $\boldsymbol{\Sigma}$ can be nearly singular, and inverting it directly is numerically unstable. We therefore truncated the eigendecomposition $\boldsymbol{\Sigma}=\boldsymbol V\boldsymbol{\Lambda}\boldsymbol V^{\mathsf T}$, with eigenvalues $\lambda_1\geq\cdots\geq\lambda_J$ and orthonormal eigenvectors $\boldsymbol v_1,\ldots,\boldsymbol v_J$. We retained the set $\mathcal K$ of leading eigen-directions that together explain 99.9\% of the variance, with a minimum of five directions, and kept only directions whose eigenvalues exceed $10^{-10}$ times the largest eigenvalue; $k=|\mathcal K|$ (formal definition in \nameref{S1_Text}). The truncated matrix $\widetilde{\boldsymbol{\Sigma}}=\sum_{\ell\in\mathcal K}\lambda_\ell\boldsymbol v_\ell\boldsymbol v_\ell^{\mathsf T}$ keeps the $k$ largest eigenvalues of $\boldsymbol{\Sigma}$; by the Eckart--Young theorem, it is the best rank-$k$ approximation of $\boldsymbol{\Sigma}$ in both the Frobenius and spectral norms [CITE: Eckart--Young theorem]. Because $\widetilde{\boldsymbol{\Sigma}}$ is singular when $k<J$, we replaced $\boldsymbol{\Sigma}^{-1}$ by its Moore--Penrose pseudoinverse $\widetilde{\boldsymbol{\Sigma}}^{+}=\sum_{\ell\in\mathcal K}\lambda_\ell^{-1}\boldsymbol v_\ell\boldsymbol v_\ell^{\mathsf T}$, which inverts $\boldsymbol{\Sigma}$ on the retained eigenspace and gives zero weight to the discarded directions. The causal IVW estimate is therefore
-\begin{equation}
-\hat{\beta}_{\text{GLS-IVW}}
+\noindent Under strong LD, $\boldsymbol{\Sigma}$ may be singular, making direct inversion numerically unstable. We therefore used a truncated eigendecomposition of $\boldsymbol{\Sigma}=\boldsymbol V\boldsymbol{\Lambda}\boldsymbol V^{\mathsf T}$, with eigenvalues $\lambda_1\geq\cdots\geq\lambda_J$ and orthonormal eigenvectors $\boldsymbol v_1,\ldots,\boldsymbol v_J$. Let $\mathcal K$ denote the indices of the $k$ retained leading eigenvalues. The truncated matrix $\widetilde{\boldsymbol{\Sigma}}=\sum_{\ell\in\mathcal K}\lambda_\ell\boldsymbol v_\ell\boldsymbol v_\ell^{\mathsf T}$ retains the $k$ largest eigenvalues of $\boldsymbol{\Sigma}$ (\nameref{S1_Text}). By the Eckart--Young theorem, it is the best rank-$k$ approximation to $\boldsymbol{\Sigma}$ in both the Frobenius and spectral norms \cite{eckart1936approximation}. Its Moore--Penrose pseudoinverse is $\widetilde{\boldsymbol{\Sigma}}^{+}=\sum_{\ell\in\mathcal K}\lambda_\ell^{-1}\boldsymbol v_\ell\boldsymbol v_\ell^{\mathsf T}$. The causal effect estimate is
+\begin{equation*}
+\hat{\beta}_{\text{IVW}}
 =
 \frac{
-\hat{\boldsymbol{\gamma}}^{\mathsf T}
+\boldsymbol{\gamma}^{\mathsf T}
 \widetilde{\boldsymbol{\Sigma}}^{+}
-\hat{\boldsymbol{\Gamma}}
+\boldsymbol{\Gamma}
 }{
-\hat{\boldsymbol{\gamma}}^{\mathsf T}
+\boldsymbol{\gamma}^{\mathsf T}
 \widetilde{\boldsymbol{\Sigma}}^{+}
-\hat{\boldsymbol{\gamma}}
-},
-\end{equation}
-and, provided that the denominator is positive, its conditional variance under the working covariance model is
-\begin{equation}
-\operatorname{Var}
-\left(
-\hat{\beta}_{\text{GLS-IVW}}
-\mid\hat{\boldsymbol{\gamma}},\boldsymbol{\Sigma}
-\right)
-=
-\frac{\phi}{
-\hat{\boldsymbol{\gamma}}^{\mathsf T}
-\widetilde{\boldsymbol{\Sigma}}^{+}
-\hat{\boldsymbol{\gamma}}
+\boldsymbol{\gamma}
 }.
-\end{equation}
+\end{equation*}
 
-\noindent
-The causal effect is the slope $\beta$, and we tested $H_0:\beta=0$. The residual dispersion was estimated as $\hat{\phi}=Q/(J-1)$, where $Q=(\hat{\boldsymbol{\Gamma}}-\hat{\beta}_{\text{GLS-IVW}}\hat{\boldsymbol{\gamma}})^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}(\hat{\boldsymbol{\Gamma}}-\hat{\beta}_{\text{GLS-IVW}}\hat{\boldsymbol{\gamma}})$ is the residual quadratic form and $J$ is the number of instruments after LD filtering, not the number of retained eigen-directions $k$. Pleiotropic instruments make the SNP-specific ratio estimates more heterogeneous than sampling error alone would, so the residual variance can exceed that implied by $\boldsymbol{\Sigma}$ (overdispersion). We accommodated this with the multiplicative random-effects model by setting $\widetilde{\phi}=\max(1,\hat{\phi})$, which inflates the standard error under overdispersion but never makes it smaller than under the fixed-effect model ($\phi=1$) (details in \nameref{S1_Text}). The standard error was $\widehat{\mathrm{SE}}(\hat{\beta}_{\text{GLS-IVW}})=\{\widetilde{\phi}/(\hat{\boldsymbol{\gamma}}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\hat{\boldsymbol{\gamma}})\}^{1/2}$, and the two-sided $P$ value was obtained by comparing $T=\hat{\beta}_{\text{GLS-IVW}}/\widehat{\mathrm{SE}}(\hat{\beta}_{\text{GLS-IVW}})$ with a $t$ distribution with $J-1$ degrees of freedom.
+\noindent The residual dispersion was estimated as $\widetilde{\phi}=\frac{(\boldsymbol{\Gamma}-\hat{\beta}_{\text{IVW}}\boldsymbol{\gamma})^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}(\boldsymbol{\Gamma}-\hat{\beta}_{\text{IVW}}\boldsymbol{\gamma})}{J-1}$. Pleiotropy among the instruments may introduce heterogeneity in the causal effect estimates obtained from individual genetic variants. To accommodate this potential overdispersion, we used a multiplicative random-effects model with $\hat{\phi}=\max(1,\widetilde{\phi})$ (details in \nameref{S1_Text}). The standard error was calculated as $\widehat{\mathrm{SE}}(\hat{\beta}_{\text{IVW}})=\{\hat{\phi}/(\boldsymbol{\gamma}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol{\gamma})\}^{1/2}$. Two-sided $P$ values for testing $H_0:\beta=0$ were obtained by comparing $T=\hat{\beta}_{\text{IVW}}/\widehat{\mathrm{SE}}(\hat{\beta}_{\text{IVW}})$ with a $t$ distribution with $J-1$ degrees of freedom.
 
-
-\subsection{Causal Egger: GLS MR-Egger with correlated instruments}
+\subsection{Causal Egger}
 \label{sec:gls-egger}
-
-Causal Egger extends the causal IVW model by adding an intercept \cite{burgess2017interpreting}. With the association vectors and LD-based covariance matrix defined above, the model is
-\begin{equation}
+Causal Egger is the generalized least squares (GLS) extension of MR Egger to identify the causal effect of chromatin accessibility on the gene expression using correlated SNPs. With the association vectors and LD-based covariance matrix defined above, the model is
+\begin{equation*}
 \hat{\boldsymbol{\Gamma}}
 =
 \alpha_0\boldsymbol 1_J
 +\beta\hat{\boldsymbol{\gamma}}
-+\boldsymbol{\varepsilon}_{\mathrm{Egger}},
++\boldsymbol{\varepsilon},
 \qquad
-\boldsymbol{\varepsilon}_{\mathrm{Egger}}
+\boldsymbol{\varepsilon}
 \sim
 \mathcal N_J
-(\boldsymbol 0,\phi_{\mathrm{Egger}}\boldsymbol{\Sigma}),
-\end{equation}
-where $\boldsymbol 1_J$ is a vector of ones, $\alpha_0$ is the intercept, and $\phi_{\mathrm{Egger}}$ is the residual variance multiplier. As in causal IVW, the estimated SNP--exposure associations $\hat{\boldsymbol{\gamma}}$ were treated as fixed under the NO Measurement Error (NOME) assumption (\nameref{S1_Text}), and the pseudoinverse $\widetilde{\boldsymbol{\Sigma}}^{+}$ defined above was used as the weighting matrix. Define
-\begin{equation}
-\boldsymbol X
-=
-\begin{bmatrix}
-\boldsymbol 1_J & \hat{\boldsymbol{\gamma}}
-\end{bmatrix},
-\qquad
-\boldsymbol{\theta}
-=
-\begin{pmatrix}
-\alpha_0\\
-\beta
-\end{pmatrix}.
-\end{equation}
-Provided that
-$\boldsymbol X^{\mathsf T}
- \widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol X$
-is nonsingular, the GLS estimates are
-\begin{equation}
-\hat{\boldsymbol{\theta}}_{\text{GLS-Egger}}
+(\boldsymbol 0,\phi \boldsymbol{\Sigma}),
+\end{equation*}
+where $\boldsymbol 1_J$ is a vector of ones, $\alpha_0$ is the intercept, and $\phi$ is the residual variance multiplier. As in causal IVW, the estimated SNP--exposure associations $\hat{\boldsymbol{\gamma}}$ were treated as fixed under the NO Measurement Error (NOME) assumption (\nameref{S1_Text}), and the pseudoinverse $\widetilde{\boldsymbol{\Sigma}}^{+}$ defined above was used as the weighting matrix. Define $\boldsymbol{X}=[\boldsymbol{1}_J\;\;\boldsymbol{\gamma}]$ and $\boldsymbol{\theta}=(\alpha_0,\beta)^{\mathsf T}$. The causal Egger estimate is:
+\begin{equation*}
+\hat{\boldsymbol{\theta}}_{\text{Egger}}
 =
 \begin{pmatrix}
 \hat{\alpha}_0\\
-\hat{\beta}_{\text{GLS-Egger}}
+\hat{\beta}_{\text{Egger}}
 \end{pmatrix}
 =
 \left(
@@ -154,72 +108,35 @@ is nonsingular, the GLS estimates are
 \boldsymbol X^{\mathsf T}
 \widetilde{\boldsymbol{\Sigma}}^{+}
 \hat{\boldsymbol{\Gamma}},
-\end{equation}
-with conditional covariance matrix
-\begin{equation}
-\operatorname{Var}
-\left(
-\hat{\boldsymbol{\theta}}_{\text{GLS-Egger}}
-\mid\hat{\boldsymbol{\gamma}},\boldsymbol{\Sigma}
-\right)
-=
-\phi_{\mathrm{Egger}}
-\left(
-\boldsymbol X^{\mathsf T}
-\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol X
-\right)^{-1}
-\end{equation}
-under the working covariance model. Inference on the slope followed causal IVW. The residual dispersion $\hat{\phi}_{\mathrm{Egger}}$ was the residual quadratic form $Q_{\mathrm{Egger}}=(\hat{\boldsymbol{\Gamma}}-\boldsymbol X\hat{\boldsymbol{\theta}}_{\text{GLS-Egger}})^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}(\hat{\boldsymbol{\Gamma}}-\boldsymbol X\hat{\boldsymbol{\theta}}_{\text{GLS-Egger}})$ divided by $J-2$; the slope standard error was the square root of the second diagonal element of the covariance matrix, with $\phi_{\mathrm{Egger}}$ replaced by $\widetilde{\phi}_{\mathrm{Egger}}=\max(1,\hat{\phi}_{\mathrm{Egger}})$; and two-sided $P$ values for $H_0:\beta=0$ were obtained from a $t$ distribution with $J-2$ degrees of freedom. Causal Egger estimates depend on the allele orientation of the instruments, whereas causal IVW estimates do not (\nameref{sec:orientation}).
+\end{equation*}
+
+
+\noindent Inference followed the same procedure as for causal IVW. Let $\boldsymbol{r}_{\mathrm{Egger}}=\boldsymbol{\Gamma}-\boldsymbol{X}\hat{\boldsymbol{\theta}}_{\text{Egger}}$ denote the residual vector. The standard error was $\operatorname{SE}(\hat{\beta}_{\text{Egger}})=\left\{\max\left(1,\frac{\boldsymbol{r}_{\mathrm{Egger}}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol{r}_{\mathrm{Egger}}}{J-2}\right)\left[\left(\boldsymbol{X}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol{X}\right)^{-1}\right]_{22}\right\}^{1/2}$, where $[\cdot]_{22}$ denotes the second diagonal element. Two-sided $P$ values for $H_0:\beta=0$ were obtained from a $t$ distribution with $J-2$ degrees of freedom.
 
 
 \subsection{Causal SMR}
 \label{sec:smr}
-Summary-data-based Mendelian randomization (SMR) estimates the relationship
-between an exposure and an outcome from the summary-level associations of
-a single genetic instrument with each of them \citep{zhu2016smr}.
-We applied this approach to chromatin accessibility and gene expression.
-For each peak--gene pair, we selected the SNP with the smallest nominal
-caQTL $P$ value among the variants retained after the filtering described
-above, breaking ties by the largest absolute ratio of the caQTL effect to its
-standard error. Denoting this SNP by \(*\), the effect estimate is
-\begin{equation}
-\hat\beta_{\mathrm{SMR}}=\frac{\hat\Gamma_*}{\hat\gamma_*}.
-\end{equation}
-The SMR test uses a delta-method approximation to the variance of this
-ratio that accounts for uncertainty in both associations
-\citep{zhu2016smr}. In our implementation, this approximation omitted the
-sampling covariance between the caQTL and eQTL effect estimates.
 
-For the selected SNP, we converted the two-sided nominal caQTL and eQTL
-$P$ values, \(p_X\) and \(p_Y\), into nonnegative normal-equivalent statistics:
-\begin{equation}
-\begin{aligned}
-z_X&=\Phi^{-1}(1-\tilde p_X/2),&
-z_Y&=\Phi^{-1}(1-\tilde p_Y/2),\\
-\tilde p_X&=\max(p_X,10^{-300}),&
-\tilde p_Y&=\max(p_Y,10^{-300}),
-\end{aligned}
-\end{equation}
-where \(\Phi\) is the standard normal cumulative distribution function;
-numerically, the inverse was evaluated on the upper tail.
-From these $P$-derived statistics, we calculated
-\begin{equation}
-\begin{aligned}
-\widehat{\mathrm{SE}}(\hat\beta_{\mathrm{SMR}})
-&=|\hat\beta_{\mathrm{SMR}}|\sqrt{z_X^{-2}+z_Y^{-2}},\\
-T_{\mathrm{SMR}}&=\frac{z_X^2z_Y^2}{z_X^2+z_Y^2}.
-\end{aligned}
-\end{equation}
-The SMR $P$ value was the upper-tail probability of \(T_{\mathrm{SMR}}\)
-under an approximate \(\chi_1^2\) reference distribution. The sign of the effect
-was given by the ratio of the aligned association estimates before the allele orientation step (\nameref{sec:orientation}). We did not perform the heterogeneity in dependent instruments (HEIDI) test; SMR significance
-alone does not distinguish mediation from horizontal pleiotropy or from linkage
-between distinct causal variants \citep{zhu2016smr}.
+Causal SMR is based on summary-data-based Mendelian randomization (SMR) \citep{zhu2016smr} and integrates summary statistics from caQTL and eQTL studies to test for an association between peak accessibility and gene expression. Such an association may reflect a causal effect of peak accessibility on gene expression or horizontal pleiotropy. For each peak--gene pair, we selected the leading SNP with the smallest nominal caQTL $P$ value and used the $*$ to denote this leading SNP. Under the instrumental variable assumptions described in the MR framework, including the exclusion restriction that the leading SNP affects gene expression only through peak accessibility, the causal SMR estimate can be interpreted as an estimate of the causal effect of peak accessibility on gene expression.
 
+\noindent If we assume the variant effect on peak accessibility is $\gamma_*$ and the 
+causal effect of peak accessibility on gene expression is $\beta$, then the variant effect on gene expression can be expressed by  $\Gamma_* \approx \beta\gamma_*$. Therefore, we can estimate the causal effect $\beta$ by the single-SNP Wald ratio: 
+\begin{equation*}
+\hat{\beta}_{\mathrm{SMR}} = \frac{\Gamma_*}{\gamma_*}.
+\end{equation*}
+The SMR test uses a delta-method approximation to the variance of this ratio that accounts for uncertainty in both associations
+\citep{zhu2016smr}. Let $p_X$ and $p_Y$ denote the two-sided nominal caQTL and eQTL $P$ values for the leading SNP, respectively. We converted each $P$ value to an absolute $z$ score using $z_k = \Phi^{-1}(1-\tilde{p}_k/2)$ for $k \in \{X,Y\}$, where $\Phi$ is the standard normal cumulative distribution function. The causal SMR test statistic can be approxiamated by \citep{zhu2016smr} :
+\begin{equation*}
+T_{\mathrm{SMR}}
+= \frac{z_X^2 z_Y^2}{z_X^2 + z_Y^2}.
+\end{equation*}
+Equivalently, $1/T_{\mathrm{SMR}} = 1/z_X^2 + 1/z_Y^2$, indicating that both the caQTL and eQTL signals must be sufficiently strong to yield a significant SMR association. A strong signal for only caQTL/eQTL cannot guarantee a strong signal of causal SMR. 
 
-\subsection{Causal joint: Cauchy combination}
+\noindent Causal SMR and causal IVW both use SNP-specific ratio estimates to estimate the causal effect. Causal SMR uses only the leading caQTL SNP, whereas causal IVW combines ratio estimates across multiple instrumental SNPs using inverse-variance weighting.
+
+\subsection{Causal joint}
 \label{sec:cct}
-The Cauchy combination test (CCT) is an efficient and powerful technique to combine multiple individual $P$ values, especially when the tests are correlated \cite{liu2020cauchy}. Under the null hypothesis, for an individual $P$ value $p_k$, the transformed statistic follows a standard Cauchy distribution. We calculated the causal joint results by aggregating the three causal methods (causal IVW, causal Egger, and causal SMR) using the Cauchy combination test with equal weights:
+The Cauchy combination test (CCT) is an efficient and powerful technique to combine multiple individual $P$ values \cite{liu2020cauchy}. We calculated the causal joint results by aggregating the three causal methods (causal IVW, causal Egger, and causal SMR) using the Cauchy combination test with equal weights:
 \begin{equation*}
 T = \frac{1}{3}\left\{\tan\left[\pi(0.5 - p_{\mathrm{IVW}})\right] + \tan\left[\pi(0.5 - p_{\mathrm{Egger}})\right] + \tan\left[\pi(0.5 - p_{\mathrm{SMR}})\right]\right\},
 \end{equation*}
@@ -227,129 +144,82 @@ where $p_{\mathrm{IVW}}$, $p_{\mathrm{Egger}}$, and $p_{\mathrm{SMR}}$ denote th
 \begin{equation*}
 p_{\mathrm{joint}} = \frac{1}{2}-\frac{\arctan T}{\pi},
 \end{equation*}
-computed as $\arctan(1/T)/\pi$ when $T>0$ for numerical accuracy. For $p<10^{-15}$, the term $\tan[\pi(0.5-p)]$ was replaced by its tail approximation $1/(\pi p)$, and for $p>1-10^{-15}$ by $-1/\{\pi(1-p)\}$. The causal joint results can be understood as the aggregated causal evidence for the studied peak--gene links.
+The causal joint results can be understood as the aggregated causal evidence for the studied peak--gene links.
 
 
-\subsection{Marginal pseudobulk correlation}
+\subsection{Marginal pseudobulk correlations}
 \label{sec:pseudobulk-correlations}
 
-We evaluated marginal peak--gene associations using pseudobulk RNA and
-ATAC profiles within each cell type. The starting point was the CIMA count matrices for all cells (RNA: 6,484,974 cells and 36,326 genes; ATAC: 3,762,242 cells and 338,036 peaks), which were subset to each cell type using the CIMA level-4 annotation. For each modality, individuals were retained if they had at least 100 cells and no more than the median plus three median absolute deviations (MAD scaled by 1.4826) of the per-individual cell number; individuals passing in both modalities were used, yielding 335 individuals for Bn cells, 372 for CD4 T cells, and 346 for CD8 T cells. Counts were summed across
-cells from the same individual within each cell type to construct
-gene-by-individual and peak-by-individual pseudobulk matrices (scanpy 1.10.4).
-For each modality, counts were normalized using the individual-level library size $L$, the sum of counts across all features of that modality, and transformed as $A=\ln(1+10^{6}C/L)$, where $C$ is the summed count.
+Within each cell type, we assessed whether peak accessibility and gene expression were correlated across individuals. Following the quality control described in \nameref{sec:data-preprocessing}, we retained individuals with both RNA and ATAC profiles, yielding 335 individuals for naive B cells, 372 for naive CD4 T cells, and 346 for naive CD8 T cells. For each individual, we summed counts across cells of the same type to obtain a pseudobulk count for each peak and each gene. We then normalized the counts to counts per million (CPM) and applied the transformation $\ln(1+10^6 C/L)$, where $C$ is the pseudobulk count for a gene/peak and $L$ is the individual's total count across all gene/peak of within that cell type.
 
-\noindent For each candidate peak--gene pair, we calculated Spearman's
-rank correlation between peak accessibility and gene expression across
-matched individuals:
-\begin{equation}
-\widehat{\rho}^{\mathrm{PB}}_{pg}
-=
-\operatorname{Cor}_{\mathrm{S}}\left(
-\boldsymbol{A}_{p}, \boldsymbol{E}_{g}
-\right),
-\end{equation}
-where \(\boldsymbol{A}_{p}\) and \(\boldsymbol{E}_{g}\) are the
-log-transformed CPM vectors for peak \(p\) and gene \(g\), respectively,
-across matched individuals, and \(\operatorname{Cor}_{\mathrm{S}}\)
-denotes Spearman's rank correlation, with tied values assigned average ranks.
-Two-sided approximate $P$ values were obtained using R's
-\texttt{cor.test} with \texttt{method="spearman"} and
-\texttt{exact=FALSE}, which uses a $t$ approximation with $n-2$ degrees of freedom. No covariate residualization was applied at the
-correlation stage. All pairs in a cell type used the same individuals, with no missing values. $P$ values were adjusted as described in \nameref{sec:filtering}, and peak--gene pairs
-with \(\q<0.1\) were considered significant.
+\noindent For each candidate peak--gene pair, we calculated Spearman's rank correlation across individuals as
+\begin{equation*}
+\widehat{\rho}_{indivisual}
+= \operatorname{Cor}_{\mathrm{S}}(\boldsymbol{A}_1,\boldsymbol{E}_1),
+\end{equation*}
+where $\boldsymbol{A}_1$ and $\boldsymbol{E}_1$ are the log-transformed CPM values for peak accessibility $p$ and gene expression $g$, respectively, ordered by individual. Within each cell type, all pairs had complete observations for the same individuals. We obtained two-sided $P$ values using \texttt{cor.test} in R with \texttt{method="spearman"} and \texttt{exact=FALSE}, which uses a $t$ approximation for $n$ individuals. As described in \nameref{sec:filtering}, we considered pairs with a Benjamini--Hochberg-adjusted $P$ value below 0.1 significant.
 
-\subsection{Marginal multiomics: WNN metacell correlation}
+
+\subsection{Marginal multiomics}
 \label{sec:wnn-correlations}
 
-We evaluated marginal peak--gene associations using an external PBMC
-multiome dataset with 80 precomputed weighted nearest-neighbor (WNN)
-metacell groups. We used the existing WNN metacell groups supplied with the dataset and did not recluster the cells. The same RNA and ATAC metacell profiles were used
-for all three CIMA cell-type analyses, without restricting metacells
-to the corresponding cell type. WNN defined the cell groups, whereas
-peak--gene associations were quantified by correlations across
-metacells.
-\TODO{Add the external dataset description and citation, cell QC, the WNN
-method citation, and details of the original metacell construction
-and RNA aggregation and normalization; Signac version used for recounting (notes/2\_BOARD.md section 3).}
+We use the marginal multiomics method to evaluate marginal peak--gene associations across 80 metacells derived from a publicly available 10x Genomics 10k PBMC Multiome ATAC and Gene Expression dataset \cite{tenx2020pbmc10k}. Jiang et al.~\cite{jiang2022tripod} retained 7,790 cells after quality control and annotated them into 14 cell types using labels transferred from a CITE-seq reference \cite{hao2021seurat}. They normalized the RNA data using sctransform \cite{hafemeister2019sctransform} and the ATAC data using term frequency--inverse document frequency (TF-IDF) \cite{stuart2021signac}, then grouped the cells into 80 metacells using weighted nearest-neighbor (WNN) analysis \cite{hao2021seurat}.
 
-To align accessibility features with CIMA, external ATAC fragments
-were recounted over all 338,036 CIMA ATAC peak intervals in hg38 using Signac's
-\texttt{FeatureMatrix}, after excluding intervals that overlapped
-other peaks in the input set. ATAC counts were summed within each
-metacell and normalized to counts per million using the total counts
-across retained peaks in that metacell. The supplied RNA metacell
-matrix and group assignments were used as provided. A \(\log(1+x)\)
-transformation was then applied to both the normalized ATAC matrix
-and the supplied RNA matrix.
+\noindent We retained the published metacell assignments. To quantify accessibility at the genomic intervals used in CIMA, we started with the 338,036 CIMA ATAC peaks in hg38, excluded intervals that overlapped another peak in the set, and counted fragments from the 10x dataset over the remaining intervals using Signac's \texttt{FeatureMatrix} \cite{stuart2021signac}. We summed the resulting ATAC counts across cells within each metacell and normalized them to counts per million (CPM) using the total count across retained peaks in that metacell. We then applied a $\log(1+x)$ transformation to both the ATAC CPM values and the supplied RNA values.
 
-For each candidate peak--gene pair, we calculated Spearman's rank
-correlation between peak accessibility and gene expression across
-the 80 metacells:
-\begin{equation}
-\widehat{\rho}^{\mathrm{WNN}}_{pg}
-=
+\noindent For each candidate peak--gene pair, we calculated Spearman's rank correlation across all 80 metacells as
+\begin{equation*}
+\widehat{\rho}_{celltype} =
 \operatorname{Cor}_{\mathrm{S}}\left(
-\boldsymbol{A}^{\mathrm{MC}}_{p},
-\boldsymbol{E}^{\mathrm{MC}}_{g}
+\boldsymbol{A}_2,
+\boldsymbol{E}_2
 \right),
-\end{equation}
-where \(\boldsymbol{A}^{\mathrm{MC}}_{p}\) and
-\(\boldsymbol{E}^{\mathrm{MC}}_{g}\) denote the transformed
-accessibility and expression vectors for peak \(p\) and gene \(g\),
-respectively, across metacells, and
-\(\operatorname{Cor}_{\mathrm{S}}\) denotes Spearman's rank
-correlation. Metacells served as the units of observation.
-Two-sided approximate $P$ values were calculated as described in
-\nameref{sec:pseudobulk-correlations}. No covariate residualization,
-cell-type adjustment, or weighting by metacell size was applied.
-The resulting correlations therefore include variation across PBMC
-cell types and states. Because one matrix was used for all three cell types, a given pair has the same $\widehat{\rho}^{\mathrm{WNN}}$ and nominal $P$ value in each cell type, but its $\q$ can differ because the set of pairs tested for each gene differs between cell types. $P$ values were adjusted as described in \nameref{sec:filtering}, separately for each
-CIMA cell-type analysis, and peak--gene pairs with
-\(\q<0.1\) were considered significant.
+\end{equation*}
+where $\boldsymbol{A}_2$ and $\boldsymbol{E}_2$ contain the transformed accessibility values for peak $p$ and expression values for gene $g$, respectively, in the same metacell order. The correlations could reflect differences in accessibility and expression across cell types. 
 
+\noindent The same 80 metacells profile was not cell type specific, so a peak--gene pair tested in different cell types had the same correlation estimate and nominal $P$ value by the marginal multiomics method.
 
 \subsection{Filtering and multiple testing}
 \label{sec:filtering}
-After all methods had been applied, we first removed pairs for which any of the five base methods (causal IVW, causal Egger, causal SMR, marginal multiomics and marginal pseudobulk) returned a missing $P$ value. We then removed pairs with $\hat\phi_{\mathrm{IVW}}>10$: at this level of residual dispersion the GLS fit had failed, typically because of outlying instruments or a near-singular LD matrix among highly correlated variants. Causal joint $P$ values were computed for the remaining pairs. Finally, each of the six sets of $P$ values was adjusted by the Benjamini--Hochberg procedure within each gene, separately for each method and cell type \citep{benjamini1995fdr}, giving $\q$ (\nameref{sec:terminology}). Discovery used \(\q<0.1\).
-\TODO{Author: one sentence on why BH is applied within each gene (each gene is tested with multiple candidate peaks).}
+
+All methods were applied to the same set of peak--gene pairs within each cell type. We then excluded pairs with an estimated residual variance multiplier $\hat{\phi}>10$, indicating a poor GLS fit, typically due to outlying instruments or a singular LD matrix among highly correlated variants. Causal joint $P$ values were computed for the remaining pairs. Finally, $P$ values were adjusted using the Benjamini--Hochberg procedure within each gene, separately for each method and cell type \citep{benjamini1995fdr}, yielding BH-adjusted $P$ values. Pairs with a BH-adjusted $P$ value $\leq 0.1$ were considered significant.
+
+
+\subsection{Terminology}
+\label{sec:terminology}
+$P$ values were adjusted by the Benjamini--Hochberg (BH) procedure within each gene, separately for each method; we denote this BH-adjusted $P$ value by $\q$ and, unless stated otherwise, call a result significant when $\q<0.1$. Each tested peak--gene combination is a peak--gene pair, and a pair that is significant for a given method is a link of that method. An MR-only link is a pair with $\q<0.1$ for at least one of causal IVW, causal Egger, and causal SMR and with $\q\geq0.1$ for both marginal methods; causal joint is not used in this definition.
 
 
 \subsection{Hypergeometric enrichment}
 \label{sec:hyper}
 
-We tested whether the significant peaks of each method were enriched for peaks that overlap existing enhancer and chromatin interaction references: FANTOM5 [CITE: FANTOM5 enhancer atlas] linked enhancers and genes based on enhancer RNA expression; 4DGenome [CITE: 4DGenome] linked enhancers and genes based on physical interactions using chromatin-looping data; EnhancerAtlas [CITE: EnhancerAtlas] reported enhancers using 12 high-throughput experimental methods; cis-eQTLs in whole blood mapped in European-American subjects were obtained from the GTEx Consortium [CITE: GTEx]; promoter capture Hi-C (PCHi-C) captured contacts between gene promoters and distal regions [CITE: PCHi-C in immune cells]; and H3K27ac HiChIP captured contacts among regions marked by an active regulatory histone modification [CITE: H3K27ac HiChIP; Supplementary Table 3 of Nat Genet article 41588\_2020\_745]. For HiChIP, we used interacting regions with $Q<0.1$ in the B cell, CD4 T cell and CD8 T cell columns; for PCHi-C, we used the other ends of contacts with CHiCAGO score $\geq 5$ in naive B cells, naive CD4 T cells and naive CD8 T cells. For GTEx, we used variants with meta-analysis $P<0.05$ and removed variants located within transcripts annotated in EnsDb.Hsapiens.v86 (2.99.0). Only the HiChIP and PCHi-C regions were lifted over from hg19 to hg38, using rtracklayer (1.66.0) with the \texttt{hg19ToHg38.over.chain} file; regions that failed to map or mapped to more than one chromosome were discarded, and regions that mapped to multiple segments were represented by the range from the first to the last segment.
-\TODO{Sources and genome builds of the GTEx, EnhancerAtlas, FANTOM5 and 4DGenome objects (notes/2\_BOARD.md section 3).}
+We tested whether significant peaks identified by each method were enriched for overlap with regulatory regions assigned to the corresponding genes in six external regulatory datasets. FANTOM5 \cite{andersson2014atlas} links enhancers to genes based on enhancer RNA expression. 4DGenome \cite{teng2015fourdgenome} records physical contacts between regulatory regions and genes detected by chromatin interaction assays. FANTOM5 and 4DGenome links were obtained through HACER \cite{wang2019hacer}. EnhancerAtlas~2.0 \cite{gao2020enhanceratlas} integrates enhancer annotations from 12 high-throughput experimental methods, including H3K4me1 and H3K27ac ChIP-seq, DNase-seq, ATAC-seq, and GRO-seq. Whole-blood cis-eQTLs mapped in European-American subjects by the GTEx Consortium \cite{gtex2017genetic} were used to determine whether a peak contained a variant associated with expression of the corresponding gene. These four datasets were used without matching to the three cell types studied here. The remaining two datasets were chromatin contact maps from immune cells: promoter capture Hi-C (PCHi-C) across 17 primary human hematopoietic cell types \cite{javierre2016pchic}, which captures contacts between gene promoters and distal regions, and H3K27ac HiChIP across five common immune cell types \cite{chandra2021pieqtl}, which captures contacts between gene promoters and regions marked by H3K27ac, a histone modification associated with active regulatory elements (Supplementary Table~3 of \cite{chandra2021pieqtl}). For H3K27ac HiChIP, we used interacting regions with $Q<0.1$ in the B-cell, CD4 T-cell, and CD8 T-cell columns; for PCHi-C, we used the non-promoter ends of contacts with a CHiCAGO score $\geq 5$ in Bn cells, CD4 T cells, and CD8 T cells. For GTEx, we used variants with meta-analysis $P<0.05$ and excluded variants located within transcripts annotated in EnsDb.Hsapiens.v86 (version 2.99.0). All regions were lifted over from hg19 to hg38 using rtracklayer (version 1.66.0) \cite{lawrence2009rtracklayer} and the \texttt{hg19ToHg38.over.chain} file.
 
-\noindent For each cell type and method, and within each gene, let $N$ be the number of candidate peaks, $K$ the number of these peaks that overlap the gene's reference regions, $n_{\mathrm{sig}}$ the number of peaks significant for the method ($\q<0.1$), and $k$ the number of peaks that are both significant and overlapping. Genes with $N>0$, $K>0$, $n_{\mathrm{sig}}>0$ and $N>K$ were included. We summed $N$, $K$, $n_{\mathrm{sig}}$ and $k$ across genes and performed one global test, coded in R as \texttt{phyper($\sum k-1$, $\sum K$, $\sum N-\sum K$, $\sum n_{\mathrm{sig}}$, lower.tail = FALSE)}, without further multiple-testing correction. The pooled fold enrichment was $(\sum k/\sum n_{\mathrm{sig}})/(\sum K/\sum N)$. Results are given in \nameref{S1_Table} and \nameref{S2_Table}.
+\noindent The background for each gene $g$ consisted of all its candidate peaks within 1~Mb of its TSS. For a given set of significant peaks and a given regulatory dataset, let $N_g$ denote the number of candidate peaks for $g$, $K_g$ the number of candidate peaks overlapping regulatory regions assigned to $g$, $n_g$ the number of significant peaks for $g$, and $k_g$ the number of significant peaks overlapping those regulatory regions. A gene was included in the hypergeometric test only if the regulatory dataset assigned at least one region to it and $K_g>0$, $n_g>0$, and $N_g>K_g$. We summed the counts across the included genes, yielding $N=\sum_g N_g$, $K=\sum_g K_g$, $n=\sum_g n_g$, and $k=\sum_g k_g$. We then calculated an overall hypergeometric $P$ value as the probability of observing at least $k$ overlapping peaks when drawing $n$ peaks without replacement from $N$ candidate peaks, of which $K$ overlapped the regulatory regions. In R, this was computed using \texttt{phyper(k - 1, K, N - K, n, lower.tail = FALSE, log.p = TRUE)}, which returns the log-transformed $P$ value. The pooled fold enrichment was calculated as $(k/n)/(K/N)$, the overlap proportion among significant peaks divided by the corresponding proportion among candidate peaks.
+
+\noindent Because regulatory annotation coverage varied among genes, we compared overlap proportions between MR-only and background peak--gene pairs within groups of genes with similar coverage. For each dataset, genes were ranked by $K_g/N_g$ and divided into eight groups. Within each group, we calculated the pooled background overlap proportion, $\sum_g K_g/\sum_g N_g$, and the pooled MR-only overlap proportion, $\sum_g k_g/\sum_g n_g$. The 95\% confidence interval for the MR-only proportion was obtained by resampling genes with replacement (2,000 bootstrap resamples). The group-level proportions were plotted against the line $y=x$, which represents overlap at the background rate (Fig.~\ref{fig:go}C and \nameref{S5_Fig}).
 
 
 \subsection{Gene ontology analysis}
 \label{sec:go}
-We performed over-representation analysis with the DAVID Functional Annotation Chart [CITE: DAVID]. The input was the union of the genes of MR-only links (\nameref{sec:terminology}) across the three cell types, 4,509 gene symbols (OFFICIAL\_GENE\_SYMBOL, \textit{Homo sapiens}, DAVID default background). We used the GOTERM\_BP\_DIRECT and GOTERM\_MF\_DIRECT categories; DAVID exports only terms with $P<0.1$, and we report the DAVID FDR. Of the input genes, 4,031 had a GO Biological Process annotation and 4,185 had a GO Molecular Function annotation. Fig~\ref{fig:go}B and C show the top 10 terms in each category ranked by DAVID FDR. The analysis was run on 2026-10-19.
-\TODO{DAVID knowledgebase version.}
+We performed over-representation analysis with the DAVID Functional Annotation Chart \cite{sherman2022david}. The input was the union of the genes of MR-only links (\nameref{sec:terminology}) across the three cell types, 4,509 gene symbols (OFFICIAL\_GENE\_SYMBOL, \textit{Homo sapiens}, DAVID default background). We used the GOTERM\_BP\_DIRECT and GOTERM\_MF\_DIRECT categories; DAVID exports only terms with FDR $<0.1$. Of the input genes, 4,031 had a GO Biological Process annotation and 4,185 had a GO Molecular Function annotation. Fig~\ref{fig:go}B shows the top 10 terms in each category ranked by DAVID FDR. 
 
 
 \subsection{GRN overlap}
 \label{sec:grn}
-We compared the links of each method with the CIMA SCENIC+ (1.0.1) enhancer-driven regulons (eRegulons) \cite{yin2026cima} [CITE: SCENIC+]. We used two sets: the eRegulons active in the cell type (cell-type eRegulons) and the subset of these that belong to the high-quality eRegulons of the corresponding lineage (high-quality eRegulons). From each set we extracted the unique region--gene pairs. For each cell type and method, we built a $2\times2$ table of all tested pairs in the cell type, cross-classified by whether the pair was significant ($\q<0.05$) and whether it was present in the eRegulon set, and applied Fisher's exact test. We report the odds ratio (Fig~\ref{fig:go}E; \nameref{S8_Fig}).
+We compared the links of each method with the CIMA SCENIC+ (1.0.1) enhancer-driven regulons (eRegulons) \cite{yin2026cima,bravo2023scenicplus}. We used two sets: the eRegulons active in the cell type (cell-type eRegulons) and the subset of these that belong to the high-quality eRegulons of the corresponding lineage (high-quality eRegulons). From each set we extracted the unique region--gene pairs. For each cell type and method, we built a $2\times2$ table of all tested pairs in the cell type, cross-classified by whether the pair was significant ($\q<0.05$) and whether it was present in the eRegulon set, and applied Fisher's exact test. We report the odds ratio (Fig~\ref{fig:go}E; \nameref{S8_Fig}).
 
 
 \subsection{Heritability enrichment analysis from S-LDSC}
 \label{sec:sldsc}
-We used stratified LD score regression (S-LDSC; LDSC v1.0.1) \cite{finucane2015sldsc} to test whether peaks of MR-only links were enriched for disease heritability. The MR-only peaks were the union of the peaks of MR-only links (\nameref{sec:terminology}) across the three cell types. The comparison set was all candidate peaks (316,798 peaks in hg19). Peaks were lifted over from hg38 to hg19 with rtracklayer (1.66.0), keeping only one-to-one mappings on chromosomes 1--22, extended by 500 bp on each side and merged. The annotation was the set of SNPs located in the extended peaks. We fitted S-LDSC separately for the MR-only annotation and for the all-candidate-peak annotation, each together with the 97 baselineLD v2.2 annotations, with \texttt{--ld-wind-cm 1}, LD scores restricted to HapMap3 SNPs, and \texttt{--overlap-annot --print-coefficients}. We used the 1000 Genomes Phase 3 European LD reference data and the standard regression weights that exclude the MHC region; the reference files were obtained from Zenodo (doi:10.5281/zenodo.10515792). Enrichment was defined as the proportion of heritability explained by the annotation divided by the proportion of SNPs in the annotation, and we report the enrichment estimate and its $P$ value for the tested annotation.
+We used stratified LD score regression (S-LDSC; LDSC v1.0.1) \cite{finucane2015sldsc} to test whether peaks of MR-only links were enriched for disease heritability. The MR-only peaks were the union of the peaks of MR-only links (\nameref{sec:terminology}) across the three cell types. The comparison set was all candidate peaks (316,798 peaks in hg19). Peaks were lifted over from hg38 to hg19 with rtracklayer (1.66.0), keeping only one-to-one mappings on chromosomes 1--22, extended by 500 bp on each side and merged. The annotation was the set of SNPs located in the extended peaks. We fitted S-LDSC separately for the MR-only annotation and for the all-candidate-peak annotation, each together with the 97 baselineLD v2.2 annotations \cite{gazal2017baselineld}, with \texttt{--ld-wind-cm 1}, LD scores restricted to HapMap3 SNPs, and \texttt{--overlap-annot --print-coefficients}. We used the 1000 Genomes Phase 3 European LD reference data and the standard regression weights that exclude the MHC region; the reference files were obtained from Zenodo (doi:10.5281/zenodo.10515792) \cite{gazal2024sldscref}. Enrichment was defined as the proportion of heritability explained by the annotation divided by the proportion of SNPs in the annotation, and we report the enrichment estimate and its $P$ value for the tested annotation.
 
-\noindent We report seven immune-mediated diseases: ankylosing spondylitis (AS), Crohn's disease (CD), inflammatory bowel disease (IBD), rheumatoid arthritis (RA), systemic lupus erythematosus (SLE), multiple sclerosis (MS), and type 1 diabetes (T1D). Summary statistics for IBD \cite{delange2017ibd}, RA \cite{saevarsdottir2022ra}, SLE \cite{bentham2015sle} and T1D \cite{chiou2021t1d} were obtained from the collection of 107 independent GWAS summary statistics on Zenodo (\url{https://zenodo.org/records/10515792/files/sumstats_indep107.tgz}). Summary statistics for AS were obtained from the Pan-UK Biobank (\url{https://pan.ukbb.broadinstitute.org/}), those for CD from the International IBD Genetics Consortium (\url{https://www.ibdgenetics.org/}), and those for MS from ImmunoBase \cite{sawcer2011ms}. The sample sizes and sources of the seven GWAS are given in \nameref{S4_Table}.
-
-
-\subsection{GWAS overlap}
-\label{sec:gwas-overlap}
-To show individual examples, we selected strong MR-only links, defined as links with $\q<0.001$ for at least one of the four causal methods and $\q\geq0.05$ for both marginal methods, whose peak contained at least one SNP with $P<5\times10^{-8}$ in any of the seven GWAS analyzed. In Fig~\ref{fig:disease}B, links are drawn as significant at $\q<0.05$.
+\noindent We report seven immune-mediated diseases: ankylosing spondylitis (AS), Crohn's disease (CD), inflammatory bowel disease (IBD), rheumatoid arthritis (RA), systemic lupus erythematosus (SLE), multiple sclerosis (MS), and type 1 diabetes (T1D). Summary statistics for IBD \cite{delange2017ibd}, RA \cite{saevarsdottir2022ra}, SLE \cite{bentham2015sle} and T1D \cite{chiou2021t1d} were obtained from the collection of 107 independent GWAS summary statistics on Zenodo (\url{https://zenodo.org/records/10515792/files/sumstats_indep107.tgz}) \cite{gazal2024sldscref}. Summary statistics for AS were obtained from the Pan-UK Biobank (\url{https://pan.ukbb.broadinstitute.org/}) \cite{karczewski2025panukb}, those for CD from the International IBD Genetics Consortium (\url{https://www.ibdgenetics.org/}) \cite{liu2015ibd}, and those for MS from ImmunoBase \cite{sawcer2011ms}. The AS and CD summary statistics are those used by Yazar et al.~\cite{yazar2022onek1k}. The sample sizes and sources of the seven GWAS are given in \nameref{S4_Table}.
 
 
 \subsection{Motif enrichment analysis}
 \label{sec:motif}
-We performed motif enrichment analysis to determine whether transcription factor binding motifs were overrepresented in significant peaks compared with background peaks. For each cell type (Bn cells, CD4 T cells, CD8 T cells) and each of the six methods, we used the peaks of links with $\q<0.1$ as the foreground set. The universe was the peaks of the candidate pairs that were also present in the ATAC object of that cell type (316,117 peaks in Bn cells), and the background was 50,000 peaks drawn from this universe with \texttt{MatchRegionStats}, matched for GC content and $\log(1+\text{total accessibility})$. Motif occurrences were annotated with \texttt{AddMotifs} in Signac (1.14.0) [CITE: Signac] using the JASPAR2020 CORE vertebrate collection (JASPAR2020 0.99.10; latest version of each matrix, 746 motifs) [CITE: JASPAR2020] and the hg38 genome (BSgenome.Hsapiens.UCSC.hg38 1.4.5). We used \texttt{FindMotifs} in Signac, which computes $P$ values with a hypergeometric test, and adjusted the $P$ values by the Benjamini--Hochberg procedure across motifs within each cell type and method. Motifs with adjusted $P<0.05$ and fold enrichment $>1$ were considered enriched. A motif was MR-specific if it was enriched for at least one of causal IVW, causal Egger and causal SMR and for neither marginal method; causal joint was not used in this definition. For Table~\ref{tab:motif}, we selected for each cell type the two MR-specific motifs with the smallest adjusted $P$ among the causal methods, skipping motifs without a clear literature report.
+We performed motif enrichment analysis to determine whether transcription factor binding motifs were overrepresented in significant peaks compared with background peaks. For each cell type (Bn cells, CD4 T cells, CD8 T cells) and each of the six methods, we used the peaks of links with $\q<0.1$ as the foreground set. The universe was the peaks of the candidate pairs that were also present in the ATAC object of that cell type (316,117 peaks in Bn cells), and the background was 50,000 peaks drawn from this universe with \texttt{MatchRegionStats}, matched for GC content and $\log(1+\text{total accessibility})$. Motif occurrences were annotated with \texttt{AddMotifs} in Signac (1.14.0) \cite{stuart2021signac} using the JASPAR2020 CORE vertebrate collection (JASPAR2020 0.99.10; latest version of each matrix, 746 motifs) \cite{fornes2020jaspar} and the hg38 genome (BSgenome.Hsapiens.UCSC.hg38 1.4.5). We used \texttt{FindMotifs} in Signac, which computes $P$ values with a hypergeometric test, and adjusted the $P$ values by the Benjamini--Hochberg procedure across motifs within each cell type and method. Motifs with adjusted $P<0.05$ and fold enrichment $>1$ were considered enriched. A motif was MR-specific if it was enriched for at least one of causal IVW, causal Egger and causal SMR and for neither marginal method; causal joint was not used in this definition. For Table~\ref{tab:motif}, we selected for each cell type the two MR-specific motifs with the smallest adjusted $P$ among the causal methods, skipping motifs without a clear literature report.
 
 
 \subsection{Allele orientation}
@@ -364,7 +234,7 @@ Consider the two marginal models of the caQTL and eQTL studies, which provide th
 X_i &= \mu_{Xj} + \gamma_j G_{ij} + \varepsilon_{ij}^{X}, \\
 Y_i &= \mu_{Yj} + \Gamma_j G_{ij} + \varepsilon_{ij}^{Y},
 \end{align*}
-where \(\mu_{Xj}\) and \(\mu_{Yj}\) are intercepts, and \(\gamma_j\) and \(\Gamma_j\) are the population-level SNP--exposure and SNP--outcome associations, respectively. MR study is usually base on Two-Sample data, where the SNP-exposure estimates and SNP-outcome estimates come from two independent but homogeneous samples. In this ways, the residuals $\varepsilon_{ij}^{X}$ and $\varepsilon_{ij}^{Y}$ are independent. However, in our study, caQTL and eQTL come from the same population, leading to some potential bias. In order to measures of the bias, we do the following sensitivity test for each of cell types separately.
+where \(\mu_{Xj}\) and \(\mu_{Yj}\) are intercepts, and \(\gamma_j\) and \(\Gamma_j\) are the population-level SNP--exposure and SNP--outcome associations, respectively. MR study is usually base on Two-Sample data, where the SNP-exposure estimates and SNP-outcome estimates come from two independent but homogeneous samples \cite{burgess2016overlap}. In this ways, the residuals $\varepsilon_{ij}^{X}$ and $\varepsilon_{ij}^{Y}$ are independent. However, in our study, caQTL and eQTL come from the same population, leading to some potential bias. In order to measures of the bias, we do the following sensitivity test for each of cell types separately.
 
 \noindent We first performed LD pruning (\texttt{--indep-pairwise 500kb 50 0.1}, MAF $\geq 0.01$, with MAF computed in the reference panel) on the caQTL variants on chromosomes 1--22 that matched the EAS reference panel. We further selected SNPs under the null (caQTL nominal $P>0.05$ and eQTL nominal $P>0.05$). The marginal associations are under the null, there is no evidence to prove the marginal associations ($\gamma_j$ and $\Gamma_j$) are nonzero values. Therefore, we can use the correlation of Z scores to approximate the correlation of residuals:
 

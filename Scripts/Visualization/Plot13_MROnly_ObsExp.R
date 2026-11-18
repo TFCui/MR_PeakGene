@@ -75,13 +75,16 @@ ssqrt <- scales::trans_new("ssqrt", function(x) sign(x) * sqrt(abs(x)), function
 EXP <- 0.03   # 两端留白 (变换后空间的比例)
 sq_brk <- function(lim) if (lim > 0.3) c(0, 0.05, 0.1, 0.2, 0.4, 0.6) else c(0, 0.02, 0.05, 0.1, 0.2)   # 平方根刻度下低值区不挤
 AX_LAB <- c(x = "Background overlap ratio (K / N)", y = "MR-Only overlap ratio (k / n_sig)")
+AX_LAB_F3 <- c(x = "Background ratio (K / N)", y = "MR-Only ratio (k / n)")   # Figure 3 (2026-11-06 第 2 轮)
 
 COLS_S5   <- list(bin = COL_BIN, gene = COL_GENE, enr = COL_ENR, diag = COL_DIAG)
 # Figure 3 的 HiChIP panel (2026-11-04 起薄荷色板): 分箱深蓝 / gene 薄荷绿 / 富集侧极浅薄荷 (比 S5 更透明) / 对角线灰
 COLS_FIG3 <- list(bin = PAL_MINT[["m7"]], gene = PAL_MINT[["m3"]], enr = "#F5FAF3", diag = "grey45")
+# Figure 3 新配色 (2026-11-06 第 2 轮, PAL_FRESH; S5 仍用 COLS_FIG3)
+COLS_F3NEW <- list(bin = PAL_FRESH[["f1"]], gene = PAL_FRESH[["f5"]], enr = PAL_FRESH[["f7"]], diag = "grey45")
 # fig3 = TRUE: 不写 title, 改用标签条 (theme_strip_mint); 边框 / 轴 / 分箱线条加粗
 # 2026-11-04 起 S5 也用 Figure 3D 的风格 (fig3 = TRUE); cart = TRUE 只给 Figure 3D (coord_cartesian, 便于与 GRN 对齐), S5 保持 coord_equal (对角线 45°)
-panel <- function(d, show_x = TRUE, show_y = TRUE, cols = COLS_S5, show_sub = TRUE, fig3 = FALSE, strip = d, cart = FALSE, ann_size = 4.4, ann_sep = " ") {   # ann_sep = "\n": S5 小 panel 中 Fold / P 分两行, 不压到对角线   # strip: Figure 3 的标签条文字
+panel <- function(d, show_x = TRUE, show_y = TRUE, cols = COLS_S5, show_sub = TRUE, fig3 = FALSE, strip = d, cart = FALSE, ann_size = 4.4, ann_sep = " ", arrows = FALSE) {   # arrows: Figure 3 (2026-11-06 第 2 轮) 用 L 形箭头坐标轴, 无标签条 / 边框   # ann_sep = "\n": S5 小 panel 中 Fold / P 分两行, 不压到对角线   # strip: Figure 3 的标签条文字
   lw <- if (fig3) list(line = 0.75, err = 0.7, pt = 2.9, stroke = 0.5, gene_a = 0.35) else list(line = 0.45, err = 0.5, pt = 2.3, stroke = 0.4, gene_a = 0.4)
   s <- D[db == d][, strip_lab := strip]; b <- B[db == d][, strip_lab := strip]; st <- S[db == d]   # strip_lab: Figure 3 的标签条
   lim <- max(b$hi, b$bx) * 1.06                                   # x、y 同一范围, 对角线 45°
@@ -104,9 +107,15 @@ panel <- function(d, show_x = TRUE, show_y = TRUE, cols = COLS_S5, show_sub = TR
     # Figure 3: 右下角 (对角线以下的空白处) 写 pooled fold 和合并超几何 P (与 S5 副标题同一口径; 2026-11-04)
     (if (fig3) annotate("label", fill = "white", label.size = 0, label.padding = unit(0.12, "lines"), x = (sqrt(hi_l) * 0.97)^2, y = (sqrt(hi_l) * 0.13)^2, hjust = 1, vjust = 0, size = ann_size, fontface = "bold", colour = "#1F2937",   # 加粗放大 (2026-11-04)
                         label = sprintf("Fold = %.2f%s(%s)", st$fold, ann_sep, fmt_lp(st$log10_p)), lineheight = 0.95) else NULL) +
-    labs(title = if (fig3) NULL else d, subtitle = sub, x = if (show_x) AX_LAB[["x"]] else NULL, y = if (show_y) AX_LAB[["y"]] else NULL) +
+    labs(title = if (fig3) NULL else d, subtitle = sub, x = if (show_x) (if (arrows) AX_LAB_F3[["x"]] else AX_LAB[["x"]]) else NULL,
+         y = if (show_y) (if (arrows) AX_LAB_F3[["y"]] else AX_LAB[["y"]]) else NULL) +
     theme_s5() +
-    if (fig3) list(facet_wrap(~ strip_lab), theme_strip_mint(11),
+    if (arrows) theme(panel.border = element_blank(),
+                      axis.line = element_line(color = COL_AX3, linewidth = 0.8, arrow = grid::arrow(length = unit(2.8, "mm"), type = "closed", ends = "last")),
+                      axis.ticks = element_line(color = COL_AX3, linewidth = 0.6), axis.ticks.length = unit(1.6, "mm"),
+                      axis.text = element_text(color = COL_AX3, size = 12), axis.title = element_text(face = "bold", color = "#1F2937", size = 13),
+                      axis.title.y = element_text(margin = margin(r = 4)), panel.grid.major = element_line(color = "grey93", linewidth = 0.3), panel.grid.minor = element_blank())
+    else if (fig3) list(facet_wrap(~ strip_lab), theme_strip_mint(11),
                    theme(panel.border = element_rect(color = COL_AX3, linewidth = 0.9), axis.ticks = element_line(color = COL_AX3, linewidth = 0.6),
                          axis.ticks.length = unit(1.6, "mm"), axis.text = element_text(color = COL_AX3, size = BASEF),
                          axis.title = element_text(face = "bold", color = "#1F2937", size = BASEF + 1), panel.grid.major = element_line(color = "grey93", linewidth = 0.3)))
@@ -127,7 +136,7 @@ msg("Saved: ", out)
 
 ### Figure 3 用的 HiChIP panel (2026-11-04): 薄荷色板, 标签条 "HiChIP", 线条加粗, 不写副标题数字; 存 rds 由 Plot9_GO_GRN.R 拼图 (改这里后先跑本脚本, 再跑 Plot9)
 TMP13 <- file.path(TMP_DIR, "Plot13_MROnly"); dir.create(TMP13, recursive = TRUE, showWarnings = FALSE)
-saveRDS(panel("HiChIP", cols = COLS_FIG3, show_sub = FALSE, fig3 = TRUE, strip = "MR-only link overlap (HiChIP)", cart = TRUE), file.path(TMP13, "hichip_fig3.rds"))
+saveRDS(panel("HiChIP", cols = COLS_F3NEW, show_sub = FALSE, fig3 = TRUE, cart = TRUE, arrows = TRUE, ann_size = 5), file.path(TMP13, "hichip_fig3.rds"))   # 2026-11-06 第 2 轮: 无标签条, 箭头坐标轴
 msg("Saved: ", file.path(TMP13, "hichip_fig3.rds"))
 
 fwrite(S[, .(database = db, n_gene, pct_nsig1 = round(pct_nsig1, 2), pct_hit_obs = round(pct_hit_obs, 2), pct_hit_exp = round(pct_hit_exp, 2),

@@ -1,41 +1,51 @@
 \section{Results}
 \label{sec:results}
-
-\subsection{Study overview and comparison of peak–gene linking methods}
+\subsection{Overview of the MR-based framework}
 \label{res:analysis-set}
-We applied MR methods to data from the Chinese Immune Multi-Omics Atlas (CIMA) \cite{yin2026cima}, a multi-omics analysis of 428 healthy Chinese adults that combined scRNA-seq and scATAC-seq of circulating immune cells with whole-genome sequencing (WGS) of plasma cell-free DNA. CIMA applied TensorQTL [CITE: TensorQTL] to identify cell-type-specific \textit{cis}-xQTLs within $\pm$1 Mb of gene transcription start sites (TSSs) or chromatin peak midpoints. We used the cell-type-specific caQTL and eQTL summary statistics to estimate the effect of peak accessibility on gene expression in naive B cells (Bn cells), naive CD4$^+$ T cells (CD4 T cells), and naive CD8$^+$ T cells (CD8 T cells). MR estimates causal effects under the instrumental-variable assumptions, whereas correlation-based methods estimate associations. We used three established MR methods \cite{burgess2016combining,bowden2015egger,burgess2017interpreting,zhu2016smr}, which we call causal IVW, causal Egger and causal SMR, and an equal-weight Cauchy combination of these three tests (causal joint) \cite{liu2020cauchy}. We compared them with two correlation-based methods: Spearman correlation across individual-level pseudobulk profiles of CIMA individuals (marginal pseudobulk; 335 individuals for Bn cells, 372 for CD4 T cells, and 346 for CD8 T cells) and Spearman correlation across 80 WNN metacells of an external PBMC multiome dataset (marginal multiomics) (Fig~\ref{fig:overview}A). We refer to the four MR-based tests (causal IVW, causal Egger, causal SMR and causal joint) collectively as the causal methods, and to the two correlation-based methods as the marginal methods. Significance was defined by the BH-adjusted $P$ value computed within each gene, separately for each method ($\q<0.1$), and an MR-only link is a pair that is significant for at least one of causal IVW, causal Egger and causal SMR but for neither marginal method (see Methods).
 
-\noindent All six methods were applied to the same set of candidate peak--gene pairs (40,087 for Bn cells, 85,527 for CD4 T cells, and 50,931 for CD8 T cells; \nameref{S3_Table}) for a fair comparison. Marginal multiomics found 37,181 links ($\q<0.1$) in CD4 T cells, many more than the other methods. Causal methods (causal IVW, causal Egger, and causal SMR) generally found fewer links than the two marginal methods (marginal multiomics and marginal pseudobulk). The sets of links overlapped between methods (Fig~\ref{fig:overview}B). The results for Bn cells and CD8 T cells were similar (\nameref{S3_Fig}).
+We propose a Mendelian randomization (MR) framework to assess the causal effect of chromatin accessibility at a candidate peak on the expression of a nearby gene within a given cell type (Fig.~1A). For each peak--gene pair, we use chromatin accessibility QTL (caQTL) and expression QTL (eQTL) summary statistics for \(J\) single-nucleotide polymorphisms (SNPs). Let \(\hat{\boldsymbol{\gamma}}=(\hat{\gamma}_1,\ldots,\hat{\gamma}_J)^{\mathsf T}\) and \(\hat{\boldsymbol{\Gamma}}=(\hat{\Gamma}_1,\ldots,\hat{\Gamma}_J)^{\mathsf T}\) denote the estimated SNP associations with peak accessibility and gene expression, respectively. Inverse-variance weighting (IVW) and MR-Egger use the same regression model:
+\[
+\hat{\boldsymbol{\Gamma}}
+= \alpha_0\boldsymbol{1}_J + \beta\hat{\boldsymbol{\gamma}}
+  + \boldsymbol{\varepsilon},
+\qquad
+\boldsymbol{\varepsilon}
+\sim \mathcal{N}_J(\boldsymbol{0},\phi\boldsymbol{\Sigma}).
+\]
+\noindent Here, \(\beta\) represents the causal effect of peak accessibility on gene expression under the MR assumptions. IVW fixes the intercept \(\alpha_0\) at zero, whereas MR-Egger estimates it to allow for directional pleiotropy. The covariance matrix \(\boldsymbol{\Sigma}\) accounts for the standard errors of the eQTL estimates and linkage disequilibrium among SNPs estimated from a reference panel. The dispersion parameter \(\phi\) allows for multiplicative overdispersion.
 
-\noindent Even if some peak-gene pairs are significant in both marginal and causal methods, the directions might be different. We extracted all 1,259 links in CD4 T cells that were significant for all six methods and compared their effect directions. The results of causal IVW, causal Egger, and causal SMR were highly concordant (1,258 of 1,259 links with the same sign). For 73\% of these links, causal IVW had the same sign as both marginal methods, whereas for 24.1\% the sign of causal IVW differed from that of marginal multiomics only. Marginal multiomics was more likely to be discordant with causal IVW than marginal pseudobulk (Fig~\ref{fig:overview}C, \nameref{S3_Fig}).
+\noindent Summary-data-based Mendelian randomization (SMR) uses the lead SNP, defined as the SNP with the smallest caQTL \(p\)-value for the peak. Denoting this SNP by \(*\), the SMR estimate is \(\hat{\beta}_{\mathrm{SMR}}=\hat{\Gamma}_*/\hat{\gamma}_*\). We combine the IVW, MR-Egger, and SMR \(p\)-values using an equally weighted Cauchy combination test. We refer to these four MR methods as causal IVW, causal Egger, causal SMR, and causal joint, respectively.
+
+\noindent We applied the framework to cell-type-specific caQTL and eQTL summary statistics from the Chinese Immune Multi-Omics Atlas (CIMA), which profiled circulating immune cells from 428 healthy Chinese adults using scRNA-seq and scATAC-seq \cite{yin2026cima}. We analyzed naive B cells (Bn), naive CD4$^+$ T cells (CD4), and naive CD8$^+$ T cells (CD8).
+
+\noindent For comparison, we also calculated two marginal measures of peak--gene association (Fig.~1A). The marginal multiomics analysis calculated Spearman correlations between peak accessibility and gene expression across weighted nearest-neighbor (WNN) metacells spanning multiple cell types in an external peripheral blood mononuclear cell dataset. The marginal pseudobulk analysis calculated the same correlation across CIMA donors using pseudobulk profiles constructed separately for each cell type. The methods represent common tools that use Spearman's correlations to identify peak-gene pairs, such as Signac, ArchR, and scMEGA \cite{stuart2021signac,granja2021archr,li2023scmega}. 
+
 
 \subsection{Concordance and discordance between MR estimates and marginal correlations}
 \label{res:examples}
-\noindent Mendelian randomization estimates the causal effect of peak accessibility on gene expression, while marginal multiomics and marginal pseudobulk calculate the correlation between peaks and genes across metacells (spanning cell types) and across individuals, respectively. The causal effects and marginal associations agree on many peak-gene pairs, which is reasonable. But discordance still exsits. We select four representative case to illustrate this.
 
-\noindent For the gene \textit{SIDT2} and the peak chr11:117185715-117186216 in Bn cells, the MR results (causal SMR, causal IVW, causal Egger, and causal joint) and two marginal correlations (marginal multiomics and marginal pseudobulk) were all positive and significant ($\q<0.1$) (Fig~\ref{fig:examples}A). Causal IVW gave the smallest $P$ value, and the two lines were closely aligned implying no clear pleiotropy in the data (Fig~\ref{fig:examples}A). \TODO{R2-P2: delete the ``no clear pleiotropy'' clause, or compute the Egger intercept (author to decide).} However, the concordance of significance did not always exist among methods. For second examples (gene \textit{RPL11}, peak chr1:23691494-23691995) in CD4 T cells, while the MR estimates and the correlation across metacells are significant, the correlation across individuals was not significant anymore (Fig~\ref{fig:examples}B). Therefore, the causal effects were not always mirrored by a marginal association within the same cell type.
+Within each cell type, we applied all six methods to the same set of candidate peak--gene pairs (40,087 in naive B cells, 85,527 in naive CD4 T cells, and 50,931 in naive CD8 T cells; \nameref{S3_Table}). Using a BH-adjusted \(p\)-value threshold of 0.1, the marginal multiomics analysis identified 37,181 links among the CD4 T-cell candidate pairs, including 24,632 detected by this method alone. In comparison, each MR-based test identified fewer links, although some links were detected only by MR (Fig.~\ref{fig:overview}B). We next examined whether the methods agreed on the direction of the association for the 1,259 CD4 T-cell links that were significant by all six methods. The causal IVW, causal Egger, and causal SMR estimates agreed in sign for 1,258 of these links, indicating the high consistency across MR methods. The causal IVW estimate agreed in sign with both marginal correlations for 918 links (72.9\%). For 304 links, only the metacell correlation differed in sign from the IVW estimate, compared with 17 links for which only the pseudobulk correlation differed. For the remaining 20 links, both correlations had the opposite sign to the IVW estimate (Fig.~\ref{fig:overview}C). We observed similar patterns in naive B cells and naive CD8 T cells (\nameref{S3_Fig}).
 
-\noindent The causal effects and the marginal associations might have even different sign. For the gene \textit{ERAP2} and the peak chr5:96885894-96886395 in CD4 T cells, all of causal IVW, causal Egger, and causal SMR detect negative and significant effects, consistent with the negative correlation across individuals ($\rho = -0.641$) (Fig~\ref{fig:examples}C). However, the correlation across cell types was surprisingly positive ($\rho=0.375$, $P=6.1\times10^{-4}$), indicating the possible directional discrepancy between causal effects and marginal association.
+\noindent Four examples illustrated these patterns. First, for the peak at chr11:117185715--117186216 and \textit{SIDT2} in naive B cells, all six tests were significant, and the three MR estimates and both marginal correlations were positive (Fig.~\ref{fig:examples}A). Next, for \textit{RPL11} and the peak at chr1:23691494--23691995 in naive CD4 T cells, the MR tests and the metacell correlation were also significant, but the donor-level pseudobulk correlation was weak and did not reach significance (Fig.~\ref{fig:examples}B). The \textit{ERAP2} example illustrated a difference in direction. For the peak at chr5:96885894--96886395, all three MR estimates in naive CD4 T cells were negative, as was the correlation across donors (\(\rho=-0.641\), \(p=2.0\times10^{-44}\)). In contrast, the correlation across metacells was positive (\(\rho=0.375\), \(p=6.1\times10^{-4}\)) (Fig.~\ref{fig:examples}C). Finally, for \textit{ARPC1B} and the peak at chr7:99376204--99376705 in naive CD4 T cells, all four MR-based tests were significant and all three MR estimates were positive, but neither marginal correlation reached significance (Fig.~\ref{fig:examples}D). One possible explanation for the discordance is that marginal correlations can reflect shared variation in accessibility and expression across cell types or states \cite{su2025scmultimap,calderon2019landscape}. For example, if both peak accessibility and gene expression are higher in one cell type than in another, pooling metacells across these types can yield a positive correlation even when the association within a given cell type is weak or negative \cite{su2025scmultimap}. Within a cell type, differences in immune activation across donors could likewise influence both measurements and contribute to the pseudobulk correlation \cite{calderon2019landscape}. Thus, a marginal correlation alone cannot establish that accessibility at a candidate enhancer causally affects gene expression. By using genetic variants as instruments, MR methods provide complementary evidence about the causal effects and can identify candidate regulatory links even when marginal correlations are weak, as illustrated by \textit{ARPC1B} (Fig.~\ref{fig:examples}D).
 
-\noindent Some links were detected only by MR methods. For example, all MR methods detected a significantly positive effect of the peak chr7:99376204-99376705 on \textit{ARPC1B} in CD4 T cells, whereas neither marginal correlation test provided evidence of association (Fig~\ref{fig:examples}D).
+\subsection{Biological evidence for MR-inferred enhancer--gene links}
 
-\noindent Together, these examples show the consistency and possible difference between marginal correlation and causal effects. Because marginal multiomics and marginal pseudobulk only calculate the marginal association, which might be influenced by potential unobserved counfunding factors, the calculated correlation may be different or even of different signs from the causal effects. This demonstrates that when studying the regulation mechanism between peak accessibility and gene expression, we should not only study the marginal association, but also find the underlying causal effects.
-\TODO{R2-P5: keep this paragraph or merge it into the end of the previous one; the last sentence is stronger than the evidence (notes/2\_BOARD.md, Results R2).}
+\noindent To extend the comparison beyond the individual loci in Fig.~\ref{fig:examples}, we compared the genome-wide significance patterns of the causal joint test and the two marginal analyses. The Manhattan plots for the 85,527 candidate peak--gene pairs in naive CD4 T cells show that some pairs with strong MR evidence had little evidence of association in either marginal analysis (Fig.~\ref{fig:go}A, with additional results in Fig.~S7). We therefore examined the functions of genes involved in MR-only links, defined as peak--gene pairs that were significant in at least one MR-based test and in neither marginal analysis.
 
-\subsection{Functional characterization and regulatory network support for peak–gene links}
-\TODO{Fig~\ref{fig:go}A (Miami plot, CD4 T cells) and Fig~\ref{fig:go}D (HiChIP overlap of MR-only links; \nameref{S5_Fig}) are not yet cited in the text; \nameref{S7_1_Fig}--\nameref{S7_3_Fig} (genome-wide Manhattan plots) is not yet cited either (author to write).}
+\noindent We examined the biological functions of genes implicated by MR-only links. Pooling these links across Bn, CD4 T, and CD8 T cells yielded 4,509 unique genes, for which we performed Gene Ontology (GO) enrichment analysis using DAVID \cite{sherman2022david} (Fig.~\ref{fig:go}B). DNA-templated transcription was the most significantly enriched biological process (689 genes, 1.36-fold enrichment, BH-adjusted \(p=5.20\times10^{-18}\)). Regulation of transcription by RNA polymerase II was also enriched (415 genes, 1.26-fold enrichment, BH-adjusted \(p=4.70\times10^{-5}\)). RNA processing emerged as a second theme across the biological process and molecular function categories. RNA splicing was enriched among biological processes (84 genes, 1.69-fold enrichment, BH-adjusted \(p=3.39\times10^{-4}\)), while RNA binding and mRNA binding were enriched among molecular functions. Both \textit{SRSF7} and \textit{DDX5} were annotated to all three terms. These findings were relevant to early changes in RNA processing in lymphocytes. For example, human naive B cells in secondary lymphoid tissue exhibited less intron retention than those in peripheral blood, even before activation \cite{ogrady2022splicing}. Changes in alternative splicing had also been observed within six hours of stimulating naive CD4 T cells, with similar overall patterns reported in CD8 T cells \cite{zisman2025splicing}. Protein ubiquitination was likewise enriched (172 genes, 1.50-fold enrichment, BH-adjusted \(p=1.25\times10^{-5}\)), as was the corresponding molecular function, ubiquitin-protein transferase activity (92 genes, 1.66-fold enrichment, BH-adjusted \(p=1.55\times10^{-4}\)). Both terms included \textit{UBE2N}, which encodes the ubiquitin-conjugating enzyme Ubc13 \cite{yamamoto2006ubc13}.
 
-To characterize the biological functions of MR-only links (see Methods), we performed GO enrichment analysis using DAVID [CITE: DAVID] on their genes. We pooled the MR-only links from the three cell types, giving 4,509 MR-only genes (4,031 with a GO Biological Process annotation). DNA-templated transcription was the most significant biological process term, including 689 genes, with a fold enrichment of 1.36 and a DAVID-reported FDR of $5.18\times10^{-18}$ (Fig~\ref{fig:go}B). The molecular function enrichment showed protein binding (fold enrichment 1.16, DAVID FDR $2.81 \times 10^{-85}$), RNA binding (fold enrichment 1.41, DAVID FDR $3.58 \times 10^{-15}$), and zinc ion binding (fold enrichment 1.33, DAVID FDR $3.58 \times 10^{-15}$) as the most significant terms (Fig~\ref{fig:go}C). Genes related with the RNA-binding enrichment, such as \textit{SRSF7} amd \textit{DDX5}, were known to have establilshed role in pre-mRNA splicing and RNA processing [CITE: SRSF7 and DDX5 in pre-mRNA splicing and RNA processing]. Genes included in the zinc ion binding term included the zinc-finger proteins \textit{ZNF143} and \textit{IKZF3} [CITE: ZNF143 and IKZF3 as zinc-finger regulators].
+\noindent Peak--gene links identified by MR generally showed stronger enrichment in the CIMA gene regulatory network than those identified by the two marginal methods. To quantify this enrichment, we extracted unique region--gene pairs from the enhancer-driven regulons (eRegulons) that CIMA inferred using SCENIC+ \cite{yin2026cima}. For each method and cell type, we calculated an odds ratio comparing the odds of eRegulon membership among significant peak--gene pairs with the corresponding odds among the remaining tested pairs (see Methods). Although the marginal methods generally identified more links (Fig.~\ref{fig:overview}B and \nameref{S3_Fig}), the MR methods yielded higher odds ratios, particularly for the high-quality eRegulon subset (Fig.~\ref{fig:go}D, \nameref{S8_Fig}). These results provided additional support for the regulatory relevance of MR-identified peak--gene links.
 
-\noindent By integrating scRNA-seq and scATAC-seq data, CIMA applied SCENIC+ (version 1.0.1) [CITE: SCENIC+] to construct cell-type specific enhancer-driven regulons (eRegulons) and further selected a subset of high-quality eRegulons \cite{yin2026cima}. Each eRegulon is a triple of (TF, chromatin peak, gene), which can reasonably serve as validation data. We extracted unique region-gene pairs from the CIMA eRegulons and calculated the odds ratio for overlap with the links ($\q<0.05$) identified by each method (Fig~\ref{fig:go}E for CD4 T cells, \nameref{S8_Fig} for Bn cells and CD8 T cells; see Methods). Although marginal multiomics and marginal pseudobulk tended to find more links (Fig~\ref{fig:overview}B, \nameref{S3_Fig}), causal methods had higher odds ratios than the marginal methods in most comparisons across cell types. Although overlap with the CIMA regulatory network is not a ground truth for causal regulatory effects, it could partially support the reliability of MR estimates.
+\noindent The enhancer-gene linkage inferred only by MR methods shown enrichment across six external regulatory references. The six orthogonal data included GTEx whole-blood eQTLs, EnhancerAtlas, FANTOM5, 4DGenome, H3K27ac HiChIP, and promoter capture Hi-C. We first assessed each of the six methods separately within each cell type, comparing the proportion of significant links supported by each reference with the corresponding proportion among candidate links. All six methods showed enrichment, but causal SMR had the largest fold enrichment in 17 of the 18 combinations of cell type and reference (Tables~S1 and~S2). Moreover, we focused on MR-only links, which was significant in at least one of MR method (causal IVW, causal Egger, and causal SMR) and insignificant for both marginal methods. For each gene, we took the union of its MR-only peaks across the three cell types and, separately, the union of its candidate peaks. Because reference coverage varied among genes, we divided genes into eight equally sized groups according to the proportion of their candidate peaks overlapping the gene's reference regions. Within each group, we compared this pooled background proportion with the pooled overlap proportion for MR-only peaks (Fig 3C, Fig.~S5). For H3K27ac HiChIP, the overlap proportion was generally higher for MR-only peaks across the groups (Fig.~\ref{fig:go}C). Overall, MR-only peaks were 3.28 times as likely as candidate peaks to overlap a HiChIP contact region assigned to the same gene (pooled hypergeometric \(p=6.4\times10^{-620}\)). Thus, MR identified candidate regulatory links with independent chromatin-contact support even when neither marginal correlation reached significance.
 
-\noindent We also tested whether the significant peaks of each method were enriched for peaks overlapping six external regulatory references: EnhancerAtlas, FANTOM5, 4DGenome, GTEx whole-blood eQTLs, H3K27ac HiChIP and promoter capture Hi-C (PCHi-C) (see Methods; \nameref{S1_Table} and \nameref{S2_Table}). The significant peaks of all six methods were enriched for every reference in every cell type (pooled hypergeometric $P<10^{-16}$; fold enrichment 1.68--6.18). Causal SMR had the largest pooled fold enrichment in 17 of the 18 combinations of cell type and reference; the exception was PCHi-C in CD4 T cells, where causal IVW was largest (2.61 versus 2.55 for causal SMR). Marginal multiomics had the smallest fold enrichment in all 18 combinations. For example, in Bn cells the fold enrichment of causal SMR and marginal multiomics was 6.18 and 3.56 for FANTOM5, and 4.46 and 3.08 for HiChIP. The fold enrichments are descriptive and have no confidence intervals; the hypergeometric $P$ values depend on the number of significant peaks and were often smaller for the marginal methods, which had more significant peaks but lower fold enrichment.
+\subsection{Causal enhancer–gene links provide insights into disease mechanisms}
 
-\subsection{Disease heritability enrichment and GWAS overlap of MR-supported peak–gene links}
+To assess the disease relevance of MR-supported peak--gene links, we evaluated heritability enrichment across seven immune-mediated diseases: ankylosing spondylitis (AS), Crohn's disease (CD), inflammatory bowel disease (IBD), rheumatoid arthritis (RA), systemic lupus erythematosus (SLE), multiple sclerosis (MS), and type 1 diabetes (T1D) (\nameref{S4_Table}). We hypothesized that peaks involved in MR-only links would capture disease-relevant regulatory signals missed by marginal correlation analyses. We therefore pooled these peaks across the three cell types and estimated their heritability enrichment using stratified LD score regression (S-LDSC) \cite{finucane2015sldsc}, controlling for 97 baseline annotations, with all candidate peaks as a comparison. Peaks involved in MR-only links showed higher heritability enrichment than all candidate peaks across all seven diseases (Fig.~\ref{fig:disease}A), with enrichment $P<0.1$ for CD, IBD, MS, and T1D.
 
-To explore the disease relevance of MR-only links, we assessed heritability enrichment using stratified LD score regression (S-LDSC) \cite{finucane2015sldsc}. We pooled the peaks of MR-only links (see Methods) from the three cell types and obtained 3,777 unique peaks after liftOver to hg19 (MR-only). We constructed an annotation from these 3,777 peaks and fitted the S-LDSC model together with the 97 baselineLD v2.2 annotations. For comparison, all candidate peaks (All peaks) were analyzed with the same S-LDSC pipeline (Fig~\ref{fig:disease}A). We select the seven GWAS triated studied in OneK1K paper (OneK1K reference). \TODO{R4-P1: delete the OneK1K sentence, or provide its source (author to decide).} Enrichment scores were defined as the ratio of the proportion of heritability explained to the proportion of variants. MR-only peaks had higher enrichment point estimates than all candidate peaks across the seven immune-mediated diseases (Fig~\ref{fig:disease}A). Nominal evidence of enrichment at $P<0.1$ was observed for Crohn's disease, inflammatory bowel disease, multiple sclerosis, and type 1 diabetes (Fig~\ref{fig:disease}A).
 
-\noindent We next showed individual MR-only links whose peak regions contained genome-wide significant variants. These were strong MR-only links, with $\q<0.001$ for at least one causal method and $\q\geq0.05$ for both marginal methods (see Methods). For example, an MR-only peak linked to the gene \textit{ERBB3} in CD4 T cells contained rs705704, a variant significantly associated with type 1 diabetes (Fig~\ref{fig:disease}B). This finding nominated \textit{ERBB3} as a candidate target gene of the GWAS-overlapping regulatory region in CD4 T cells. Additional examples included \textit{RGL2}-linked peaks overlapping type 1 diabetes and rheumatoid arthritis variants, a \textit{POLR2E}-linked peak overlapping Crohn’s disease variants, a \textit{GNAS}-linked peak overlapping inflammatory bowel disease and Crohn's disease variants, and an \textit{ERAP1}-linked peak in Bn cells overlapping a Crohn's disease variant (Fig~\ref{fig:disease}B). Although we cannot directly say there were causal relationship between the genes and GWAS diseases, these MR-supported peak-gene links provided a potential regulation mechenism ways for these diseases.
+\noindent We next showed three examples illustrating how identified causal enhancer-gene linkages can help identify candidate target genes and cellular contexts of disease-associated variants. Although GWAS have identified many loci associated with immune-mediated diseases, the mechanisms through which these loci act and the relevant cell types often remain unclear \cite{gallagher2018postgwas}. All three examples were MR-only links, detected by MR methods but not by either marginal method. In the first example, causal methods linked the chromatin accessibility peak at chr5:96,896,259--96,896,760 (hg38), which contains the CD-associated variant rs2549785, to \textit{ERAP1} in Bn cells (Fig.~\ref{fig:disease}B). The 5q15 region harboring \textit{ERAP1} is a known CD-associated locus \cite{franke2010cd}. \textit{ERAP1} encodes an endoplasmic reticulum aminopeptidase that trims peptides for presentation by MHC class I molecules \cite{hattori2013erap}, and immune-mediated disease-associated variants at 5q15 affect its transcript and protein expression \cite{hanson2018erap}. In mice with DSS-induced colitis, ERAP1 deficiency increased colonic proinflammatory cytokine levels \cite{blake2022erap1}. Independent regulatory annotations also supported the peak--gene link: the peak overlaps an enhancer predicted to target \textit{ERAP1} by EnhancerAtlas \cite{gao2020enhanceratlas}, and naive B-cell H3K27ac HiChIP data identified a contact between the peak and the \textit{ERAP1} promoter ($Q=8.4\times10^{-3}$) \cite{chandra2021pieqtl}. RegulomeDB further annotated rs2549785 as overlapping a transcription factor binding site or an accessible chromatin region \cite{boyle2012regulomedb,dong2023regulomedb}. Our causal framework nominated \textit{ERAP1} as a target of this peak in Bn cells (beta later) and, and higher peak accessibility was estimated to decrease \textit{ERAP1} expression (beta later). This implied that rs2549785 may contribute to CD risk by altering the accessibility of this peak and, consequently, the expression of \textit{ERAP1} in Bn cells.
+
+\noindent The second example linked a peak containing the T1D-associated variant rs705704 at chr12:56,041,553--56,042,054 (hg38) to \textit{ERBB3} in CD4 T cells (Fig.~\ref{fig:disease}B). This variant lies within the well-established T1D-associated locus at 12q13 \cite{todd2007t1d,hakonarson2008t1d}. Previous work has connected genetic variation at this locus to \textit{ERBB3} expression in peripheral blood mononuclear cells from patients with T1D and controls, with protective genotypes associated with higher expression. The same study showed that ERBB3 modulates antigen-presenting cell function in dendritic cells and monocytes \cite{wang2010erbb3}. Functional annotations further suggest that rs705704 lies in a regulatory region: its FAVOR aPC-TF and aPC-EpiActive scores were 29.1 and 18.1, placing it approximately in the top 0.1\% and 1.5\% of variants genome-wide, respectively \cite{zhou2023favor}, and RegulomeDB annotated it as overlapping a transcription factor binding site or an accessible chromatin region \cite{boyle2012regulomedb,dong2023regulomedb}. These findings connect the locus to \textit{ERBB3} and support the regulatory potential of rs705704. Our MR analysis adds a potential cellular context by linking accessibility of the variant-containing peak to \textit{ERBB3} expression in CD4 T cells, suggesting a candidate regulatory mechanism at this T1D-associated locus. The third example linked a peak containing the IBD-associated variant rs2990245 at chr1:155,227,359--155,227,860 (hg38) to \textit{THBS3} in CD8 T cells (Fig.~\ref{fig:disease}B). Previous integration of blood eQTL and IBD GWAS data prioritized \textit{THBS3} as a candidate IBD target gene through SMR and colocalization (posterior probability $0.96$), with the colocalization replicated in FinnGen \cite{gu2025ibd}. Its elevated expression in gene expression datasets from patients with IBD provides additional disease-related context \cite{zhang2025thbs3}. Regulatory evidence supports a connection between the variant-containing region and \textit{THBS3}: rs2990245 lies 18.6 kb from the \textit{THBS3} TSS and is associated with its expression in GTEx whole blood ($P=5.2\times10^{-33}$) \cite{gtex2017genetic}, while naive CD8 T-cell H3K27ac HiChIP data identified a contact between the 5-kb bin containing the peak and the \textit{THBS3} promoter ($Q=1.9\times10^{-48}$) \cite{chandra2021pieqtl}. FAVOR and RegulomeDB also support the regulatory potential of rs2990245, with an aPC-TF score of 21.4 (top 0.7\%)\cite{zhou2023favor,boyle2012regulomedb}. Our MR analysis extends this evidence by estimating the effect of peak accessibility on \textit{THBS3} expression specifically in naive CD8 T cells. Higher peak accessibility was estimated to decrease \textit{THBS3} expression. Neither marginal method detected this link (BH-adjusted $P=0.067$ and $0.45$ for marginal multiomics and pseudobulk). Together, these findings suggest a potential mechanism connecting the IBD-associated variant to altered \textit{THBS3} regulation in naive CD8 T cells.
 
 \subsection{Motif enrichment highlights candidate regulators of MR-supported peak–gene links}
 To characterize the regulatory sequence features of the peaks of each method, we performed transcription factor motif enrichment analysis (see Methods). For each cell type and method, the peaks of links with $\q<0.1$ formed the foreground set, and the background was 50,000 candidate peaks matched for GC content and chromatin accessibility. We focused on MR-specific motifs, which were enriched for at least one of causal IVW, causal Egger and causal SMR but for neither marginal method; there were 47 such motifs (23 in Bn cells, 14 in CD4 T cells, and 10 in CD8 T cells). Table~\ref{tab:motif} shows the most significant MR-specific motifs for each cell type. All six motifs in Table~\ref{tab:motif} were enriched for causal Egger, and four of them (FOSL2::JUND, MNT, POU3F1 and TEF) were enriched only for causal Egger; causal Egger estimates depend on the allele orientation of the instruments (see Methods; \nameref{S2_Fig}).
@@ -49,62 +59,85 @@ To characterize the regulatory sequence features of the peaks of each method, we
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth,height=0.7\textheight,keepaspectratio]{Figure_1.pdf}
-\caption{The complete analysis framework and the results of CD4 T cells.
-\textbf{A} MR methods (IVW, MR Egger, SMR) use cell-type specific caQTL/eQTL summary statistics; Marginal multiomics uses external PBMC metacells, and marginal pseudobulk correlations use CIMA individuals. Both two marginal correlation are measured by the Spearman correlation.
-\textbf{B} UpSet plot of significant links in CD4 T cells (\(\q<0.1\))
-\textbf{C} Effect directions among the 1,259 CD4 T cell links significant in all six
-methods. Slices compare the sign of the IVW estimate with the signs of the
-marginal correlations: concordant with both marginal methods (light gray), discordant with Marginal Multiomics only (blue), discordant with Marginal Pseudobulk only (green), and discordant with both (brown). Bn and CD8 T cell comparisons appear in \nameref{S3_Fig}.}
+\caption{Schematics of the analysis framework and results
+\textbf{A} Our proposed analysis framework detects causation between peaks and genes by cell-type specific Median randomization. The marginal multiomics method identifies enhancer-gene correlation across meta cells based on weighted nearest neighbors; the marginal pseudobulk method identifies enhancer-gene correlation across individuals. \textbf{B} Significant links ( CD4 T cells, \(\q<0.1\))
+\textbf{C} Effect directions among the links significant in all six
+methods (CD4 T cells). Slices compare the sign of the IVW estimate with the signs of the marginal correlations. Bn and CD8 T cell results appear in \nameref{S3_Fig}.}
 \label{fig:overview}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{Figure_2.pdf}
+\includegraphics[
+    width=\linewidth,
+    height=0.65\textheight,
+    keepaspectratio
+]{Figure_2.pdf}
 \caption{
-\textbf{Four selected peak--gene links.}
-Rows show four peak--gene pairs: \textbf{A,} \textit{SIDT2} in Bn cells; \textbf{B,} \textit{RPL11} in CD4 T cells; \textbf{C,} \textit{ERAP2} in CD4 T cells; \textbf{D,} \textit{ARPC1B} in CD4 T cells. \textbf{First column:}
-Regional caQTL (top) and eQTL (bottom) tracks.  The horizontal axis indicates genomic position, and the vertical axis shows $-\log_{10}(p)$.
-Red triangles mark retained MR instruments, and yellow triangles identify the SNP selected for SMR. \textbf{Second column:} MR method results, red and blue lines show the IVW and MR-Egger fits, respectively. The yellow triangle highlights the leading SNP used in SMR. Report $p$-values correspond to SMR, IVW, MR-Egger, and the Cauchy combination (``Causal Joint'').
-\textbf{Third column:} Peak accessibility and gene expression across 80 WNN metacells from an external PBMC multiome dataset. Each point represents a metacell, colored by cell type
-\textbf{Fourth column:}
-Peak accessibility and gene expression across matched individuals. Each point represents an individual.
+\textbf{Representative peak--gene links.}
+Each row shows one of four representative peak--gene pairs.
+The first column displays regional caQTL and eQTL association tracks.
+Red triangles indicate SNPs used as instrumental variables in MR,
+and yellow triangles highlight the leading caQTL SNP.
+The second column shows SNP effect estimates on peak accessibility
+and gene expression, together with IVW (red) and MR-Egger (blue)
+regression fits and their corresponding $p$-values.
+The third column shows the relationship between peak accessibility
+and gene expression across WNN-defined metacells from an external
+PBMC multiome dataset. Lines indicate linear regression fits. 
+Each point represents a metacell and is colored by cell type;
+Spearman correlation coefficients and $p$-values are reported.
+The fourth column shows the corresponding relationship across
+individuals using matched RNA and ATAC pseudobulk profiles
+within the indicated cell type. Lines indicate linear regression fits.
+Each point represents an individual;
 }
 \label{fig:examples}
 \end{figure}
 
-
-% Fig 3: full text width (not scaled down); the caption continues on the next page (\ContinuedFloat, same number).
 \begin{figure}[p]
 \centering
 \includegraphics[width=\linewidth]{Figure_3.pdf}
-\caption{Genome-wide view, GO enrichment, regulatory-reference overlap and regulatory network overlap of peak--gene links.
-\textbf{A,} Miami plot of the 85,527 pairs tested in CD4 T cells (peak center, hg38): \(-\log_{10}P\) of causal joint (top) and marginal multiomics
-(bottom, mirrored). Dashed lines, Bonferroni threshold (\(0.05/85{,}527\)); labels, the strongest
-pair of selected genes above it (at most one per 5 Mb); diamonds, the example pairs of
-Fig~\ref{fig:examples} (\textit{RPL11}, \textit{ERAP2}, \textit{ARPC1B}).
-Caption continued on the next page.}
+\caption{
+\textbf{Functional characterization and regulatory support
+for MR-inferred peak--gene links.}
+\textbf{A,}
+Genome-wide results of causal joint, marginal multiomics and marginal pseudobulk associations in naive CD4 T cells (85,527 peak--gene pairs).  Examples in Fig.~\ref{fig:examples} are marked as diamonds.
+Additional results are provided in Fig.~S7.
+}
 \label{fig:go}
 \end{figure}
 
 \begin{figure}[p]
 \ContinuedFloat
-\caption*{\textbf{Fig~\ref{fig:go} (continued).}
-\textbf{B,} GO Biological Process terms (4,031 annotated genes) and \textbf{C,} GO Molecular
-Function terms (4,185 annotated genes) for the genes of MR-only links pooled across the three
-cell types (top 10 terms by DAVID FDR; x-axis, GeneRatio; point size, term count; color, DAVID
-FDR, shown as p.adj, with values below \(10^{-10}\) in the darkest color).
-\textbf{D,} Overlap of MR-only links with HiChIP interactions compared with all candidate peaks
-(panel E of \nameref{S5_Fig}, where the axes and groups are defined); the lower right gives the
-pooled fold enrichment and hypergeometric P value.
-\textbf{E,} Odds ratio for a link significant for each method in CD4 T cells (within-gene
-\(\q<0.05\), a stricter threshold than the \(\q<0.1\) used elsewhere) being present in the CIMA
-SCENIC+ regulatory network, compared with links not in the network (\(2\times2\) table; all
-tested pairs in the cell type as background). Light bars use eRegulons active in the cell type
-(cell-type eRegulons; 2,520 tested pairs), and dark bars the subset in the high-quality
-eRegulons of the lineage (high-quality eRegulons; 458 tested pairs).
-Fisher's exact test \(P<10^{-30}\) for every bar; the dashed line marks an odds ratio of 1.
-Bn cells and CD8 T cells are shown in \nameref{S8_Fig}.}
+\caption*{
+\textbf{Fig.~\ref{fig:go} (continued).}
+\textbf{B,}
+Top 10 enriched GO biological process (left) and molecular function
+(right) terms for genes involved in MR-only links pooled across
+the three cell types, identified using DAVID.
+The x-axis shows the gene ratio; dot size and color indicate
+gene counts and BH-adjusted $p$-values, respectively.
+\textbf{C,}
+Overlap of MR-only links pooled across cell types with
+H3K27ac HiChIP interactions. Light green points represent individual
+genes. For each gene, $N$ denotes the total number of candidate peaks,
+$K$ the number of annotated candidate peaks, $n$ the number of
+significant links, and $k$ the number of significant links supported
+by the annotation. Genes were divided into eight equally sized groups
+according to their background overlap ratio ($K/N$). Dark blue points
+represent the pooled background and MR-only overlap ratios within
+each group, with 95\% bootstrap confidence intervals. The overall
+fold enrichment and hypergeometric $p$-value are reported.
+Results of other datasets are provided in Fig.~S5.
+\textbf{D,}
+Enrichment of significant links from each method
+(BH-adjusted $P<0.1$) in CIMA eRegulons
+(2,520 unique peak--gene pairs) and their high-confidence
+subset (458 pairs), expressed as odds ratios for naive CD4 T cells.
+Naive B-cell and naive CD8 T-cell results appear
+in \nameref{S8_Fig}.
+}
 \end{figure}
 
 
@@ -112,15 +145,18 @@ Bn cells and CD8 T cells are shown in \nameref{S8_Fig}.}
 \begin{figure}[htbp]
 \centering
 \includegraphics[page=1,width=\linewidth]{Figure_4.pdf}
-\caption{Disease-heritability enrichment and GWAS-overlapping regulatory links.
-\textbf{A} Heritability enrichment of the combined MR-only and
-all-candidate-peak S-LDSC annotations for each GWAS trait, shown on a common
-y axis; asterisks mark nominal enrichment \(P<0.1\).
-\textbf{B}  Tracks show the gene, MR instruments (lavender ticks), GWAS variants within the peak (purple diamonds), the peak (orange bar), and one link
-per method (Causal SMR, IVW, and Egger; Marginal Multiomics and Pseudobulk).
-Significant links (\(\q<0.05\)) are drawn in red, and line width increases
-with \(-\log_{10}\q\); gray dashed links are nonsignificant.
-Link stars denote \(\q<0.05\) (*), \(0.01\) (**), and \(0.001\) (***).
+\caption{Disease relevance of MR-identified peak--gene links.
+\textbf{A} Heritability enrichment estimated using stratified LD score
+regression (S-LDSC) for peaks involved in MR-only links (green) and
+all candidate peaks (gray) across seven immune-related GWAS traits.
+Peaks were pooled across the three cell types.
+An asterisk denotes $p<0.1$.
+\textbf{B} Representative peak--gene links identified by MR methods
+(Benjamini--Hochberg [BH]-adjusted $p<0.05$; red lines) but not
+significant in marginal correlation analyses (gray dashed lines).
+Asterisks indicate BH-adjusted $p<0.05$ (*), $p<0.01$ (**),
+and $p<0.001$ (***).
+GWAS variants overlapping the peaks are shown in purple.
 }
 \label{fig:disease}
 \end{figure}

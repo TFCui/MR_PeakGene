@@ -1,11 +1,13 @@
 # ==============================================================================
 # Figure 4 (原 Fig10): S-LDSC (Combined) + MR-only link / GWAS SNP 位点图
-#   输出: Figures_20261102/Figure_4.pdf (正文, 只出 PDF; panel B 1 行 x 5 个 pair); 2026-10-29 起不再输出 Figure_S4
+#   输出: Figures_20261102/Figure_4.pdf (2026-11-11: panel B = Bn ERAP1 / CD4 ERBB3 / CD8 THBS3, 1 行 x 3, 行高加大; 只出 PDF)
+#         2026-10-29 起不再输出 Figure_S4; 11-10 的试看版 Figure_4_CC1 / Codex1 已删除
 #   panel A = Plot5_SLDSC.R 的 Combined 页 (MR-Only (亮蓝) vs All peaks), 去掉标题和解释文字; 单个面板: 共用 y 轴, GWAS 名在 x 轴, 两根柱紧贴
 #   panel B = Plot8_Link.R 的单 pair 位点图, 精简文字 (只有底部 细胞类型 | GWAS trait; 星号 / 线宽等解释写在论文 caption, 图里不放); 显著 link 统一红色
 #     pair 之间用浅灰细竖线分隔 (不加边框); 左侧行名字号 LABEL_SIZE
 #     行名 (Gene / SNPs / Peak / 5 个方法) 只在最左边一列写一次; 显著 link 在弧线旁标 * / ** / *** (p.adj < 0.05 / 0.01 / 0.001)
-#   选 pair: 下面 PAGES; 数据 = Valid2_SLDSC/SLDSC_all.tsv + Valid6_GWAS/GWAS_MRonly_overlap.tsv
+#   选 pair: 下面 PAGES; 数据 = Valid2_SLDSC/SLDSC_all.tsv + tmp/Valid6_GWAS/annot/GWAS_example_candidates_snps.tsv
+#     (2026-11-10: 由 GWAS_MRonly_overlap.tsv (MR FDR < 0.001) 换成 FDR < 0.05 候选池的 SNP 表, 列名相同; C5orf56 只在后者中)
 #   Fig5 / Fig8 及其脚本不动; 本脚本是两者代码的合并拷贝
 # 运行: sbatch Scripts/Visualization/Plot10_Combined_slurm.sh   (PLINK / 临时文件 = tmp/plink_fig10/)
 # ==============================================================================
@@ -28,8 +30,9 @@ REF_DIR  <- file.path(PROJ, "data/ref_chr/hg38")
 OMIX     <- file.path(CIMA_DIR, "Data/OMIX009786")
 LD_DIR   <- file.path(PROJ, "tmp/plink_fig10", paste0("ld_fig10_", Sys.getpid()))   # PLINK / 临时文件放项目 tmp/, 结束自动删除
 FIG_DIR  <- file.path(PROJ, "Results/Figures/Figures_20261102")
-PAIR_FILE <- file.path(PROJ, "Results/Validation/Valid6_GWAS/GWAS_MRonly_overlap.tsv")
-PDF_FILE  <- file.path(FIG_DIR, "Figure_4.pdf")
+PAIR_FILE <- file.path(PROJ, "tmp/Valid6_GWAS/annot/GWAS_example_candidates_snps.tsv")   # 2026-11-10: 候选池 (MR FDR < 0.05), 一行 = pair x trait x GWAS SNP
+EXAMPLE_FILE <- file.path(PROJ, "Results/Validation/Valid6_GWAS/GWAS_Fig4B_examples.tsv")  # 最终清单; 核对 PAGES 都是 recommended
+PDF_FILE  <- file.path(FIG_DIR, "Figure_4.pdf")                                             # 2026-11-11: 3 个 pair 一行
 dir.create(FIG_DIR, recursive = TRUE, showWarnings = FALSE)
 dir.create(LD_DIR,  recursive = TRUE, showWarnings = FALSE)
 
@@ -48,8 +51,8 @@ TICK_SEP   <- 0.27                    # 刻度最小间距 (x 轴比例; 2026-11
 N_SNP_TARGET <- 6; SNP_MIN_SEP <- 0.025 # SNP 轨: 每页目标 SNP 数 (含 GWAS SNP) / 最小间距 (x 轴比例)
 LW_RANGE   <- c(1.4, 4.4); LW_NS <- 0.85 # 显著 link 线宽范围; 不显著 link 线宽 (2026-11-06 字号放大后同比加粗)
 BASE_SIZE  <- 16                      # 2026-11-06: 12 -> 16 (图 24 in 宽, 论文里缩到约 0.27 倍, 原 12 pt 缩后只有约 3 pt)
-PAGE_W     <- 24                      # 页宽; 页高 = PAGE_H_A (panel A) + PAGE_H_ROW x panel B 的行数 (每行 5 个 pair)
-PAGE_H_A   <- 5.0; PAGE_H_ROW <- 7.0; PAIRS_PER_ROW <- 5
+PAGE_W     <- 16                      # 页宽; 页高 = PAGE_H_A (panel A) + PAGE_H_ROW x panel B 的行数 (2026-11-10: 每行 3 个 pair, 24 -> 16 in, 每个 pair 宽度与原来相近)
+PAGE_H_A   <- 5.0; PAGE_H_ROW <- 9.0; PAIRS_PER_ROW <- 3   # 2026-11-11: 只剩 1 行, 行高 7 -> 9 in
 page_h     <- function(n_pair) PAGE_H_A + PAGE_H_ROW * ceiling(n_pair / PAIRS_PER_ROW)
 
 # MR 固定参数 (与 MR 结果一致)
@@ -73,14 +76,18 @@ SNP_COL   <- "#a29cc9"; GWAS_COL <- "#bc80bd"; GWAS_TXT <- "#8A4E8C"
 EX <- fread(PAIR_FILE)[trait != "Asthma"][, ord := rleid(cell_type, gene_id, peak_id)]   # 2026-11-06: 不再展示 Asthma (A 里也没有), 只有 Asthma 的 pair (UBAC2 等) 随之去掉
 ALL_PAIRS <- unique(EX[, .(ord, cell_type, gene_id, peak_id, mr_methods_sig)], by = "ord")[order(ord)]
 CELL_LAB  <- local({ source(file.path(PROJ, "Scripts/Visualization/00_common.R"), local = TRUE); CELL_LAB })   # 图中细胞类型标签 (Bn / CD4 T cell / CD8 T cell)
-# 一页 = Figure_4 (正文), 5 个 pair (cell_type, gene); 改这里即可换 pair (候选见 GWAS_MRonly_overlap.tsv)
-# 2026-10-29: 加入 GNAS (CD8, 原 Figure_S4); Figure_S4 不再输出 (原第 2 页: GLS2, GNAS (CD4), UBA7, TMBIM1, ERAP1, TMPRSS3, ZSCAN16)
-PAGES <- list(
-  list(c("Bn_TCL1A", "RGL2"), c("CD4_Tn_CCR7", "ERBB3"), c("CD4_Tn_CCR7", "POLR2E"), c("Bn_TCL1A", "ERAP1"), c("CD8_Tn_CCR7", "GNAS")))   # 2026-11-06: UBAC2 (只有 Asthma) -> ERAP1 (Bn, CD)
+# 一页 = Figure 4, pair = c(cell_type, gene, peak_id); 按行排 (每行 PAIRS_PER_ROW 个)
+# 旧版 (Figure_4.pdf): RGL2 (Bn) / ERBB3 / POLR2E (CD4) / ERAP1 (Bn) / GNAS (CD8)
+# 2026-11-10: GWAS_Fig4B_examples.tsv 第 2 版推荐的 5 个 + 备选 Bn ERAP1 (2 行 x 3)
+# 2026-11-11: 作者只保留 3 个 (每个细胞类型 1 个), 1 行: Bn ERAP1 / CD4 ERBB3 / CD8 THBS3
+PAGES <- list(list(
+  c("Bn_TCL1A",    "ERAP1",  "chr5:96896259-96896760"),   c("CD4_Tn_CCR7", "ERBB3", "chr12:56041553-56042054"),   c("CD8_Tn_CCR7", "THBS3", "chr1:155227359-155227860")))
 SEL <- rbindlist(lapply(seq_along(PAGES), function(pg) rbindlist(lapply(seq_along(PAGES[[pg]]), function(k)
-  data.table(page = pg, slot = k, cell_type = PAGES[[pg]][[k]][1], gene_id = PAGES[[pg]][[k]][2])))))
-PAIRS <- ALL_PAIRS[SEL, on = .(cell_type, gene_id), nomatch = NULL][order(page, slot)]
+  data.table(page = pg, slot = k, cell_type = PAGES[[pg]][[k]][1], gene_id = PAGES[[pg]][[k]][2], peak_id = PAGES[[pg]][[k]][3])))))
+PAIRS <- ALL_PAIRS[SEL, on = .(cell_type, gene_id, peak_id), nomatch = NULL][order(page, slot)]
 stopifnot(nrow(PAIRS) == nrow(SEL))
+REC <- fread(EXAMPLE_FILE)[tier %chin% c("recommended", "alternate"), .(cell_type, gene_id, peak_id)]
+stopifnot(nrow(fsetdiff(SEL[, .(cell_type, gene_id, peak_id)], REC)) == 0)   # PAGES 必须在推荐 / 备选档内
 GW <- EX[, .(pos = as.numeric(pos_hg38[1]), P = min(gwas_p), traits = paste(sprintf("%s P=%.1e", trait, gwas_p)[order(gwas_p)], collapse = "; ")),
          by = .(cell_type, gene_id, peak_id, rsid)]
 msg(sprintf("Fig10 pairs: %d | GWAS SNP-pair 行: %d", nrow(PAIRS), nrow(GW)))
@@ -427,7 +434,7 @@ p_sldsc <- ggplot(dt_sl, aes(x = xpos, y = val)) +
         plot.margin = margin(14, 10, 6, 6))
 
 ###----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-### 运行: 每页 = panel a (S-LDSC) + panel b (1 x 4 pairs)
+### 运行: 每页 = panel a (S-LDSC) + panel b (PAIRS_PER_ROW 个 pair 一行)
 
 cts <- intersect(c("Bn_TCL1A", "CD4_Tn_CCR7", "CD8_Tn_CCR7"), PAIRS$cell_type)
 RES <- setNames(lapply(cts, function(ct) fread(file.path(MR_DIR, paste0(ct, "_AllPairs_results.tsv.gz")))), cts)

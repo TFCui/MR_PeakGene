@@ -70,9 +70,11 @@
 
 状态：未动 / 已调结构 / 已润色（日期）/ 有新改动。
 
-**Abstract**（1 段，6 句，旧稿）：背景 → 现有方法靠相关 → MR 框架 → CIMA 应用 → Hi-C / HiChIP 验证、motif 和遗传力。状态：未动（有 4 句强于证据，见第 4 节）。
+**Abstract**（`sections/abstract.tex`，1 段 10 句，292 词）：背景 → 现有方法靠相关（correlation does not imply causation）→ MR 框架和四个检验 → CIMA 三个细胞类型、两种对照方法 → link 数量和方向 → eRegulon OR、6 个外部参考 → MR-only peak 的 HiChIP 3.28 倍和 7 个疾病的遗传力点估计 → GWAS 位点例子（*ERAP1*、*ERBB3*、*THBS3*）→ 结论句。状态：已重写（11-18），待作者 polish。
 
-**Introduction / Author Summary**：空。
+**Introduction**（`sections/introduction.tex`，7 段，约 1,230 词）：P1 背景（调控元件、GWAS 非编码变异、enhancer–gene map 难以实验获得）→ P2 现有 peak–gene linking 方法（跨细胞 / metacell、跨个体的相关）→ P3 marginal association 的问题：跨细胞类型（Xie 2023 的例子、TRIPOD）、跨个体（scMultiMap、本文关于 pseudobulk 的推论、GRaNIE Box 1），段末 “correlation does not imply causation” → P4 MR、分子性状、CIMA 提供同一细胞类型的 caQTL 和 eQTL → P5 三个难点（工具变量少且相关、多效性、单一方法的假设）→ P6 本文框架（causal IVW / Egger / SMR / joint）→ P7 应用与结果（定性，不放数字）。状态：已改写（11-18），P3 新增（11-18），待作者 polish。
+
+**Author Summary**：空。
 
 **Results**（`sections/results.tex`）
 
@@ -91,7 +93,7 @@
 |      |                                                                                   | P2 | 与 CIMA SCENIC+ eRegulon 的重叠，多数比较中 causal 方法的 OR 更高 → Fig 3E、S8 Fig                                       | 有新改动 |
 |      |                                                                                   | P3 | 6 个外部参考的超几何富集：SMR 在 17/18 个组合中 fold 最大 → S1 / S2 Table                                                | 已调结构 |
 | R4   | Disease heritability enrichment and GWAS overlap of MR-supported peak–gene links | P1 | S-LDSC：MR-only peak 的点估计更高，4 个疾病 P < 0.1 → Fig 4A                                                             | 已调结构 |
-|      |                                                                                   | P2 | strong MR-only link 的 GWAS 重叠例子（*ERBB3* 等）→ Fig 4B                                                             | 已调结构 |
+|      |                                                                                   | P2 | strong MR-only link 的 GWAS 重叠例子（ERAP1 / ERBB3 / THBS3）→ Fig 4B                                                   | 有新改动（11-11）|
 | R5   | Motif enrichment highlights candidate regulators of MR-supported peak–gene links | P1 | 前景、背景、47 个 MR-specific motif；Table 1 依赖 Egger                                                                   | 已调结构 |
 |      |                                                                                   | P2 | 例子与文献：MNT、ATF3、FOSL2::JUND 等                                                                                     | 已调结构 |
 
@@ -110,9 +112,9 @@
 | M5 Causal SMR                        | 2  | lead SNP、比值、由 P 反推 z、T_SMR、不做 HEIDI                        | 未动（有作者意见） |
 | M6 Causal joint                      | 1  | CCT 的公式与尾部近似                                                  | 已调结构           |
 | M7 Marginal pseudobulk               | 2  | count 矩阵 → 个体过滤 → ln(1 + CPM) → Spearman                     | 已调结构           |
-| M8 Marginal multiomics               | 3  | 80 个 WNN metacell；重新计数；Spearman                                | 已调结构           |
+| M8 Marginal multiomics               | 3  | 外部数据（TRIPOD：7,790 细胞、14 类型、80 个 WNN metacell）；重新计数；Spearman | 已补写（11-09）    |
 | M9 Filtering and multiple testing    | 1  | 删 NA → $\hat\phi \le 10$ → joint → gene 内 BH                   | 已调结构           |
-| M10 Hypergeometric enrichment        | 2  | 6 个参考；N / K / n_sig / k；合并后做一次检验                         | 已调结构           |
+| M10 Hypergeometric enrichment        | 7  | 6 个参考；计数定义；pooled 检验；三种分析（各方法 × CT → S1/S2 Table；MR-only 3 CT 合并 → Fig 3C / S5；按 K/N 分 8 组 + bootstrap CI） | 已重写（11-09），待润色 |
 | M11 Gene ontology analysis           | 1  | DAVID 输入、类别、作图规则                                            | 已调结构           |
 | M12 GRN overlap                      | 1  | 两套 eRegulon；2×2 Fisher 检验                                       | 已调结构           |
 | M13 S-LDSC                           | 2  | 注释的构造、参数；7 个疾病和来源                                      | 已调结构           |
@@ -170,7 +172,7 @@
 ### 2.4 每一部分该写什么、不该写什么
 
 - **Abstract**：只概括 Results 和 Discussion 中已定的内容；不引文献；< 300 词；说法强度不能超过 Results。
-- **Introduction**（以后写）：背景 → 现有 peak–gene linking 方法（跨个体或跨细胞的相关，估计的是 association）→ MR 能补充什么 → 本文做了什么。不写结果的细节。
+- **Introduction**：背景 → 现有 peak–gene linking 方法（跨个体或跨细胞的相关，估计的是 association）→ MR 能补充什么 → 本文做了什么。不写结果的细节。
 - **Results**：
   - 每段写一个发现：先说做了什么（一句话，并写 "see Methods"），再写发现和数字，然后引图。
   - 定义只引用，不重写（R1-P1 的短版除外）。
@@ -183,11 +185,11 @@
 
 - **标题**：`main.tex` 里的标题是 "Demystifying enhancer-gene linkage …"，要按 1.1 改成 peak 的说法；`\ShortTitle` 还没用上。
 - **未引用的图**：Fig 3A、3D，以及 S4、S5、S6.1–S6.3、S7.1–S7.3 Fig。放在哪里、怎么写由作者决定（见 R1、R3 的遗留问题）。
-- **文献**：正文有 27 处 `[CITE: …]`；bib 中有些条目以 "others" 结尾，要补全；DAVID、SCENIC+、TensorQTL 等软件也要引用。
+- **文献**（2026-11-18 两轮补引已完成）：占位符全部换成 `\cite`；bib 新增 19 条（PMID / DOI 已核对），删 `fang2001cblb`；Methods 新加短小节 “Terminology”（`sec:terminology`，$\q$ 和 MR-only 的定义）。剩余：部分 bib 作者以 "others" 结尾，投稿前确认 PLOS 格式。
 - **软件版本**（3_LEDGER 1.8）：放进 S1 Text 的软件表，还是写在正文各处。
 - **暂缓的数据来源**：
-  - WNN 外部 PBMC 数据：来源（作者说来自 UPenn）、细胞 QC、原始的 WNN 聚类、RNA 聚合方式；笔记本上运行时的 Signac 版本（M1、M8）
-  - GTEx、EnhancerAtlas、FANTOM5、4DGenome 对象的来源和基因组版本（M10）
+  - WNN 外部 PBMC 数据：只剩重新计数时的 Signac 版本（M8）；来源、QC、WNN 聚合 11-09 已按 TRIPOD（jiang2022tripod）写入 M1、M8。10x 数据集页面的引用、sctransform、Signac 文献仍是 `[CITE]`（10x 官网拒绝自动访问，需作者从浏览器取 URL）
+  - ~~GTEx、EnhancerAtlas、FANTOM5、4DGenome 对象的来源和基因组版本（M10）~~：2026-11-09 已写入，来源为 TRIPOD 整理的版本（FANTOM5 / 4DGenome 经 HACER；GTEx 引 2017 Nature），正文写 “without coordinate conversion”，不写 hg38
   - ~~AS、CD、MS 三个 GWAS 的来源（M13）~~：2026-11-05 已由作者提供并写入 Methods 和 S4 Table
 - **S3 Table 表注**：CIMA 全队列数字（428 人、73 个 L4 类型、±1 Mb、5,051,397 个变异）待作者核对。
 - **投稿相关**：选哪个 section（Integrative Omics / Gene Expression and Regulation / Methods，选 Methods 需要模拟验证）；STROBE-MR 核对表；AI 使用披露的范围；Table 1 的 motif logo（PLOS 不允许表格里放图）；代码存档要不要 DOI；投稿系统的各个字段（见 3_LEDGER 第 3 节）。
@@ -228,7 +230,12 @@
 
 - 遗留问题：
   - P1 的 OneK1K 一句（有 `\TODO`）：删掉，还是由作者提供出处？目前没有结论句，作者想说什么？
-  - P2：~~*UBAC2*（asthma）~~ 2026-11-06 已从 Fig 4B 和正文去掉，换成 *ERAP1*（Bn，CD）；Methods 改为 “seven GWAS”。最后一句（“Although we cannot directly say…”）语法仍待改写。
+  - P2：~~*UBAC2*（asthma）~~ 2026-11-06 已从 Fig 4B 和正文去掉，换成 *ERAP1*（Bn，CD）；2026-11-10 Fig 4B 换成 ERAP1 / DR1 / ERBB3 / GNAS / TMBIM1 / THBS3，例子句已同步（去掉 RGL2、POLR2E）；Methods 改为 “seven GWAS”。2026-11-11 按作者要求仿 scMultiMap PICALM 段重写为 8 段草稿（导语 + 6 个例子各一段 + 收尾；弱点只在收尾统一交代；旧的 “Although we cannot directly say…” 句删除），待作者微调和润色。
+  - 2026-11-11 第 2 版（作者要求更贴近 scMultiMap，不罗列）：每个例子按 “Fig 4B (位置) shows that … → 已知位点 / 病人表达 / 功能 → 变异位置和 FAVOR / RegulomeDB / GeneHancer / 3D 接触 → 方法补充了什么（细胞类型） → 本文数据（caQTL、方向、marginal 不显著）→ This implies that … may contribute to … risk by …” 写；导语去掉 Methods 式的注释罗列；strong MR-only 的阈值不再在 Results 重写（只写 see Methods）。约 1,900 词，作者会删减。v1 存 `tmp/ms_rounds/r4p2_20261111_v1/`。
+  - 待作者确认的解释句：每段 “nominate … as its target gene” 和 “This implies that … may contribute to … risk by altering the accessibility of this peak and, consequently, the expression of …”（仿 scMultiMap，比 1.3 “只写候选靶基因” 略强，已加 may）；ERBB3 段 “Previous studies … measured ERBB3 in bulk blood or APC” 一句；收尾最后一句。
+  - P2 新增约 20 处 `[CITE: …, PMID]`（文献 PMID 来自 `tmp/Valid6_GWAS/annot/GWAS_example_literature.tsv`，已核对；数据库 FAVOR、RegulomeDB、GeneHancer、Open Targets、ENCODE、CADD）。
+  - 2026-11-11 第 3 版（作者决定）：Fig 4B 和正文只留 ERAP1（Bn）/ ERBB3（CD4 T）/ THBS3（CD8 T）三个例子，删去 DR1 / GNAS / TMBIM1 三段和收尾段 “Several of these loci …”；每段写出 peak 的 hg38 坐标和外部证据的具体数值（HiChIP 计数和 Q、RegulomeDB 等级和概率、FAVOR aPC、GTEx P）；`[CITE]` 全部换成 `\cite`（新增 12 条 bib）；P1 已润色（OneK1K 句删去）。
+  - **待办 M14**：Methods GWAS overlap 只写了筛选标准，需补外部注释来源（HiChIP / PCHi-C / EnhancerAtlas / GTEx 同 M10；FAVOR、RegulomeDB、GeneHancer、ENCODE cCRE 用 2026-11 查询；Open Targets 共定位 H4；文献中的 LD 用 1000G EUR，MR SNP 的 LD 用 1000G EAS）。
 
 ### Results R5
 
@@ -252,18 +259,32 @@
 
 ### Abstract
 
+- 已定（2026-11-18）：
+  - 按全文重写，旧稿强于证据的 4 句已替换：不写 identify causal / pleiotropic、differs substantially、validate、significant heritability enrichment；也不再写 428 individuals（那是 CIMA 全队列人数）。
+  - 细胞类型写全称（naive B cells、naive CD4⁺ T cells、naive CD8⁺ T cells），不用 Bn cells 等简称；方法写通用名（inverse-variance weighted、MR-Egger、summary-data-based MR、joint test），不写 causal IVW 等本文的方法名。
+  - 数字只留 3.28（MR-only peak 与 HiChIP）、six references、seven diseases；Results 或这些数字改动时，Abstract 要同步。
 - 遗留问题：
-  - 旧稿中强于证据的 4 句：
-    - "directly identify causal and pleiotropic …"（T6 禁用；pleiotropic 没有对应的结果）
-    - "our method … differs substantially"（只有一部分成立）
-    - "orthogonally validate …"（参考数据集共有 6 个；validate 太强）
-    - "significant enrichment of … heritability"（只有 nominal 证据）
-  - 428 人是 CIMA 全队列的人数，不是本文 QTL 的样本量。
-  - 逐句要点（等 Results 和 Discussion 定稿后再写）：背景 → 现有方法估计 association → MR 框架（承认方法不是本文首创）→ CIMA 的 3 个细胞类型和候选 pair → 主要比较结果 → 外部数据的支持（GRN / 超几何）→ MR-only link 的特征 → 结论句（由作者给）。
+  - 292 词，离 300 词上限很近；作者要加内容时先删方向一致性那一句或 eRegulon 那一句。
+  - 备选句（方向，三个细胞类型都成立，数字见 3_LEDGER 1.2）：“…, whereas 24–26% disagreed in direction with the correlation across metacells, compared with 1–3% for the correlation across individuals.”
+  - 结论句 “Our results show that MR with population-scale single-cell data complements correlation-based mapping of enhancers to target genes” 由作者定稿；motif 结果没有写进 Abstract。
+  - Results 的 “each MR-based test identified fewer links” 只和 marginal multiomics 比；Abstract 写的是 “than either correlation-based method”（3_LEDGER 1.2 的 link 数表在三个细胞类型都成立）。
 
 ### Introduction / Author Summary
 
-- 留到最后写。Author Summary 150–200 词，非技术性，用第一人称。
+- 已定（2026-11-18）：
+  - 主旨句是作者给的：correlation does not imply causation；用 MR 和 population-scale single-cell QTL 推断因果（保留为文件顶部的注释，P3 段末点题）。
+  - 用词：生物学概念写 “enhancer–gene”（P1），被检验的单位写 “peak–gene pair”，显著的写 “link”；三个细胞类型在 P7 首次定义。
+  - 不与 scMultiMap / TRIPOD / FusioMR 的 Introduction 雷同：改写后共有的 5 词片段只剩专有名词（scRNA-seq 全称等），以后改动这一节时保持。
+  - 最后一段只写定性结论，不放数字；说法按 1.3（不写 outperform / validate / first）。
+- 遗留问题：
+  - P2 跨个体相关的引文作者已换成 `kamal2023granie`、`zhang2026ra`：GRaNIE 是 bulk RNA-seq + ATAC-seq 跨个体（31–45 人的 iPSC-derived macrophages）的 Pearson 相关，可以用；`zhang2026ra`（Front Immunol 2026）在 PubMed 按标题和关键词都检索不到，bib 无 PMID，待作者核对 DOI 以及它是否做了跨个体的 peak–gene 相关。
+  - P3 Xie 2023 的例子没有写基因名（PMC 全文丢了斜体，*Stim2* 未能从正文确认）；作者对照 Fig 1 确认后可把 “one gene” 改为 *Stim2*。原文数字：ATAC r = 0.87（mCG r = −0.87），38 个神经元类型，25,027 个显著相关的 enhancer 中 23,526 个在其他染色体，8 个大类 vs 38 个亚型。
+  - P3 “A correlation across donor-level pseudobulk profiles measures exactly this between-donor association, which can differ from the association within a donor” 是作者的推论，不挂引用。
+  - P4 “few studies have used MR to estimate the effect of chromatin accessibility at a peak on …”：作者的论断，没有引文；强度由作者定（Discussion D2 要交代分子 QTL 之间的 SMR / MR 先例）。
+  - P5 多效性的例子 “through another regulatory element in the same region” 取自 Discussion D4 的要点，作者确认是否保留。
+  - P7 末句 “Together, these analyses show how MR … can complement correlation-based peak–gene linking” 是收尾句，由作者定稿。
+  - 篇幅约 1,230 词（scMultiMap 约 900、FusioMR 约 1,100）；要压缩时先压 P3 和 P7。
+- Author Summary 留到最后写：150–200 词，非技术性，用第一人称。
 
 ### Methods M1 Data sources
 

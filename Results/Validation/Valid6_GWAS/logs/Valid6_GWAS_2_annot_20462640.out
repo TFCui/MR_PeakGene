@@ -1,0 +1,54 @@
+job = 20462640 | cores = 6 | node = c031
+[22:05:59] MR-only pairs (MR 任一 FDR < 0.05, WNN / Pseudo FDR >= 0.05):
+     cell_type     N
+        <char> <int>
+1:    Bn_TCL1A  1814
+2: CD4_Tn_CCR7  3961
+3: CD8_Tn_CCR7  2389
+[22:05:59] 候选: 61 pairs | 52 genes | 26 peaks
+     cell_type n_pairs n_old_strict
+        <char>   <int>        <int>
+1:    Bn_TCL1A      17            7
+2: CD4_Tn_CCR7      26            7
+3: CD8_Tn_CCR7      18           10
+[22:05:59] 核对通过: 旧 Valid6 的 24 个 pair (7 个性状) 全部在新池中, 且 in_old_strict 数一致
+[22:06:49] 金标准命中 (pair 数):
+   gs_enhancerAtlas gs_FANTOM5 gs_4DGenome gs_GTEx gs_HiChIP gs_PCHiC gs_HiChIP_anyCT gs_PCHiC_anyCT
+              <int>      <int>       <int>   <int>     <int>    <int>           <int>          <int>
+1:                8          2           0      12        17        5              19              9
+[22:06:49] 抽查金标准通过: Bn_TCL1A ATG16L1 chr2:233349123-233349624
+[22:08:01] GWAS Catalog: 10564 条 P <= 5e-8 关联属于 7 个性状
+[22:08:03] GWAS Catalog: gene 为同一性状的 reported/mapped gene: 23 / 61; peak ±250 kb 有同一性状关联: 60 / 61
+[22:08:03] 查 QTL (6 个文件, 6 核) ...
+[22:11:20] QTL 命中行数:
+              tag     N
+           <char> <int>
+1:    ca_Bn_TCL1A    12
+2: ca_CD4_Tn_CCR7    15
+3: ca_CD8_Tn_CCR7    13
+4:     e_Bn_TCL1A    21
+5:  e_CD4_Tn_CCR7    26
+6:  e_CD8_Tn_CCR7    19
+[22:11:39] r2(lead GWAS SNP, SMR lead caQTL SNP): NA 1 | >= 0.8 43 / 61
+[22:11:39] 候选按 CT / 性状 (pair 数):
+     cell_type     N
+        <char> <int>
+1: CD8_Tn_CCR7    18
+2:    Bn_TCL1A    17
+3: CD4_Tn_CCR7    26
+    trait n_pairs
+   <char>   <int>
+1:     CD      24
+2:    IBD      23
+3:    T1D      18
+4:     RA       7
+[22:11:39] n_gold 分布 (非 MHC):
+   n_gold     N
+    <num> <int>
+1:      3     1
+2:      2     6
+3:      1    25
+4:      0    26
+[22:11:39] 排序前 40:
+[22:11:39] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid6_GWAS/GWAS_example_candidates.tsv
+[22:11:39] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid6_GWAS/GWAS_example_candidates_snps.tsv

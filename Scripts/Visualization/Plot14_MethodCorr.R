@@ -128,15 +128,17 @@ make_matrix <- function(sc, ct) {
   wrap_plots(cells, nrow = 5)
 }
 PANEL_TITLE <- c(effect = "Effect estimate", signedP = "Signed −log10(P)")
-panel_head <- function(tag, txt) ggplot() +   # panel 标题行 (单独一行, 不压在矩阵上)
+# 2026-11-06: 论文中 S6 为一张图, 3 页 = panel A / B / C (Bn / CD4 T cell / CD8 T cell, 字母写在页标题);
+#   页内两个矩阵不再标 A / B (避免与页字母冲突), 只写小标题
+panel_head <- function(txt) ggplot() +   # 矩阵标题行 (单独一行, 不压在矩阵上)
   annotate("text", x = 0, y = 0.5, hjust = 0, vjust = 0.5, family = FONT, size = 4.8,
-           label = sprintf("bold(%s)~~~bold('%s')", tag, txt), parse = TRUE) +
+           label = sprintf("bold('%s')", txt), parse = TRUE) +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE, clip = "off") + theme_void()
-make_page <- function(ct) {   # 两个 panel 上下排 (补充材料页面不够宽): 标题行 A / 矩阵 A / 标题行 B / 矩阵 B
-  wrap_plots(list(panel_head("A", PANEL_TITLE[["effect"]]),  wrap_elements(full = make_matrix("effect", ct)),
-                  panel_head("B", PANEL_TITLE[["signedP"]]), wrap_elements(full = make_matrix("signedP", ct))),
+make_page <- function(ct, tag) {   # 两个矩阵上下排 (补充材料页面不够宽): 标题行 / effect 矩阵 / 标题行 / signed −log10 P 矩阵
+  wrap_plots(list(panel_head(PANEL_TITLE[["effect"]]),  wrap_elements(full = make_matrix("effect", ct)),
+                  panel_head(PANEL_TITLE[["signedP"]]), wrap_elements(full = make_matrix("signedP", ct))),
              ncol = 1, heights = c(0.045, 1, 0.045, 1)) +
-    plot_annotation(title = CELL_LAB[[ct]],
+    plot_annotation(title = sprintf("%s   %s", tag, CELL_LAB[[ct]]),   # 页标题 = panel 字母 + 细胞类型
                     theme = theme(plot.title = element_text(face = "bold", size = 16, family = FONT, margin = margin(b = 2)),
                                   plot.margin = margin(8, 8, 6, 8)))
 }
@@ -146,7 +148,7 @@ dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 FIG_W <- 8.5; FIG_H <- 17.6
 out <- file.path(OUT_DIR, "Figure_S6.pdf")
 cairo_pdf(out, width = FIG_W, height = FIG_H, family = FONT, onefile = TRUE)
-for (ct in CELLS) { print(make_page(ct)); msg(ct, " done") }
+for (j in seq_along(CELLS)) { print(make_page(CELLS[j], LETTERS[j])); msg(CELLS[j], " done") }
 invisible(dev.off())
 msg("Saved: ", out)
 

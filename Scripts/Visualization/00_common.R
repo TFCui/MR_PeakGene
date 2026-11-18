@@ -47,6 +47,8 @@ msg <- function(...) cat(format(Sys.time(), "[%H:%M:%S] "), ..., "\n", sep = "")
 # ---------- Figure 3 薄荷色板 (2026-11-04; Plot9 / Plot13 / Plot15 共用) ----------
 PAL_MINT <- c(m1 = "#EBF5E6", m2 = "#C4E9CA", m3 = "#9ACDA2", m4 = "#6FBD8F", m5 = "#47A49D", m6 = "#336E99", m7 = "#2E4E77")
 COL_AX3  <- "#374151"   # Figure 3 轴线 / 刻度 / 文字
+# Figure 3 清爽渐进色板 (2026-11-06, 取自作者给的参考色板: 深蓝 → 青蓝 → 青绿 → 薄荷 → 极浅薄荷); PAL_MINT 保留给 S5 等旧图
+PAL_FRESH <- c(f1 = "#04579B", f2 = "#3492B2", f3 = "#6FC8CA", f4 = "#8BCF8B", f5 = "#AADCA9", f6 = "#DDF3DE", f7 = "#F3FBF2")
 # 统一的小标签条 (facet strip): 浅薄荷底 + 薄荷边 + 粗体深色字
 theme_strip_mint <- function(size = 10) theme(
   strip.background = element_rect(fill = PAL_MINT[["m1"]], colour = PAL_MINT[["m3"]], linewidth = 0.5),

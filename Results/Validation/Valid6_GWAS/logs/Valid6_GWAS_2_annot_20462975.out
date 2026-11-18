@@ -1,0 +1,98 @@
+job = 20462975 | cores = 6 | node = c018
+[23:11:02] MR-only pairs (MR 任一 FDR < 0.05, WNN / Pseudo FDR >= 0.05):
+     cell_type     N
+        <char> <int>
+1:    Bn_TCL1A  1814
+2: CD4_Tn_CCR7  3961
+3: CD8_Tn_CCR7  2389
+[23:11:03] 候选: 61 pairs | 52 genes | 26 peaks
+     cell_type n_pairs n_old_strict
+        <char>   <int>        <int>
+1:    Bn_TCL1A      17            7
+2: CD4_Tn_CCR7      26            7
+3: CD8_Tn_CCR7      18           10
+[23:11:03] 核对通过: 旧 Valid6 的 24 个 pair (7 个性状) 全部在新池中, 且 in_old_strict 数一致
+[23:11:52] 金标准命中 (pair 数):
+   gs_enhancerAtlas gs_FANTOM5 gs_4DGenome gs_GTEx gs_HiChIP gs_PCHiC gs_HiChIP_anyCT gs_PCHiC_anyCT
+              <int>      <int>       <int>   <int>     <int>    <int>           <int>          <int>
+1:                8          2           0      12        17        5              19              9
+[23:11:52] 抽查金标准通过: Bn_TCL1A ATG16L1 chr2:233349123-233349624
+[23:13:01] GWAS Catalog: 10564 条 P <= 5e-8 关联属于 7 个性状
+[23:13:04] GWAS Catalog: gene 为同一性状的 reported/mapped gene: 23 / 61; peak ±250 kb 有同一性状关联: 60 / 61
+[23:13:04] 查 QTL (6 个文件, 6 核) ...
+[23:16:15] QTL 命中行数:
+              tag     N
+           <char> <int>
+1:    ca_Bn_TCL1A    12
+2: ca_CD4_Tn_CCR7    15
+3: ca_CD8_Tn_CCR7    13
+4:     e_Bn_TCL1A    21
+5:  e_CD4_Tn_CCR7    26
+6:  e_CD8_Tn_CCR7    19
+[23:16:49] r2(lead GWAS SNP, SMR lead caQTL SNP): NA 1 | >= 0.8 43 / 61
+[23:17:45] GWAS SNP 是 MR 的 SNP: 23 / 61 pairs; 与 MR SNP r2 >= 0.8 (含本身): 54 / 61
+[23:17:45] 候选按 CT / 性状 (pair 数):
+     cell_type     N
+        <char> <int>
+1: CD8_Tn_CCR7    18
+2:    Bn_TCL1A    17
+3: CD4_Tn_CCR7    26
+    trait n_pairs
+   <char>   <int>
+1:     CD      24
+2:    IBD      23
+3:    T1D      18
+4:     RA       7
+[23:17:45] n_gold 分布 (非 MHC):
+   n_gold     N
+    <num> <int>
+1:      3     1
+2:      2     6
+3:      1    25
+4:      0    26
+[23:17:45] 排序前 40:
+     rank   cell_type  gene_id                  peak_id    mr_methods_sig min_mr_fdr n_ct_mronly distance   location traits  lead_rsid lead_gwas_p n_gold gs_enhancerAtlas gs_FANTOM5 gs_4DGenome gs_GTEx gs_HiChIP gs_PCHiC gwascat_trait_gene r2_gwas_caqtl lead_caqtl_p lead_eqtl_p    MHC
+    <int>      <char>   <char>                   <char>            <char>      <num>       <int>    <int>     <char> <char>     <char>       <num>  <num>           <lgcl>     <lgcl>      <lgcl>  <lgcl>    <lgcl>   <lgcl>             <lgcl>         <num>        <num>       <num> <lgcl>
+ 1:     1 CD8_Tn_CCR7  C5orf56 chr5:132472926-132473427           SMR,CCT    5.1e-03           1    62540      genic CD,IBD  rs2548993     1.0e-20      3             TRUE      FALSE       FALSE   FALSE      TRUE     TRUE               TRUE          1.00      1.2e-10     7.1e-05  FALSE
+ 2:     2    Bn_TCL1A    ERAP1   chr5:96896259-96896760 IVW,Egger,SMR,CCT    8.0e-06           1    88409 intergenic     CD  rs2549785     4.8e-11      2             TRUE      FALSE       FALSE   FALSE      TRUE    FALSE               TRUE          1.00      5.2e-27     1.4e-06  FALSE
+ 3:     3    Bn_TCL1A  ATG16L1 chr2:233349123-233349624               IVW    2.8e-02           1   139322 intergenic CD,IBD rs11679046     8.2e-20      2             TRUE      FALSE       FALSE   FALSE     FALSE     TRUE               TRUE          0.61      6.1e-04     9.3e-03  FALSE
+ 4:     4 CD8_Tn_CCR7    THBS3 chr1:155227359-155227860 IVW,Egger,SMR,CCT    1.3e-04           1    18558 intergenic    IBD  rs2990245     7.2e-09      2            FALSE      FALSE       FALSE    TRUE      TRUE    FALSE              FALSE          0.88      2.5e-22     4.8e-07  FALSE
+ 5:     5 CD4_Tn_CCR7    GPR65  chr14:88006182-88006683               SMR    2.8e-02           1     1297   promoter CD,IBD  rs8005161     6.1e-19      2             TRUE       TRUE       FALSE   FALSE     FALSE    FALSE               TRUE          0.04      4.5e-01     6.0e-02  FALSE
+ 6:     6 CD4_Tn_CCR7   POLR2E    chr19:1095225-1095726       IVW,SMR,CCT    8.1e-11           2       95   promoter     CD  rs1046040     1.5e-08      2             TRUE      FALSE       FALSE    TRUE     FALSE    FALSE              FALSE          0.09      4.8e-05     2.2e-09  FALSE
+ 7:     7 CD8_Tn_CCR7   POLR2E    chr19:1095225-1095726       IVW,SMR,CCT    2.2e-07           2       95   promoter     CD  rs1046040     1.5e-08      2             TRUE      FALSE       FALSE    TRUE     FALSE    FALSE              FALSE          0.10      6.3e-02     6.3e-06  FALSE
+ 8:     8 CD4_Tn_CCR7      DR1   chr1:93179440-93179941 IVW,Egger,SMR,CCT    3.8e-17           3   166217 intergenic     CD  rs1335679     3.9e-10      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE               TRUE          0.96      4.1e-30     1.9e-33  FALSE
+ 9:     9 CD8_Tn_CCR7      DR1   chr1:93179440-93179941 IVW,Egger,SMR,CCT    1.5e-11           3   166217 intergenic     CD  rs1335679     3.9e-10      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE               TRUE          1.00      8.7e-17     7.4e-21  FALSE
+10:    10    Bn_TCL1A      DR1   chr1:93179440-93179941       IVW,SMR,CCT    4.0e-04           3   166217 intergenic     CD  rs1335679     3.9e-10      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE               TRUE          0.94      4.6e-12     3.6e-05  FALSE
+11:    11    Bn_TCL1A     UBA7   chr3:49903714-49904215       IVW,SMR,CCT    2.8e-05           1    90011 intergenic    IBD  rs2280406     3.3e-09      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE               TRUE          0.94      8.1e-11     5.9e-11  FALSE
+12:    12 CD8_Tn_CCR7     NKD1  chr16:50327086-50327587       IVW,SMR,CCT    3.0e-03           1   221060 intergenic CD,IBD rs11644043     3.6e-10      1            FALSE      FALSE       FALSE   FALSE     FALSE     TRUE               TRUE          1.00     8.2e-116     1.6e-03  FALSE
+13:    13    Bn_TCL1A  ZKSCAN8   chr6:28443269-28443770     IVW,Egger,CCT    4.3e-04           1   301636 intergenic     RA  rs2531804     2.0e-09      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE               TRUE          0.32      4.1e-18     5.1e-01  FALSE
+14:    14 CD4_Tn_CCR7  TMPRSS3  chr21:42425157-42425658       IVW,SMR,CCT    6.5e-10           2    29316 intergenic    T1D  rs2839508     5.7e-10      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE              FALSE          0.90      4.7e-19     1.4e-19  FALSE
+15:    15 CD8_Tn_CCR7  TMPRSS3  chr21:42425157-42425658       IVW,SMR,CCT    7.8e-08           2    29316 intergenic    T1D  rs2839508     5.7e-10      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE              FALSE          1.00      2.6e-24     1.6e-12  FALSE
+16:    16 CD8_Tn_CCR7     GNAS  chr20:59254001-59254502       IVW,SMR,CCT    8.8e-06           2   414533 intergenic CD,IBD   rs259956     2.6e-09      1            FALSE      FALSE       FALSE   FALSE     FALSE     TRUE              FALSE          0.84      9.8e-28     1.2e-04  FALSE
+17:    17 CD4_Tn_CCR7  BLOC1S1  chr12:56041553-56042054           IVW,CCT    4.6e-03           2   325766 intergenic    T1D   rs705704     1.5e-62      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE              FALSE          0.98     4.5e-100     3.9e-02  FALSE
+18:    18    Bn_TCL1A  BLOC1S1  chr12:56041553-56042054             Egger    4.2e-02           2   325766 intergenic    T1D   rs705704     1.5e-62      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE              FALSE          0.96      1.6e-63     3.5e-01  FALSE
+19:    19 CD4_Tn_CCR7    ASH1L chr1:155227359-155227860             Egger    3.1e-02           1   335198 intergenic    IBD  rs2990245     7.2e-09      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE              FALSE          0.88      5.6e-30     4.9e-01  FALSE
+20:    20 CD8_Tn_CCR7 HIST1H4H   chr6:26554691-26555192     IVW,Egger,CCT    6.0e-03           1   269303 intergenic    T1D  rs6929908     8.6e-11      1            FALSE      FALSE       FALSE   FALSE     FALSE     TRUE              FALSE          0.41      2.6e-11     8.7e-01  FALSE
+21:    21    Bn_TCL1A     XRN1 chr3:141498786-141499287               SMR    3.7e-02           1   949026 intergenic     CD  rs6808837     1.0e-09      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE              FALSE          0.41      2.3e-09     4.8e-01  FALSE
+22:    22 CD4_Tn_CCR7   ZNF184   chr6:26554691-26555192               IVW    4.3e-02           1   918177 intergenic    T1D  rs6929908     8.6e-11      1            FALSE      FALSE       FALSE   FALSE      TRUE    FALSE              FALSE          0.41      2.2e-16     3.7e-02  FALSE
+23:    23 CD4_Tn_CCR7     MUC1 chr1:155227359-155227860           IVW,CCT    1.0e-02           1    34693 intergenic    IBD  rs2990245     7.2e-09      1            FALSE      FALSE       FALSE    TRUE     FALSE    FALSE               TRUE          0.88      5.6e-30     7.5e-03  FALSE
+24:    24 CD8_Tn_CCR7    TTC33   chr5:40386298-40386799         Egger,CCT    3.7e-02           1   369415 intergenic CD,IBD  rs1002922     1.6e-53      1            FALSE      FALSE       FALSE    TRUE     FALSE    FALSE               TRUE          0.99      2.0e-13     7.3e-01  FALSE
+25:    25 CD8_Tn_CCR7    PGBD1   chr6:28443269-28443770       IVW,SMR,CCT    3.2e-02           1   161947 intergenic     RA  rs2531804     2.0e-09      1            FALSE      FALSE       FALSE    TRUE     FALSE    FALSE               TRUE          0.15      2.3e-03     1.5e-01  FALSE
+26:    26 CD4_Tn_CCR7    ZBTB9   chr6:33904403-33904904               SMR    3.4e-02           1   450683 intergenic    T1D  rs4713719     3.2e-08      1            FALSE       TRUE       FALSE   FALSE     FALSE    FALSE               TRUE          0.08      5.7e-13     1.3e-01  FALSE
+27:    27 CD8_Tn_CCR7      GBA chr1:155227359-155227860           IVW,CCT    2.0e-03           2    17090 intergenic    IBD  rs2990245     7.2e-09      1            FALSE      FALSE       FALSE    TRUE     FALSE    FALSE              FALSE          0.88      2.5e-22     1.7e-02  FALSE
+28:    28    Bn_TCL1A      GBA chr1:155227359-155227860               SMR    3.1e-02           2    17090 intergenic    IBD  rs2990245     7.2e-09      1            FALSE      FALSE       FALSE    TRUE     FALSE    FALSE              FALSE          0.88      3.3e-09     4.6e-03  FALSE
+29:    29 CD4_Tn_CCR7  LAMTOR2 chr1:155227359-155227860     IVW,Egger,CCT    6.6e-03           1   827143 intergenic    IBD  rs2990245     7.2e-09      1            FALSE      FALSE       FALSE    TRUE     FALSE    FALSE              FALSE          0.88      5.6e-30     9.9e-03  FALSE
+30:    30 CD8_Tn_CCR7    EFNA1 chr1:155227359-155227860     IVW,Egger,CCT    1.5e-02           1    99733 intergenic    IBD  rs2990245     7.2e-09      1            FALSE      FALSE       FALSE    TRUE     FALSE    FALSE              FALSE          0.88      2.5e-22     2.1e-02  FALSE
+31:    31 CD4_Tn_CCR7  RPS6KL1  chr14:75274783-75275284               IVW    4.5e-02           1   351637 intergenic     CD  rs1569328     4.7e-16      1            FALSE      FALSE       FALSE    TRUE     FALSE    FALSE              FALSE          1.00      1.7e-62     1.0e-01  FALSE
+32:    32 CD4_Tn_CCR7   ZNF322   chr6:26554691-26555192     IVW,Egger,CCT    3.1e-03           1   104811 intergenic    T1D  rs6929908     8.6e-11      1            FALSE      FALSE       FALSE    TRUE     FALSE    FALSE              FALSE          0.41      2.2e-16     7.9e-01  FALSE
+33:    33 CD4_Tn_CCR7    ERBB3  chr12:56041553-56042054 IVW,Egger,SMR,CCT    1.4e-04           1    34996 intergenic    T1D   rs705704     1.5e-62      0            FALSE      FALSE       FALSE   FALSE     FALSE    FALSE               TRUE          0.98     4.5e-100     3.0e-04  FALSE
+34:    34 CD8_Tn_CCR7   TMBIM1 chr2:218287070-218287571       IVW,SMR,CCT    4.0e-05           1     5266      genic     CD rs13031757     2.0e-08      0            FALSE      FALSE       FALSE   FALSE     FALSE    FALSE               TRUE          0.96      6.0e-10     1.3e-10  FALSE
+35:    35 CD8_Tn_CCR7   UBQLN4 chr1:155227359-155227860     IVW,Egger,CCT    4.2e-04           1   826189 intergenic    IBD  rs2990245     7.2e-09      0            FALSE      FALSE       FALSE   FALSE     FALSE    FALSE               TRUE          0.88      2.5e-22     6.4e-01  FALSE
+36:    36 CD4_Tn_CCR7    STMN3  chr20:63588056-63588557           SMR,CCT    5.4e-03           1    69376 intergenic    IBD  rs3810492     3.2e-12      0            FALSE      FALSE       FALSE   FALSE     FALSE    FALSE               TRUE          0.91      6.9e-11     8.1e-07  FALSE
+37:    37 CD4_Tn_CCR7    IKZF4  chr12:56041553-56042054               IVW    3.5e-02           1    34144 intergenic    T1D   rs705704     1.5e-62      0            FALSE      FALSE       FALSE   FALSE     FALSE    FALSE               TRUE          0.98     4.5e-100     6.2e-02  FALSE
+38:    38 CD4_Tn_CCR7   ZSWIM8  chr10:73785073-73785574               SMR    4.2e-02           1      259   promoter     CD rs12256103     5.0e-12      0            FALSE      FALSE       FALSE   FALSE     FALSE    FALSE               TRUE          0.98      6.0e-24     1.7e-01  FALSE
+39:    39    Bn_TCL1A  ZSCAN16   chr6:28443269-28443770         Egger,CCT    5.2e-04           1   318910 intergenic     RA  rs2531804     2.0e-09      0            FALSE      FALSE       FALSE   FALSE     FALSE    FALSE               TRUE          0.32      4.1e-18     8.0e-01  FALSE
+40:    40 CD4_Tn_CCR7     GNAS  chr20:59254001-59254502 IVW,Egger,SMR,CCT    3.4e-04           2   414533 intergenic CD,IBD   rs259956     2.6e-09      0            FALSE      FALSE       FALSE   FALSE     FALSE    FALSE              FALSE          0.84      2.2e-27     4.0e-03  FALSE
+     rank   cell_type  gene_id                  peak_id    mr_methods_sig min_mr_fdr n_ct_mronly distance   location traits  lead_rsid lead_gwas_p n_gold gs_enhancerAtlas gs_FANTOM5 gs_4DGenome gs_GTEx gs_HiChIP gs_PCHiC gwascat_trait_gene r2_gwas_caqtl lead_caqtl_p lead_eqtl_p    MHC
+[23:17:45] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid6_GWAS/GWAS_example_candidates.tsv
+[23:17:45] Saved: /scratch/user/tfcui2025/CIMA/Claude_project/Results/Validation/Valid6_GWAS/GWAS_example_candidates_snps.tsv
