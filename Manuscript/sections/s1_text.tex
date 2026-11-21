@@ -3,6 +3,58 @@
 % uncorrelated variants, GLS truncation details) on 2026-11-01 (see notes/2_BOARD.md, S1 Text).
 % Restructured and expanded 2026-11-02 (P5): NOME, consistency of IVW, InSIDE,
 % correlated variants (Burgess & Thompson 2017, Appendix A.2 and A.4), random effects.
+% 2026-11-20: added "Marginal association and causal effect" with Fig A (TikZ), redrawn from
+% the author's derivation (paper_reference/image.png); symbols changed to gamma / psi_X / psi_Y.
+
+\subsection*{Marginal association and causal effect}
+
+\noindent Marginal methods measure the association between peak accessibility and gene expression across cells, metacells, or individuals. This association equals the causal effect of accessibility on expression only if no other factor affects both. Consider a peak--gene pair, and let $X$ denote chromatin accessibility at the peak, $Y$ expression of the paired gene, $Z$ a genetic variant associated with accessibility, and $U$ an unmeasured factor that affects both accessibility and expression (Fig A). In peak--gene linking, $U$ can represent, for example, cell identity when cells of several types are pooled, the activity of a transcription factor, or differences between donors. We consider the linear structural model
+\begin{align*}
+X &= \gamma Z + \psi_X U + \varepsilon_X,\\
+Y &= \beta X + \psi_Y U + \varepsilon_Y,
+\end{align*}
+where $\beta$ is the causal effect of accessibility on expression, $\gamma$ is the effect of the variant on accessibility, $\psi_X$ and $\psi_Y$ are the effects of $U$ on accessibility and expression, and the errors $\varepsilon_X$ and $\varepsilon_Y$ are independent of each other and of $Z$ and $U$.
+
+\begin{center}
+\vspace{6pt}
+\begin{tikzpicture}[
+    var/.style={circle, draw, thick, minimum size=9mm, inner sep=0pt},
+    eff/.style={-{Stealth[length=2.6mm]}, thick},
+    lab/.style={font=\small, inner sep=2pt}]
+  \node[var] (Z) at (0,0)    {$Z$};
+  \node[var] (X) at (3.2,0)  {$X$};
+  \node[var] (Y) at (6.4,0)  {$Y$};
+  \node[var] (U) at (3.2,-2.6) {$U$};
+  \draw[eff] (Z) -- node[lab, above] {$\gamma$}  (X);
+  \draw[eff] (X) -- node[lab, above] {$\beta$}   (Y);
+  \draw[eff] (U) -- node[lab, left]  {$\psi_X$}  (X);
+  \draw[eff] (U) -- node[lab, below right] {$\psi_Y$} (Y);
+\end{tikzpicture}
+
+\begin{minipage}{0.85\linewidth}
+\small\textbf{Fig A. Causal diagram for a peak--gene pair.} $Z$, genetic variant (instrument); $X$, chromatin accessibility at the peak (exposure); $Y$, expression of the paired gene (outcome); $U$, unmeasured factor that affects both $X$ and $Y$. Arrows denote direct effects and are labeled with the corresponding coefficients.
+\end{minipage}
+\vspace{6pt}
+\end{center}
+
+\noindent Under this model,
+\begin{equation*}
+\operatorname{Cov}(X,Y)=\beta\operatorname{Var}(X)+\psi_Y\operatorname{Cov}(X,U).
+\end{equation*}
+Equivalently, if $Y$ is regressed on $X$ alone, $Y=\tilde{\beta}X+\tilde{\varepsilon}$, the marginal slope is
+\begin{equation*}
+\tilde{\beta}=\frac{\operatorname{Cov}(X,Y)}{\operatorname{Var}(X)}
+=\beta+\psi_Y\frac{\operatorname{Cov}(X,U)}{\operatorname{Var}(X)}
+=\beta+\frac{\psi_X\psi_Y\operatorname{Var}(U)}{\operatorname{Var}(X)},
+\end{equation*}
+where the last equality uses the independence of $Z$ and $U$. The second term is a confounding bias that is nonzero whenever $U$ affects both accessibility and expression. Hence the marginal association can differ completely from the causal effect. A marginal association can arise when $\beta=0$; a causal effect can be masked when the bias offsets $\beta$; the marginal association can have the opposite sign when the bias has the opposite sign to $\beta$ and a larger magnitude; and, because a test of marginal association tests $\tilde{\beta}$ rather than $\beta$, the two can differ in statistical significance. The Spearman correlations used by the marginal methods also measure the marginal association between $X$ and $Y$ and are subject to the same confounding.
+
+\noindent The genetic variant avoids this bias. Because $Z$ is independent of $U$ and affects $Y$ only through $X$,
+\begin{equation*}
+\frac{\operatorname{Cov}(Z,Y)}{\operatorname{Cov}(Z,X)}
+=\frac{\beta\gamma\operatorname{Var}(Z)}{\gamma\operatorname{Var}(Z)}=\beta,
+\end{equation*}
+which is the ratio $\Gamma_j/\gamma_j$ used in the MR model below.
 
 \subsection*{MR model}
 

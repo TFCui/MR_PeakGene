@@ -1,4 +1,4 @@
-\subsection{Data Preprocessing}
+\subsection{Data preprocessing}
 \label{sec:data-preprocessing}
 
 \noindent For each candidate peak--gene pair, we selected instruments with strong evidence of association with peak accessibility and used LD clumping to limit collinearity. Within each cell type, we retained caQTL variants with nominal $P<10^{-8}$. We then performed LD clumping separately for each pair using PLINK (v1.90b7.2) \cite{chang2015plink} via \texttt{ieugwasr::ld\_clump\_local} (ieugwasr v1.1.0). We ranked variants by ascending caQTL $P$ value for index SNP selection and used an $r^2$ threshold of 0.99, a 20,000~kb window covering the entire \textit{cis} region, and \texttt{clump\_p = 1}. This threshold removed variants in near-perfect LD with an index SNP while allowing us to model the remaining correlations using generalized least square. We retained a pair if at least three clumped variants had both caQTL and eQTL summary statistics and if both the peak and the gene were represented in the pseudobulk and WNN metacell data (\nameref{sec:pseudobulk-correlations} and \nameref{sec:wnn-correlations}).

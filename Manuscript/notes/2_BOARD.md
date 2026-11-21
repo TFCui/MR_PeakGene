@@ -19,12 +19,12 @@
 | 方法名（正文） | causal IVW、causal Egger（不写 causal MR-Egger）、causal SMR、causal joint、marginal multiomics、marginal pseudobulk。Methods 小节标题保留 GLS-IVW 等全称；图表标签不改（Causal IVW … Marginal Pseudobulk）                                                                                                                |
 | 类别名         | Methods 和 Results 的开头各定义一次："We refer to the four MR-based tests (…) collectively as the causal methods, and to the two correlation-based methods as the marginal methods." 不写 "our causal methods"（这些方法不是本文提出的）；本文的贡献落在框架上（"an MR framework for peak–gene linking"），框架不起短名字 |
 | 显著性         | $P_{\mathrm{adj}}$ = 每个 gene 内部、每个方法分别做 BH 后的 P 值，用宏 `\q`；全文写 `$\q<0.1$`；名义 P 写斜体 *P*。不写 p.adj、FDR、q；DAVID 自己的 FDR 写 "DAVID FDR"                                                                                                                                              |
-| peak           | 全文写 "peak"（首次出现写 "chromatin accessibility peak"），不写 "enhancer"（标题也要改，见第 3 节）                                                                                                                                                                                                                        |
+| peak / enhancer | 生物学概念和小节标题写 "enhancer–gene"（与论文标题、Abstract、Intro、Discussion 一致，2026-11-20 作者决定）；被检验的单位写 "peak–gene pair"，显著的写 "link"；首次出现写 "chromatin accessibility peak" |
 | pair / link    | 被检验的单位写 "peak–gene pair"，显著的 pair 写 "link"                                                                                                                                                                                                                                                                     |
 | GWAS           | 只报告 7 个疾病：AS、CD、IBD、RA、SLE、MS、T1D，统称 "immune-mediated diseases"（不写 "blood traits"）；S-LDSC 实际跑了 9 个，asthma 和 PBC 不报告                                                                                                                                                                          |
 | GO             | 只写 DAVID 过表示分析                                                                                                                                                                                                                                                                                                       |
 | 格式           | 基因符号斜体；科学计数写 `$6.1\times10^{-4}$`；美式拼写（center）；图写 `Fig~\ref{fig:overview}B`，表写 `Table~\ref{tab:motif}`，补充条目写 `\nameref{S1_Fig}`                                                                                                                                                      |
-| 参考文献       | 暂时不处理，最后统一处理（缺的地方写 `[CITE: 论断]`）                                                                                                                                                                                                                                                                     |
+| 参考文献       | PLOS 数字编号（`\cite{}`）；正文不写作者名（不写 "X et al." 和年份），引用跟在论断 / 工具名 / 研究名后（如 `Signac \cite{…}`、`the TRIPOD study \cite{…}`）；只有 S4 Table 来源列保留 "Author et al.~\cite{…}"；缺的地方写 `[CITE: 论断]` |
 
 ### 1.2 定义与阈值（主定义在 Methods 的 Study design and terminology；Results 开头用一两句话再说一次）
 
@@ -78,26 +78,21 @@
 
 **Results**（`sections/results.tex`）
 
-| 小节 | 标题                                                                              | 段 | 每段一句话                                                                                                                | 状态     |
-| ---- | --------------------------------------------------------------------------------- | -- | ------------------------------------------------------------------------------------------------------------------------- | -------- |
-| R1   | Study overview and comparison of peak–gene linking methods                       | P1 | CIMA 数据、三个细胞类型、六个方法分两类、类别名、$P_{\mathrm{adj}}$ 和 MR-only 的定义 → Fig 1A                         | 已调结构 |
-|      |                                                                                   | P2 | 同一组候选 pair；marginal multiomics 最多（CD4 37,181），causal 方法更少；重叠 → Fig 1B、S3 Fig                          | 已调结构 |
-|      |                                                                                   | P3 | 六个方法都显著的 1,259 个 link：MR 之间几乎全部同号，73% 与两个 marginal 方法同号，24.1% 只与 multiomics 不同号 → Fig 1C | 已调结构 |
-| R2   | Concordance and discordance between MR estimates and marginal correlations        | P1 | MR 与两种相关分别估计什么；多数一致，也有不一致，下面看 4 个例子                                                          | 已调结构 |
-|      |                                                                                   | P2 | *SIDT2*（Bn）六个方法都一致；*RPL11*（CD4）个体层不显著 → Fig 2A–B                                                  | 已调结构 |
-|      |                                                                                   | P3 | *ERAP2*（CD4）MR 与个体层同为负，跨 metacell 为正 → Fig 2C                                                             | 已调结构 |
-|      |                                                                                   | P4 | *ARPC1B*（CD4）只有 MR 显著 → Fig 2D                                                                                   | 已调结构 |
-|      |                                                                                   | P5 | 小结：关联可能与因果效应不同（结论偏强）                                                                                  | 已调结构 |
-| R3   | Functional characterization and regulatory network support for peak–gene links   | P0 | `\TODO`：Fig 3A、3D、S5、S7 还没有正文                                                                                  | 有新改动 |
-|      |                                                                                   | P1 | MR-only 基因的 DAVID GO（4,509 个基因）→ Fig 3B–C                                                                       | 已调结构 |
-|      |                                                                                   | P2 | 与 CIMA SCENIC+ eRegulon 的重叠，多数比较中 causal 方法的 OR 更高 → Fig 3E、S8 Fig                                       | 有新改动 |
-|      |                                                                                   | P3 | 6 个外部参考的超几何富集：SMR 在 17/18 个组合中 fold 最大 → S1 / S2 Table                                                | 已调结构 |
-| R4   | Disease heritability enrichment and GWAS overlap of MR-supported peak–gene links | P1 | S-LDSC：MR-only peak 的点估计更高，4 个疾病 P < 0.1 → Fig 4A                                                             | 已调结构 |
-|      |                                                                                   | P2 | strong MR-only link 的 GWAS 重叠例子（ERAP1 / ERBB3 / THBS3）→ Fig 4B                                                   | 有新改动（11-11）|
-| R5   | Motif enrichment highlights candidate regulators of MR-supported peak–gene links | P1 | 前景、背景、47 个 MR-specific motif；Table 1 依赖 Egger                                                                   | 已调结构 |
-|      |                                                                                   | P2 | 例子与文献：MNT、ATF3、FOSL2::JUND 等                                                                                     | 已调结构 |
+| 小节 | 标题 | 段 | 每段一句话 | 状态 |
+| ---- | ---- | -- | ---------- | ---- |
+| R1 | A Mendelian randomization framework for causal enhancer–gene inference | P1–P5 | 框架（IVW / Egger 模型、SMR、Cauchy 合并）、CIMA 三个细胞类型、两种 marginal 对照 → Fig 1A | 标题已改（11-20） |
+| R2 | Concordance and discordance between causal effects and marginal associations | P1 | 候选 pair 数、CD4 link 数、1,259 个 link 的方向比较 → Fig 1B–C、S3 Fig | 标题已改（11-20） |
+| | | P2 | *SIDT2* / *RPL11* / *ERAP2* / *ARPC1B* 四个例子和解释 → Fig 2 | |
+| R3 | Orthogonal regulatory evidence for MR-inferred enhancer–gene links | P1 | Manhattan 比较，定义 MR-only → Fig 3A、S7 Fig | 结构已调（11-20） |
+| | | P2 | MR-only 基因的 DAVID GO → Fig 3B | |
+| | | P3 | CIMA eRegulon 重叠，MR 方法 OR 更高 → Fig 3D、S8 Fig | |
+| | | P4 | Motif（原 R5 P1，首句改为承接 eRegulon）：前景 / 背景、47 个 MR-specific motif、Table 1 依赖 Egger | 11-20 并入 |
+| | | P5 | Motif 例子：MNT、ATF3、FOSL2::JUND 等 | 11-20 并入 |
+| | | P6 | 6 个外部参考：SMR 17/18 fold 最大；MR-only 的 HiChIP 3.28 倍 → Fig 3C、S5 Fig、S1 / S2 Table | |
+| R4 | Heritability enrichment and candidate target genes for immune-mediated diseases | P1 | S-LDSC：MR-only peak 富集更高，4 个疾病 P < 0.1 → Fig 4A | 标题已改（11-20） |
+| | | P2–P3 | GWAS 例子 *ERAP1* / *ERBB3* / *THBS3* → Fig 4B | |
 
-**Discussion**（`sections/discussion.tex`）：只有 D1–D8 的注释骨架，加上两段旧文字：D5（样本重叠，S1 Fig）和 D6（等位方向，S2 Fig）。状态：未动。
+**Discussion**（`sections/discussion.tex`）：作者 11-18 在 Overleaf 写成 4 段：D1 研究概述 → D2 验证结果总结 → 局限 First 样本重叠（S1 Fig）→ Second 强工具变量、弱工具变量、NOME。原 “allele orientation” 段 11-20 移到 Methods 的 Allele orientation 小节。状态：作者初稿，待润色。
 
 **Methods**（`sections/methods.tex` + `data_preprocessing.tex`）
 
