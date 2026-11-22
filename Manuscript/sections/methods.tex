@@ -21,7 +21,9 @@ Mendelian randomization (MR) uses single-nucleotide polymorphisms (SNPs) as inst
     \item \textbf{Exclusion restriction:} the SNP affects the outcome only through the exposure.
 \end{enumerate}
 
-\noindent In this study, we investigated the causal effect of chromatin accessibility at candidate regulatory peaks on gene expression. The exposure was chromatin accessibility at an ATAC-seq peak, and the outcome was expression of the paired gene. For each candidate peak--gene pair within each cell type, let \(\hat{\gamma}_j\) and \(s_{Xj}\) denote the estimated SNP--exposure association and its standard error from the CIMA caQTL summary statistics, and let \(\hat{\Gamma}_j\) and \(s_{Yj}\) denote the corresponding SNP--outcome association and its standard error from the CIMA eQTL summary statistics (\nameref{sec:data-preprocessing}). Under the no measurement error (NOME) assumption \cite{bowden2016nome}, we treated the estimated SNP--exposure associations as fixed (\nameref{S1_Text}). The MR-Egger regression model relates the SNP--outcome associations to the SNP--exposure associations as follows:
+\noindent These assumptions allow MR to avoid the confounding that affects marginal correlations. When an unmeasured factor affects both the exposure and the outcome, the slope of the outcome on the exposure equals the causal effect plus a confounding term. In contrast, for a valid instrument the ratio of the SNP--outcome covariance to the SNP--exposure covariance equals the causal effect, because the SNP is independent of the confounder and affects the outcome only through the exposure (\nameref{S1_Text}).
+
+\noindent In this study, we investigated the causal effect of chromatin accessibility at candidate regulatory peaks on gene expression. The exposure was chromatin accessibility at an ATAC-seq peak, and the outcome was expression of the paired gene. For each candidate peak--gene pair within each cell type, let \(\hat{\gamma}_j\) and \(s_{Xj}\) denote the estimated SNP--exposure association and its standard error from the CIMA caQTL summary statistics, and let \(\hat{\Gamma}_j\) and \(s_{Yj}\) denote the corresponding SNP--outcome association and its standard error from the CIMA eQTL summary statistics (\nameref{sec:data-preprocessing}). Under the no measurement error (NOME) assumption \cite{bowden2016nome}, we treated the estimated SNP--exposure associations as fixed, ignoring their sampling error. When NOME is violated, this measurement error attenuates causal estimates toward zero; because our caQTL and eQTL data come from overlapping samples, it also allows correlated estimation errors to bias the estimates toward the marginal association. To first order, both biases are inversely proportional to instrument strength (\nameref{S1_Text}; \nameref{sec:overlap}). The MR-Egger regression model relates the SNP--outcome associations to the SNP--exposure associations as follows:
 \begin{equation*}
     \hat{\Gamma}_j = \alpha_0 + \beta\hat{\gamma}_j + \varepsilon_j,
     \qquad
@@ -30,18 +32,18 @@ Mendelian randomization (MR) uses single-nucleotide polymorphisms (SNPs) as inst
 
 \noindent Here, \(\beta\hat{\gamma}_j\) represents the genetic component mediated by the exposure, and the intercept \(\alpha_0\) allows for an average pleiotropic effect not mediated by the exposure. Under the Instrument Strength Independent of Direct Effect (InSIDE) assumption (\nameref{S1_Text}), the slope \(\beta\) identifies the causal effect of the exposure on the outcome, and \(\alpha_0\) can be interpreted as the weighted average pleiotropic effect of the instruments (\nameref{S1_Text}). The parameter \(\phi\) is a residual variance multiplier, with \(\phi=1\) corresponding to the fixed-effect model (\nameref{S1_Text}).
 
-\noindent Constraining the intercept to zero (\(\alpha_0=0\)) yields the inverse-variance weighted (IVW) estimator. IVW provides consistent estimates when all instruments are valid, or under balanced pleiotropy when the weighted average pleiotropic effect is zero. MR-Egger additionally allows for directional pleiotropy (\(\alpha_0 \neq 0\)). \cite{bowden2015egger,burgess2017interpreting}.
+\noindent Constraining the intercept to zero (\(\alpha_0=0\)) yields the inverse-variance weighted (IVW) estimator. IVW provides consistent estimates when all instruments are valid. More generally, its asymptotic bias is proportional to the weighted sum of the products of the pleiotropic effects and the SNP--exposure associations, so it vanishes when pleiotropy is balanced and unrelated to instrument strength (\nameref{S1_Text}). MR-Egger additionally allows for directional pleiotropy (\(\alpha_0 \neq 0\)): under InSIDE, which requires zero weighted covariance between the pleiotropic effects and the SNP--exposure associations across instruments, its slope remains consistent and its intercept estimates the weighted average pleiotropic effect \cite{bowden2015egger,burgess2017interpreting}.
 
 \subsection{Causal IVW}
 \label{sec:gls-ivw}
 
 SNPs within \textit{cis}-regulatory regions are often correlated because of linkage disequilibrium (LD). Stringent LD clumping to obtain independent instruments can leave too few variants per peak--gene pair, potentially limiting statistical power. We therefore used the generalized least squares (GLS) extension of IVW to account for correlations among instruments~\cite{burgess2016combining,burgess2017interpreting}.
 
-\noindent sFor a given peak--gene pair with $J$ instruments, let $\boldsymbol{\gamma}=(\hat{\gamma}_1,\ldots,\hat{\gamma}_J)^{\mathsf T}$ and $\boldsymbol{\Gamma}=(\hat{\Gamma}_1,\ldots,\hat{\Gamma}_J)^{\mathsf T}$ denote the vectors of estimated SNP--exposure and SNP--outcome associations, respectively. Let $\boldsymbol R$ denote the signed genotype correlation matrix estimated from the reference panel (\nameref{sec:data-preprocessing}), and let $\boldsymbol D_Y=\operatorname{diag}(s_{Y1},\ldots,s_{YJ})$ contain the standard errors of the SNP--outcome associations. We approximated the sampling covariance matrix of $\boldsymbol{\Gamma}$ by $\boldsymbol{\Sigma}=\boldsymbol D_Y\boldsymbol R\boldsymbol D_Y$. The causal IVW model is
+\noindent For a given peak--gene pair with $J$ instruments, let $\hat{\boldsymbol{\gamma}}=(\hat{\gamma}_1,\ldots,\hat{\gamma}_J)^{\mathsf T}$ and $\hat{\boldsymbol{\Gamma}}=(\hat{\Gamma}_1,\ldots,\hat{\Gamma}_J)^{\mathsf T}$ denote the vectors of estimated SNP--exposure and SNP--outcome associations, respectively. Let $\boldsymbol R$ denote the signed genotype correlation matrix estimated from the reference panel (\nameref{sec:data-preprocessing}), and let $\boldsymbol D_Y=\operatorname{diag}(s_{Y1},\ldots,s_{YJ})$ contain the standard errors of the SNP--outcome associations. We approximated the sampling covariance matrix of $\hat{\boldsymbol{\Gamma}}$ by $\boldsymbol{\Sigma}=\boldsymbol D_Y\boldsymbol R\boldsymbol D_Y$. Consistent with NOME, $\boldsymbol{\Sigma}$ describes only the sampling errors of $\hat{\boldsymbol{\Gamma}}$; it does not model the sampling errors of $\hat{\boldsymbol{\gamma}}$ or their covariance with those of $\hat{\boldsymbol{\Gamma}}$ induced by sample overlap (\nameref{S1_Text}). The causal IVW model is
 \begin{equation*}
-\boldsymbol{\Gamma}
+\hat{\boldsymbol{\Gamma}}
 =
-\beta\boldsymbol{\gamma}+\boldsymbol{\varepsilon},
+\beta\hat{\boldsymbol{\gamma}}+\boldsymbol{\varepsilon},
 \qquad
 \boldsymbol{\varepsilon}
 \sim\mathcal{N}_J
@@ -52,34 +54,34 @@ Using standard results from generalized least squares regression, the causal eff
 \hat{\beta}_{\text{IVW}}
 =
 \frac{
-\boldsymbol{\gamma}^{\mathsf T}
-\boldsymbol{\Sigma}^{-1}\boldsymbol{\Gamma}
+\hat{\boldsymbol{\gamma}}^{\mathsf T}
+\boldsymbol{\Sigma}^{-1}\hat{\boldsymbol{\Gamma}}
 }{
-\boldsymbol{\gamma}^{\mathsf T}
-\boldsymbol{\Sigma}^{-1}\boldsymbol{\gamma}
+\hat{\boldsymbol{\gamma}}^{\mathsf T}
+\boldsymbol{\Sigma}^{-1}\hat{\boldsymbol{\gamma}}
 }.
 \end{equation*}
 
-\noindent Under strong LD, $\boldsymbol{\Sigma}$ may be singular, making direct inversion numerically unstable. We therefore used a truncated eigendecomposition of $\boldsymbol{\Sigma}=\boldsymbol V\boldsymbol{\Lambda}\boldsymbol V^{\mathsf T}$, with eigenvalues $\lambda_1\geq\cdots\geq\lambda_J$ and orthonormal eigenvectors $\boldsymbol v_1,\ldots,\boldsymbol v_J$. Let $\mathcal K$ denote the indices of the $k$ retained leading eigenvalues. The truncated matrix $\widetilde{\boldsymbol{\Sigma}}=\sum_{\ell\in\mathcal K}\lambda_\ell\boldsymbol v_\ell\boldsymbol v_\ell^{\mathsf T}$ retains the $k$ largest eigenvalues of $\boldsymbol{\Sigma}$ (\nameref{S1_Text}). By the Eckart--Young theorem, it is the best rank-$k$ approximation to $\boldsymbol{\Sigma}$ in both the Frobenius and spectral norms \cite{eckart1936approximation}. Its Moore--Penrose pseudoinverse is $\widetilde{\boldsymbol{\Sigma}}^{+}=\sum_{\ell\in\mathcal K}\lambda_\ell^{-1}\boldsymbol v_\ell\boldsymbol v_\ell^{\mathsf T}$. The causal effect estimate is
+\noindent Under strong LD, $\boldsymbol{\Sigma}$ may be singular, making direct inversion numerically unstable. We therefore used a truncated eigendecomposition of $\boldsymbol{\Sigma}=\boldsymbol V\boldsymbol{\Lambda}\boldsymbol V^{\mathsf T}$, with eigenvalues $\lambda_1\geq\cdots\geq\lambda_J$ and orthonormal eigenvectors $\boldsymbol v_1,\ldots,\boldsymbol v_J$. We retained the leading eigenvalues that together accounted for 99.9\% of the total positive eigenvalue sum, keeping at least five directions, and then discarded eigenvalues not exceeding $10^{-10}\lambda_1$ (\nameref{S1_Text}). Let $\mathcal K$ denote the indices of the $k$ retained leading eigenvalues. The truncated matrix $\widetilde{\boldsymbol{\Sigma}}=\sum_{\ell\in\mathcal K}\lambda_\ell\boldsymbol v_\ell\boldsymbol v_\ell^{\mathsf T}$ retains the $k$ largest eigenvalues of $\boldsymbol{\Sigma}$ (\nameref{S1_Text}). By the Eckart--Young theorem, it is the best rank-$k$ approximation to $\boldsymbol{\Sigma}$ in both the Frobenius and spectral norms \cite{eckart1936approximation}. Its Moore--Penrose pseudoinverse is $\widetilde{\boldsymbol{\Sigma}}^{+}=\sum_{\ell\in\mathcal K}\lambda_\ell^{-1}\boldsymbol v_\ell\boldsymbol v_\ell^{\mathsf T}$. The causal effect estimate is
 \begin{equation*}
 \hat{\beta}_{\text{IVW}}
 =
 \frac{
-\boldsymbol{\gamma}^{\mathsf T}
+\hat{\boldsymbol{\gamma}}^{\mathsf T}
 \widetilde{\boldsymbol{\Sigma}}^{+}
-\boldsymbol{\Gamma}
+\hat{\boldsymbol{\Gamma}}
 }{
-\boldsymbol{\gamma}^{\mathsf T}
+\hat{\boldsymbol{\gamma}}^{\mathsf T}
 \widetilde{\boldsymbol{\Sigma}}^{+}
-\boldsymbol{\gamma}
+\hat{\boldsymbol{\gamma}}
 }.
 \end{equation*}
 
-\noindent The residual dispersion was estimated as $\widetilde{\phi}=\frac{(\boldsymbol{\Gamma}-\hat{\beta}_{\text{IVW}}\boldsymbol{\gamma})^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}(\boldsymbol{\Gamma}-\hat{\beta}_{\text{IVW}}\boldsymbol{\gamma})}{J-1}$. Pleiotropy among the instruments may introduce heterogeneity in the causal effect estimates obtained from individual genetic variants. To accommodate this potential overdispersion, we used a multiplicative random-effects model with $\hat{\phi}=\max(1,\widetilde{\phi})$ (details in \nameref{S1_Text}). The standard error was calculated as $\widehat{\mathrm{SE}}(\hat{\beta}_{\text{IVW}})=\{\hat{\phi}/(\boldsymbol{\gamma}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol{\gamma})\}^{1/2}$. Two-sided $P$ values for testing $H_0:\beta=0$ were obtained by comparing $T=\hat{\beta}_{\text{IVW}}/\widehat{\mathrm{SE}}(\hat{\beta}_{\text{IVW}})$ with a $t$ distribution with $J-1$ degrees of freedom.
+\noindent The residual dispersion was estimated as $\widetilde{\phi}=\frac{(\hat{\boldsymbol{\Gamma}}-\hat{\beta}_{\text{IVW}}\hat{\boldsymbol{\gamma}})^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}(\hat{\boldsymbol{\Gamma}}-\hat{\beta}_{\text{IVW}}\hat{\boldsymbol{\gamma}})}{J-1}$. Pleiotropy among the instruments may introduce heterogeneity in the causal effect estimates obtained from individual genetic variants. To accommodate this potential overdispersion, we used a multiplicative random-effects model with $\hat{\phi}=\max(1,\widetilde{\phi})$ (details in \nameref{S1_Text}). Because $\phi$ is a common variance multiplier, this adjustment leaves the point estimate unchanged and only inflates the standard error, which is never smaller than under the fixed-effect model. Pairs with $\hat{\phi}>10$ were excluded (\nameref{sec:filtering}). The standard error was calculated as $\widehat{\mathrm{SE}}(\hat{\beta}_{\text{IVW}})=\{\hat{\phi}/(\hat{\boldsymbol{\gamma}}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\hat{\boldsymbol{\gamma}})\}^{1/2}$. Two-sided $P$ values for testing $H_0:\beta=0$ were obtained by comparing $T=\hat{\beta}_{\text{IVW}}/\widehat{\mathrm{SE}}(\hat{\beta}_{\text{IVW}})$ with a $t$ distribution with $J-1$ degrees of freedom.
 
 \subsection{Causal Egger}
 \label{sec:gls-egger}
-Causal Egger is the generalized least squares (GLS) extension of MR Egger to identify the causal effect of chromatin accessibility on the gene expression using correlated SNPs. With the association vectors and LD-based covariance matrix defined above, the model is
+Causal Egger extends MR-Egger to correlated SNPs by generalized least squares (GLS). With the association vectors and LD-based covariance matrix defined above, the model is
 \begin{equation*}
 \hat{\boldsymbol{\Gamma}}
 =
@@ -92,7 +94,7 @@ Causal Egger is the generalized least squares (GLS) extension of MR Egger to ide
 \mathcal N_J
 (\boldsymbol 0,\phi \boldsymbol{\Sigma}),
 \end{equation*}
-where $\boldsymbol 1_J$ is a vector of ones, $\alpha_0$ is the intercept, and $\phi$ is the residual variance multiplier. As in causal IVW, the estimated SNP--exposure associations $\hat{\boldsymbol{\gamma}}$ were treated as fixed under the NO Measurement Error (NOME) assumption (\nameref{S1_Text}), and the pseudoinverse $\widetilde{\boldsymbol{\Sigma}}^{+}$ defined above was used as the weighting matrix. Define $\boldsymbol{X}=[\boldsymbol{1}_J\;\;\boldsymbol{\gamma}]$ and $\boldsymbol{\theta}=(\alpha_0,\beta)^{\mathsf T}$. The causal Egger estimate is:
+where $\boldsymbol 1_J$ is a vector of ones, $\alpha_0$ is the intercept, and $\phi$ is the residual variance multiplier. As in causal IVW, the estimated SNP--exposure associations $\hat{\boldsymbol{\gamma}}$ were treated as fixed under the NO Measurement Error (NOME) assumption (\nameref{S1_Text}), and the pseudoinverse $\widetilde{\boldsymbol{\Sigma}}^{+}$ defined above was used as the weighting matrix. Define $\boldsymbol{X}=[\boldsymbol{1}_J\;\;\hat{\boldsymbol{\gamma}}]$ and $\boldsymbol{\theta}=(\alpha_0,\beta)^{\mathsf T}$. The causal Egger estimate is:
 \begin{equation*}
 \hat{\boldsymbol{\theta}}_{\text{Egger}}
 =
@@ -107,32 +109,26 @@ where $\boldsymbol 1_J$ is a vector of ones, $\alpha_0$ is the intercept, and $\
 \right)^{-1}
 \boldsymbol X^{\mathsf T}
 \widetilde{\boldsymbol{\Sigma}}^{+}
-\hat{\boldsymbol{\Gamma}},
+\hat{\boldsymbol{\Gamma}}.
 \end{equation*}
 
+\noindent Unlike the IVW estimate, the Egger estimate depends on which allele is coded as the effect allele, so we oriented all instruments to the accessibility-increasing allele before fitting (\nameref{sec:orientation}). With correlated instruments, the InSIDE condition takes a GLS-weighted form (\nameref{S1_Text}). Because the Egger slope is estimated from the variation of $\hat{\gamma}_j$ across instruments rather than from their magnitude, causal Egger is more sensitive than causal IVW to measurement error in $\hat{\gamma}_j$ \cite{bowden2016nome}.
 
-\noindent Inference followed the same procedure as for causal IVW. Let $\boldsymbol{r}_{\mathrm{Egger}}=\boldsymbol{\Gamma}-\boldsymbol{X}\hat{\boldsymbol{\theta}}_{\text{Egger}}$ denote the residual vector. The standard error was $\operatorname{SE}(\hat{\beta}_{\text{Egger}})=\left\{\max\left(1,\frac{\boldsymbol{r}_{\mathrm{Egger}}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol{r}_{\mathrm{Egger}}}{J-2}\right)\left[\left(\boldsymbol{X}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol{X}\right)^{-1}\right]_{22}\right\}^{1/2}$, where $[\cdot]_{22}$ denotes the second diagonal element. Two-sided $P$ values for $H_0:\beta=0$ were obtained from a $t$ distribution with $J-2$ degrees of freedom.
+\noindent Inference followed the same procedure as for causal IVW. Let $\boldsymbol{r}_{\mathrm{Egger}}=\hat{\boldsymbol{\Gamma}}-\boldsymbol{X}\hat{\boldsymbol{\theta}}_{\text{Egger}}$ denote the residual vector. The standard error was $\operatorname{SE}(\hat{\beta}_{\text{Egger}})=\left\{\max\left(1,\frac{\boldsymbol{r}_{\mathrm{Egger}}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol{r}_{\mathrm{Egger}}}{J-2}\right)\left[\left(\boldsymbol{X}^{\mathsf T}\widetilde{\boldsymbol{\Sigma}}^{+}\boldsymbol{X}\right)^{-1}\right]_{22}\right\}^{1/2}$, where $[\cdot]_{22}$ denotes the second diagonal element. Two-sided $P$ values for $H_0:\beta=0$ were obtained from a $t$ distribution with $J-2$ degrees of freedom.
 
 
 \subsection{Causal SMR}
 \label{sec:smr}
 
-Causal SMR is based on summary-data-based Mendelian randomization (SMR) \citep{zhu2016smr} and integrates summary statistics from caQTL and eQTL studies to test for an association between peak accessibility and gene expression. Such an association may reflect a causal effect of peak accessibility on gene expression or horizontal pleiotropy. For each peak--gene pair, we selected the leading SNP with the smallest nominal caQTL $P$ value and used the $*$ to denote this leading SNP. Under the instrumental variable assumptions described in the MR framework, including the exclusion restriction that the leading SNP affects gene expression only through peak accessibility, the causal SMR estimate can be interpreted as an estimate of the causal effect of peak accessibility on gene expression.
-
-\noindent If we assume the variant effect on peak accessibility is $\gamma_*$ and the 
-causal effect of peak accessibility on gene expression is $\beta$, then the variant effect on gene expression can be expressed by  $\Gamma_* \approx \beta\gamma_*$. Therefore, we can estimate the causal effect $\beta$ by the single-SNP Wald ratio: 
+Causal SMR is based on summary-data-based Mendelian randomization (SMR) \cite{zhu2016smr}, which estimates and tests the effect of an exposure on an outcome using a single genetic variant and summary statistics from two studies. For a variant with effect $\gamma$ on the exposure and effect $\Gamma$ on the outcome, MR with a single instrument estimates the effect of the exposure on the outcome by the ratio $\Gamma/\gamma$, which is free of confounding by non-genetic factors \cite{zhu2016smr}. SMR replaces the two effects with their estimates from the exposure and outcome studies and tests the ratio with an approximate $\chi^2_1$ statistic derived from the delta-method variance of the ratio \cite{zhu2016smr}:
 \begin{equation*}
-\hat{\beta}_{\mathrm{SMR}} = \frac{\Gamma_*}{\gamma_*}.
+\hat{\beta}_{\mathrm{SMR}}=\frac{\hat{\Gamma}}{\hat{\gamma}},
+\qquad
+T_{\mathrm{SMR}}=\frac{z_X^2z_Y^2}{z_X^2+z_Y^2},
 \end{equation*}
-The SMR test uses a delta-method approximation to the variance of this ratio that accounts for uncertainty in both associations
-\citep{zhu2016smr}. Let $p_X$ and $p_Y$ denote the two-sided nominal caQTL and eQTL $P$ values for the leading SNP, respectively. We converted each $P$ value to an absolute $z$ score using $z_k = \Phi^{-1}(1-\tilde{p}_k/2)$ for $k \in \{X,Y\}$, where $\Phi$ is the standard normal cumulative distribution function. The causal SMR test statistic can be approxiamated by \citep{zhu2016smr} :
-\begin{equation*}
-T_{\mathrm{SMR}}
-= \frac{z_X^2 z_Y^2}{z_X^2 + z_Y^2}.
-\end{equation*}
-Equivalently, $1/T_{\mathrm{SMR}} = 1/z_X^2 + 1/z_Y^2$, indicating that both the caQTL and eQTL signals must be sufficiently strong to yield a significant SMR association. A strong signal for only caQTL/eQTL cannot guarantee a strong signal of causal SMR. 
+where $z_X$ and $z_Y$ are the $z$ statistics of the variant in the exposure and outcome studies. Equivalently, $1/T_{\mathrm{SMR}}=1/z_X^2+1/z_Y^2$, so $T_{\mathrm{SMR}}$ is large only when the variant is strongly associated with both traits; a strong association with only one of them does not produce a significant result. Unlike the IVW and MR-Egger regressions, $T_{\mathrm{SMR}}$ accounts for the sampling error of $\hat{\gamma}$ and thus does not rely on NOME. Its derivation, however, sets the covariance between $\hat{\gamma}$ and $\hat{\Gamma}$ to zero, which holds when the two effects are estimated from independent samples \cite{zhu2016smr}; in our setting, this covariance is determined by the error correlation induced by sample overlap (\nameref{sec:overlap}). Because it uses a single variant, SMR cannot distinguish a causal effect of the exposure from pleiotropy, in which the variant affects the exposure and the outcome through separate pathways \cite{zhu2016smr}. Under the instrumental variable assumptions, including the exclusion restriction, $\hat{\beta}_{\mathrm{SMR}}$ can be interpreted as an estimate of the causal effect.
 
-\noindent Causal SMR and causal IVW both use SNP-specific ratio estimates to estimate the causal effect. Causal SMR uses only the leading caQTL SNP, whereas causal IVW combines ratio estimates across multiple instrumental SNPs using inverse-variance weighting.
+\noindent In our study, for each peak--gene pair we used the lead SNP, the instrument with the smallest nominal caQTL $P$ value, and denote it by $*$. The causal SMR estimate is $\hat{\beta}_{\mathrm{SMR}}=\hat{\Gamma}_*/\hat{\gamma}_*$. Let $p_X$ and $p_Y$ denote the two-sided nominal caQTL and eQTL $P$ values of the lead SNP. We converted them to absolute $z$ statistics, $z_k=\Phi^{-1}(1-p_k/2)$ for $k\in\{X,Y\}$, where $\Phi$ is the standard normal cumulative distribution function, computed $T_{\mathrm{SMR}}$ as above, and obtained the $P$ value from the $\chi^2_1$ distribution. With a single instrument, the causal IVW estimate reduces to the same Wald ratio; causal SMR therefore uses only the lead caQTL SNP, whereas causal IVW combines the ratio estimates of all instruments with inverse-variance weights and accounts for their LD.
 
 \subsection{Causal joint}
 \label{sec:cct}
@@ -140,44 +136,44 @@ The Cauchy combination test (CCT) is an efficient and powerful technique to comb
 \begin{equation*}
 T = \frac{1}{3}\left\{\tan\left[\pi(0.5 - p_{\mathrm{IVW}})\right] + \tan\left[\pi(0.5 - p_{\mathrm{Egger}})\right] + \tan\left[\pi(0.5 - p_{\mathrm{SMR}})\right]\right\},
 \end{equation*}
-where $p_{\mathrm{IVW}}$, $p_{\mathrm{Egger}}$, and $p_{\mathrm{SMR}}$ denote the nominal $P$ values from GLS-IVW, GLS MR-Egger, and SMR, respectively. The combined $P$ value is
+where $p_{\mathrm{IVW}}$, $p_{\mathrm{Egger}}$, and $p_{\mathrm{SMR}}$ denote the nominal $P$ values from causal IVW, causal Egger, and causal SMR, respectively. The combined $P$ value is
 \begin{equation*}
-p_{\mathrm{joint}} = \frac{1}{2}-\frac{\arctan T}{\pi},
+p_{\mathrm{joint}} = \frac{1}{2}-\frac{\arctan T}{\pi}.
 \end{equation*}
-The causal joint results can be understood as the aggregated causal evidence for the studied peak--gene links.
+Under the global null hypothesis, in which all three $P$ values are uniformly distributed, $T$ approximately follows a standard Cauchy distribution even when the individual $P$ values are correlated, because the tail of $T$ is insensitive to their dependence \cite{liu2020cauchy}. This property is important here, because the three tests share instruments and their $P$ values are therefore correlated. Because $T$ is dominated by the smallest individual $P$ values, causal joint aggregates the causal evidence for a peak--gene pair and is powerful when at least one of the three tests provides strong evidence.
 
 
 \subsection{Marginal pseudobulk correlations}
 \label{sec:pseudobulk-correlations}
 
-Within each cell type, we assessed whether peak accessibility and gene expression were correlated across individuals. Following the quality control described in \nameref{sec:data-preprocessing}, we retained individuals with both RNA and ATAC profiles, yielding 335 individuals for naive B cells, 372 for naive CD4 T cells, and 346 for naive CD8 T cells. For each individual, we summed counts across cells of the same type to obtain a pseudobulk count for each peak and each gene. We then normalized the counts to counts per million (CPM) and applied the transformation $\ln(1+10^6 C/L)$, where $C$ is the pseudobulk count for a gene/peak and $L$ is the individual's total count across all gene/peak of within that cell type.
+Within each cell type, we assessed whether peak accessibility and gene expression were correlated across individuals. Following the quality control described in \nameref{sec:data-preprocessing}, we retained individuals with both RNA and ATAC profiles, yielding 335 individuals for naive B cells, 372 for naive CD4 T cells, and 346 for naive CD8 T cells. For each individual, we summed counts across cells of the same type to obtain a pseudobulk count for each peak and each gene. We then normalized the counts to counts per million (CPM) and applied the transformation $\ln(1+10^6 C/L)$, where $C$ is the pseudobulk count for a gene or peak and $L$ is the individual's total count across all genes (for RNA) or all peaks (for ATAC) in that cell type.
 
 \noindent For each candidate peak--gene pair, we calculated Spearman's rank correlation across individuals as
 \begin{equation*}
-\widehat{\rho}_{indivisual}
+\widehat{\rho}_{\mathrm{individual}}
 = \operatorname{Cor}_{\mathrm{S}}(\boldsymbol{A}_1,\boldsymbol{E}_1),
 \end{equation*}
 where $\boldsymbol{A}_1$ and $\boldsymbol{E}_1$ are the log-transformed CPM values for peak accessibility $p$ and gene expression $g$, respectively, ordered by individual. Within each cell type, all pairs had complete observations for the same individuals. We obtained two-sided $P$ values using \texttt{cor.test} in R with \texttt{method="spearman"} and \texttt{exact=FALSE}, which uses a $t$ approximation for $n$ individuals. As described in \nameref{sec:filtering}, we considered pairs with a Benjamini--Hochberg-adjusted $P$ value below 0.1 significant.
+
+\noindent This correlation measures the marginal association between accessibility and expression across individuals within a cell type. Because no covariates were included, it also reflects any factor that varies across donors and affects both measurements, and it is therefore subject to the confounding described in \nameref{S1_Text}. Unlike the causal methods, it uses no genetic information.
 
 
 \subsection{Marginal multiomics}
 \label{sec:wnn-correlations}
 
-We use the marginal multiomics method to evaluate marginal peak--gene associations across 80 metacells derived from a publicly available 10x Genomics 10k PBMC Multiome ATAC and Gene Expression dataset \cite{tenx2020pbmc10k}. In the TRIPOD study \cite{jiang2022tripod}, the authors retained 7,790 cells after quality control and annotated them into 14 cell types using labels transferred from a CITE-seq reference \cite{hao2021seurat}. They normalized the RNA data using sctransform \cite{hafemeister2019sctransform} and the ATAC data using term frequency--inverse document frequency (TF-IDF) \cite{stuart2021signac}, then grouped the cells into 80 metacells using weighted nearest-neighbor (WNN) analysis \cite{hao2021seurat}.
+We used the marginal multiomics method to evaluate marginal peak--gene associations across 80 metacells derived from a publicly available 10x Genomics 10k PBMC Multiome ATAC and Gene Expression dataset \cite{tenx2020pbmc10k}. In the TRIPOD study \cite{jiang2022tripod}, the authors retained 7,790 cells after quality control and annotated them into 14 cell types using labels transferred from a CITE-seq reference \cite{hao2021seurat}. They normalized the RNA data using sctransform \cite{hafemeister2019sctransform} and the ATAC data using term frequency--inverse document frequency (TF-IDF) \cite{stuart2021signac}, then grouped the cells into 80 metacells using weighted nearest-neighbor (WNN) analysis \cite{hao2021seurat}.
 
 \noindent We retained the published metacell assignments. To quantify accessibility at the genomic intervals used in CIMA, we started with the 338,036 CIMA ATAC peaks in hg38, excluded intervals that overlapped another peak in the set, and counted fragments from the 10x dataset over the remaining intervals using Signac's \texttt{FeatureMatrix} \cite{stuart2021signac}. We summed the resulting ATAC counts across cells within each metacell and normalized them to counts per million (CPM) using the total count across retained peaks in that metacell. We then applied a $\log(1+x)$ transformation to both the ATAC CPM values and the supplied RNA values.
 
 \noindent For each candidate peak--gene pair, we calculated Spearman's rank correlation across all 80 metacells as
 \begin{equation*}
-\widehat{\rho}_{celltype} =
+\widehat{\rho}_{\mathrm{metacell}} =
 \operatorname{Cor}_{\mathrm{S}}\left(
 \boldsymbol{A}_2,
 \boldsymbol{E}_2
 \right),
 \end{equation*}
-where $\boldsymbol{A}_2$ and $\boldsymbol{E}_2$ contain the transformed accessibility values for peak $p$ and expression values for gene $g$, respectively, in the same metacell order. The correlations could reflect differences in accessibility and expression across cell types. 
-
-\noindent The same 80 metacells profile was not cell type specific, so a peak--gene pair tested in different cell types had the same correlation estimate and nominal $P$ value by the marginal multiomics method.
+where $\boldsymbol{A}_2$ and $\boldsymbol{E}_2$ contain the transformed accessibility values for peak $p$ and expression values for gene $g$, respectively, in the same metacell order. Because the metacells span 14 immune cell types, this correlation reflects differences in accessibility and expression between cell types as well as variation within them. Cell identity can therefore act as a confounder of the within-cell-type relationship (\nameref{S1_Text}). The metacells are also not specific to the cell type being analyzed, so a peak--gene pair tested in different cell types had the same correlation estimate and nominal $P$ value.
 
 \subsection{Filtering and multiple testing}
 \label{sec:filtering}
@@ -227,20 +223,14 @@ We performed motif enrichment analysis to determine whether transcription factor
 Genetic variant associations can be coded with respect to either the major or the minor allele. While IVW estimates are invariant to allele orientation, MR-Egger estimates can change. Following standard practice for MR-Egger \cite{bowden2015egger,burgess2017interpreting}, before fitting causal IVW and causal Egger we flipped the sign of $\hat{\gamma}_j$ and $\hat{\Gamma}_j$, together with the corresponding row and column of $\boldsymbol R$, for every SNP with $\hat{\gamma}_j<0$, so that all SNP--exposure associations were positive. Under this convention, directional pleiotropy is defined with respect to the accessibility-increasing allele \cite{bowden2015egger,burgess2017interpreting}. We compared causal Egger with and without this orientation across 176,545 pairs (\nameref{S2_Fig}).
 
 
-\subsection{Sensitivity analysis for sample overlap}
+\subsection{Error correlation due to sample overlap}
 \label{sec:overlap}
-Consider the two marginal models of the caQTL and eQTL studies, which provide the exposure and outcome associations in the MR framework. For each SNP separately, the marginal associations can be represented as
-\begin{align*}
-X_i &= \mu_{Xj} + \gamma_j G_{ij} + \varepsilon_{ij}^{X}, \\
-Y_i &= \mu_{Yj} + \Gamma_j G_{ij} + \varepsilon_{ij}^{Y},
-\end{align*}
-where \(\mu_{Xj}\) and \(\mu_{Yj}\) are intercepts, and \(\gamma_j\) and \(\Gamma_j\) are the population-level SNP--exposure and SNP--outcome associations, respectively. MR study is usually base on Two-Sample data, where the SNP-exposure estimates and SNP-outcome estimates come from two independent but homogeneous samples \cite{burgess2016overlap}. In this ways, the residuals $\varepsilon_{ij}^{X}$ and $\varepsilon_{ij}^{Y}$ are independent. However, in our study, caQTL and eQTL come from the same population, leading to some potential bias. In order to measures of the bias, we do the following sensitivity test for each of cell types separately.
+Two-sample MR typically uses SNP--exposure and SNP--outcome associations from independent samples \cite{burgess2016overlap}, whereas our caQTL and eQTL summary statistics were both derived from the CIMA cohort (sample sizes in \nameref{S3_Table}). Most individuals therefore contributed to both analyses, and our setting is close to a one-sample design. In \nameref{S1_Text} (``Sample overlap and measurement error''), we show that sample overlap affects the IVW estimate only through the correlation $\rho_j$ between the estimation errors of $\hat{\gamma}_j$ and $\hat{\Gamma}_j$, and only to the extent that the NOME assumption is violated. To first order, the resulting bias is of order $1/\bar{F}$, where $\bar{F}$ is the average caQTL $\chi^2$ statistic of the instruments; for our instruments, all caQTL $\chi^2$ statistics exceeded 32.8 (nominal $P<10^{-8}$). To assess the magnitude of $\rho_j$ empirically, we estimated it from SNPs with no detectable association with either trait (null SNPs), separately for each cell type.
 
-\noindent We first performed LD pruning (\texttt{--indep-pairwise 500kb 50 0.1}, MAF $\geq 0.01$, with MAF computed in the reference panel) on the caQTL variants on chromosomes 1--22 that matched the EAS reference panel. We further selected SNPs under the null (caQTL nominal $P>0.05$ and eQTL nominal $P>0.05$). The marginal associations are under the null, there is no evidence to prove the marginal associations ($\gamma_j$ and $\Gamma_j$) are nonzero values. Therefore, we can use the correlation of Z scores to approximate the correlation of residuals:
-
+\noindent We first performed LD pruning (\texttt{--indep-pairwise 500kb 50 0.1}, MAF $\geq 0.01$, with MAF computed in the reference panel) on the caQTL variants on chromosomes 1--22 that matched the EAS reference panel. For each peak--gene pair, we then retained the pruned SNPs with nominal $P>0.05$ in both the caQTL and eQTL analyses as null SNPs and computed their $z$-scores,
 \begin{equation*}
 z_{Xj} = \frac{\hat{\gamma}_j}{s_{Xj}}, \qquad z_{Yj} = \frac{\hat{\Gamma}_j}{s_{Yj}}.
 \end{equation*}
+For a SNP with no effect on either trait, $\operatorname{Corr}(z_{Xj},z_{Yj})=\rho_j$ (\nameref{S1_Text}), so the correlation of the two $z$-scores across null SNPs estimates the error correlation. Because $\rho_j$ depends on the SNP only through the sample sizes, this estimate also applies, to first order, to the instruments of the same pair.
 
-
-\noindent We calculated the genome-wide correlation of $z_{Xj}$ and $z_{Yj}$ for each cell type by pooling all (pair, SNP) observations: 17,074,938 (Bn cells), 33,263,695 (CD4 T cells) and 21,537,822 (CD8 T cells) observations. We also calculated the correlation of $z_{Xj}$ and $z_{Yj}$ for each peak--gene pair with more than two SNPs after LD pruning (547,452, 1,051,953 and 686,829 pairs, respectively), tested with a $t$ test with $n-2$ degrees of freedom. In this analysis, alleles were aligned by flipping the sign of the eQTL slope for variants with reversed alleles, rather than by removing them as in the main MR analysis. The distributions of correlations and $P$ values are shown in \nameref{S1_Fig}.
+\noindent We estimated this correlation in two ways. First, for each cell type, we pooled all (pair, SNP) observations: 17,074,938 (Bn cells), 33,263,695 (CD4 T cells), and 21,537,822 (CD8 T cells) observations. Because the same SNP can appear in several pairs, these observations are not independent. Second, we calculated the correlation separately for each peak--gene pair with more than two null SNPs (547,452, 1,051,953, and 686,829 pairs, respectively) and tested it with a $t$ test with $n-2$ degrees of freedom, where $n$ is the number of null SNPs in the pair. In this analysis, alleles were aligned by flipping the sign of the eQTL slope for variants with reversed alleles, rather than by removing them as in the main MR analysis. The distributions of the pair-specific correlations and $P$ values are shown in \nameref{S1_Fig}.

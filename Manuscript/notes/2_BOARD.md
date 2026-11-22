@@ -195,6 +195,11 @@
 
 ### Results R1
 
+#### 【工作卡】R1 扩写（2026-11-21/22）
+- 作者已定：R1 约 6–7 段、800–1000 词；公式只留模型式和 SMR 比值；R1 / Methods / S1 Text 之间可以重复（换说法）；sample overlap 不写人数；Methods 该节改名为 "Error correlation due to sample overlap"。分两步：第 1 步 R1（已完成 W2），第 2 步 Methods M3–M8（含按 Zhu 2016 重写 SMR，已完成 W2，2026-11-22；快照 `../tmp/ms_rounds/20261122_methods/`）。
+- Q1【新】R1-P3 写了 null SNP 的 z 相关 "was small in all three cell types"——这是在 Results 报告 S1 Fig 的结果，可以吗？作者：可以。
+- Q2【新】R1-P1 的 IV 理由 "alleles are randomly allocated at meiosis" 是标准表述，Introduction 已提 Mendel's laws；保留还是删？作者：保留。
+
 - 已定：
   - R1-P1 用一两句话定义类别名、$P_{\mathrm{adj}}$ 和 MR-only，并写 "see Methods"（作者要求：读者在 Results 开头就要明白这些术语）。
   - R1-P3 用 24.1%（单个扇区），写清是“只与 marginal multiomics 不一致”。
@@ -329,6 +334,12 @@
 - 遗留问题："MR study is usually base on Two-Sample data …"、"Let's recall" 这类口语，润色时改写。
 
 ### S1 Text
+
+#### 【工作卡】Sample overlap + NOME（S1 Text、M17、Discussion D5/D6；W1 2026-11-21）
+- 依据：`../tmp/sample_overlap_revision_brief.md`；推导链 ρ_ε → ρ_j → Cov(γ̂_j, ε_j) = ρ_j s_Xj s_Yj − β s_Xj² → bias ≈ (κβ̃ − β)/F̄。核心：overlap 只通过违反 NOME 产生偏倚，严格 NOME 下无偏，实际为 O(1/F)。
+- 作者已定：删独立的 NOME 小节，新小节 "Sample overlap and measurement error" 放在 IVW 一致性之后、开头先讲 NOME；Egger 只说明受 I²_GX 支配（引 bowden2016nome），不给数字；符号由 Claude 统一（Z → G，Fig A 误差 ξ，"MR model" 结构方程改为 ψ_Y U_i + ξ_{Yi}，MR 残差沿用 ε_j，全部估计值带 hat）；Discussion 合并两段、不写具体数字、LIML 压缩成一两句；M17 整节重写，与 S1 Text 呼应；不写 CIMA QTL 协变量。
+- Q1【新】S1 Fig 图注补全局 ρ̂（0.0035 / 0.0060 / 0.0053）可以吗？作者：
+- Q2【新】S3 Table 脚注 "partial sample overlap" 改为 "substantial … (at least 361–363 donors in both)" 可以吗？作者：
 
 - 遗留问题（2026-11-02 润色后留下）：
   - NOME 小节最后一句 "All instruments in this study had caQTL nominal P < 10⁻⁸" 只陈述事实，要不要保留？
