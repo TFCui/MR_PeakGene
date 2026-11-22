@@ -20,9 +20,10 @@
 | 类别名         | Methods 和 Results 的开头各定义一次："We refer to the four MR-based tests (…) collectively as the causal methods, and to the two correlation-based methods as the marginal methods." 不写 "our causal methods"（这些方法不是本文提出的）；本文的贡献落在框架上（"an MR framework for peak–gene linking"），框架不起短名字 |
 | 显著性         | $P_{\mathrm{adj}}$ = 每个 gene 内部、每个方法分别做 BH 后的 P 值，用宏 `\q`；全文写 `$\q<0.1$`；名义 P 写斜体 *P*。不写 p.adj、FDR、q；DAVID 自己的 FDR 写 "DAVID FDR"                                                                                                                                              |
 | peak / enhancer | 生物学概念和小节标题写 "enhancer–gene"（与论文标题、Abstract、Intro、Discussion 一致，2026-11-20 作者决定）；被检验的单位写 "peak–gene pair"，显著的写 "link"；首次出现写 "chromatin accessibility peak" |
-| pair / link    | 被检验的单位写 "peak–gene pair"，显著的 pair 写 "link"                                                                                                                                                                                                                                                                     |
+| pair / link    | 被检验的单位写 "peak–gene pair"，显著的 pair 写 "link"；marginal 方法估计的量写 "peak–gene association"；eRegulon 沿用 "region–gene pair"。不写 linkage（易与 genetic linkage / LD 混淆）、edge、causal link（2026-11-22）                                                                                                                                                                                                                                                                     |
 | GWAS           | 只报告 7 个疾病：AS、CD、IBD、RA、SLE、MS、T1D，统称 "immune-mediated diseases"（不写 "blood traits"）；S-LDSC 实际跑了 9 个，asthma 和 PBC 不报告                                                                                                                                                                          |
 | GO             | 只写 DAVID 过表示分析                                                                                                                                                                                                                                                                                                       |
+| 时态           | 默认一般现在时；我们做过的操作、得到的结果、前人研究用过去时（细则见 1_WORKFLOW 4.4；2026-11-22 全文核对） |
 | 格式           | 基因符号斜体；科学计数写 `$6.1\times10^{-4}$`；美式拼写（center）；图写 `Fig~\ref{fig:overview}B`，表写 `Table~\ref{tab:motif}`，补充条目写 `\nameref{S1_Fig}`                                                                                                                                                      |
 | 参考文献       | PLOS 数字编号（`\cite{}`）；正文不写作者名（不写 "X et al." 和年份），引用跟在论断 / 工具名 / 研究名后（如 `Signac \cite{…}`、`the TRIPOD study \cite{…}`）；只有 S4 Table 来源列保留 "Author et al.~\cite{…}"；缺的地方写 `[CITE: 论断]` |
 
@@ -80,19 +81,22 @@
 
 | 小节 | 标题 | 段 | 每段一句话 | 状态 |
 | ---- | ---- | -- | ---------- | ---- |
-| R1 | A Mendelian randomization framework for causal enhancer–gene inference | P1–P5 | 框架（IVW / Egger 模型、SMR、Cauchy 合并）、CIMA 三个细胞类型、两种 marginal 对照 → Fig 1A | 标题已改（11-20） |
-| R2 | Concordance and discordance between causal effects and marginal associations | P1 | 候选 pair 数、CD4 link 数、1,259 个 link 的方向比较 → Fig 1B–C、S3 Fig | 标题已改（11-20） |
-| | | P2 | *SIDT2* / *RPL11* / *ERAP2* / *ARPC1B* 四个例子和解释 → Fig 2 | |
-| R3 | Orthogonal regulatory evidence for MR-inferred enhancer–gene links | P1 | Manhattan 比较，定义 MR-only → Fig 3A、S7 Fig | 结构已调（11-20） |
-| | | P2 | MR-only 基因的 DAVID GO → Fig 3B | |
-| | | P3 | CIMA eRegulon 重叠，MR 方法 OR 更高 → Fig 3D、S8 Fig | |
-| | | P4 | Motif（原 R5 P1，首句改为承接 eRegulon）：前景 / 背景、47 个 MR-specific motif、Table 1 依赖 Egger | 11-20 并入 |
-| | | P5 | Motif 例子：MNT、ATF3、FOSL2::JUND 等 | 11-20 并入 |
-| | | P6 | 6 个外部参考：SMR 17/18 fold 最大；MR-only 的 HiChIP 3.28 倍 → Fig 3C、S5 Fig、S1 / S2 Table | |
-| R4 | Heritability enrichment and candidate target genes for immune-mediated diseases | P1 | S-LDSC：MR-only peak 富集更高，4 个疾病 P < 0.1 → Fig 4A | 标题已改（11-20） |
-| | | P2–P3 | GWAS 例子 *ERAP1* / *ERBB3* / *THBS3* → Fig 4B | |
+| R1 | A Mendelian randomization framework for causal enhancer–gene inference | P1–P7 | IV 理由 → causal IVW / Egger（模型式、GLS、一致性、InSIDE、φ）→ NOME 与 sample overlap（S1 Fig）→ SMR / joint → CIMA 数据 → 两种 marginal 方法的思路 → 术语 → Fig 1A | 已扩写（11-22） |
+| R2 | Concordance and discordance between causal effects and marginal associations | P1 | 候选 pair 数；CD4 各方法 link 数；multiomics 多（回扣 S1 Sec 1，可能有细胞类型混杂）；MR-only 定义与 4,749；870 组合；S4 Fig 共享比例 → Fig 1B、S3 Fig、S4 Fig | 已润色（11-22），待作者看 |
+| | | P2 | 1,259 个 link 的方向：MR 之间一致；不一致集中在 metacell 相关（25.7% vs 2.9%，Bn / CD8 比例）→ Fig 1C、S3 Fig | |
+| | | P3 | S6 Fig：全部 pair 上 IVW 与 pseudobulk r 0.24–0.30、与 multiomics 0.03–0.04；MR 之间 0.55–0.87 | 11-22 新增 |
+| | | P4 | *SIDT2* / *RPL11* / *ERAP2* / *ARPC1B* 四个例子（只描述）→ Fig 2 | |
+| | | P5 | 机制：跨细胞类型 / donor 的共同变异；混杂掩盖（*RPL11*、*ARPC1B*，S1 Sec 1）；marginal 相关不能确立因果 | 11-22 从 P4 拆出 |
+| R3 | Orthogonal regulatory evidence for MR-inferred enhancer–gene links | P1 | Fig 3A 描述（信号强度、头部基因差异，不写含义）→ S7 Fig | 已润色（11-22），按 panel 顺序重排 |
+| | | P2 | GO（重写）：转录调控、RNA 加工（*SRSF7* / *DDX5*）、泛素化（*UBE2N*）+ 全基因组背景限定 → Fig 3B | |
+| | | P3 | 6 个外部参考 × 各方法（S1 Table 都富集；S2 Table SMR fold 17/18 最大、multiomics 18/18 最小；P 值受 link 数影响） | |
+| | | P4 | MR-only 与参考：HiChIP 8 组都在对角线上方，3.28 倍；其余 5 个参考 1.89–2.87 → Fig 3C、S5 Fig | |
+| | | P5 | CIMA eRegulon OR（$\q<0.05$，Fisher）→ Fig 3D、S8 Fig | |
+| | | P6–P7 | Motif：47 个 MR-specific，Table 1 全部由 Egger 选出（等位方向句已删）；MNT、ATF3、FOSL2::JUND；R3 收尾句（Claude 草拟，待作者确认） | |
+| R4 | Heritability enrichment and candidate target genes for immune-mediated diseases | P1 | S-LDSC：全部 peak 本身富集；MR-only 点估计更高，4 个 P < 0.1；覆盖 0.25% vs 15.1%；收尾句（Claude 草拟）→ Fig 4A | 已润色（11-22） |
+| | | P2–P4 | 选例依据（24 个 strong MR-only + GWAS link）；*ERAP1* / *ERBB3* / *THBS3* 各一段，统一为 位点 → 已有证据 → MR β、$\q$、marginal 不显著 → 含义 → Fig 4B | |
 
-**Discussion**（`sections/discussion.tex`）：作者 11-18 在 Overleaf 写成 4 段：D1 研究概述 → D2 验证结果总结 → 局限 First 样本重叠（S1 Fig）→ Second 强工具变量、弱工具变量、NOME。原 “allele orientation” 段 11-20 移到 Methods 的 Allele orientation 小节。状态：作者初稿，待润色。
+**Discussion**（`sections/discussion.tex`）：3 段：D1 研究概述 → D2 验证结果总结 → 局限 First：样本重叠与 NOME 合并论述（同一个协方差、偏倚 ∝ 1/F、强工具变量为主、S1 Fig 为辅；末尾 LIML 两句和 independent cohorts 一句）。原 “allele orientation” 段 11-20 移到 Methods 的 Allele orientation 小节。状态：3 段已润色（11-22，待作者看）：D1 加核心发现（MR 与 metacell 相关基本无关、与 donor 相关较一致）；D2 按 Results 改正 GO 主题、去掉 “strong biological support” / “therapeutic intervention”，补 S-LDSC；局限段只改两句。作者决定暂不补写新段落。
 
 **Methods**（`sections/methods.tex` + `data_preprocessing.tex`）
 
@@ -101,13 +105,13 @@
 | M1 Data sources                      | 2  | CIMA 数据；外部 PBMC multiome；三个细胞类型及标签                     | 已润色（11-02）    |
 | M0b Study design and terminology     | 2  | 框架；类别名、$P_{\mathrm{adj}}$、pair / link、MR-only 的定义       | 已润色（11-02）    |
 | M2 Data Preprocessing                | 4  | 候选 pair → 工具变量 → 等位与去重 → LD 矩阵                        | 已润色（11-02）    |
-| M3 Mendelian randomization           | 4  | 一般定义和三条假设 → 记号 → MR-Egger 式（α₀ = 0 即 IVW）→ 本研究 | 已润色（11-02）    |
-| M4a Causal IVW                       | 4  | LD → GLS；记号；截断（Eckart–Young）；推断                          | 已润色（11-02）    |
-| M4b Causal Egger                     | 1  | 加截距的 GLS、推断                                                    | 已润色（11-02）    |
-| M5 Causal SMR                        | 2  | lead SNP、比值、由 P 反推 z、T_SMR、不做 HEIDI                        | 未动（有作者意见） |
-| M6 Causal joint                      | 1  | CCT 的公式与尾部近似                                                  | 已调结构           |
-| M7 Marginal pseudobulk               | 2  | count 矩阵 → 个体过滤 → ln(1 + CPM) → Spearman                     | 已调结构           |
-| M8 Marginal multiomics               | 3  | 外部数据（TRIPOD：7,790 细胞、14 类型、80 个 WNN metacell）；重新计数；Spearman | 已补写（11-09）    |
+| M3 Mendelian randomization           | 5  | 三条假设 → 为什么能避开混杂（S1 Text）→ 记号、NOME 与 overlap 偏倚 → MR-Egger 式 → IVW 偏倚条件、InSIDE | 已补充（11-22）    |
+| M4a Causal IVW                       | 4  | LD → GLS；记号、Σ 只含 Γ̂ 的误差；截断（参数、Eckart–Young）；推断、φ̂ 只放大 SE、φ̂ > 10 | 已补充（11-22）    |
+| M4b Causal Egger                     | 3  | 加截距的 GLS → 等位对齐、相关变异的 InSIDE、对测量误差更敏感 → 推断 | 已补充（11-22）    |
+| M5 Causal SMR                        | 2  | 基本 SMR（比值、T_SMR、不依赖 NOME、假设两样本独立、不能区分多效性）→ 本研究的算法（lead SNP、P → z、χ²₁）、与 IVW 的关系 | 已重写（11-22）    |
+| M6 Causal joint                      | 1  | CCT 的公式；相关 P 值下仍有效；由最小 P 值主导 | 已补充（11-22）    |
+| M7 Marginal pseudobulk               | 3  | count 矩阵 → 个体过滤 → ln(1 + CPM) → Spearman → 边际关联、无协变量、含混杂 | 已补充（11-22）    |
+| M8 Marginal multiomics               | 3  | 外部数据（TRIPOD：7,790 细胞、14 类型、80 个 WNN metacell）；重新计数；Spearman | 已补充（11-22）    |
 | M9 Filtering and multiple testing    | 1  | 删 NA → $\hat\phi \le 10$ → joint → gene 内 BH                   | 已调结构           |
 | M10 Hypergeometric enrichment        | 7  | 6 个参考；计数定义；pooled 检验；三种分析（各方法 × CT → S1/S2 Table；MR-only 3 CT 合并 → Fig 3C / S5；按 K/N 分 8 组 + bootstrap CI） | 已重写（11-09），待润色 |
 | M11 Gene ontology analysis           | 1  | DAVID 输入、类别、作图规则                                            | 已调结构           |
@@ -116,53 +120,52 @@
 | M14 GWAS overlap                     | 1  | strong MR-only link + GWAS P < 5e-8                                   | 已调结构           |
 | M15 Motif enrichment                 | 1  | 前景、背景、motif 集、检验和阈值                                      | 已调结构           |
 | M16 Allele orientation               | 1  | flip 操作；IVW 不受影响、Egger 受影响                                 | 已调结构           |
-| M17 Sensitivity: overlapping samples | 4  | 两个边际模型 → pruning 和 null SNP → 全局和逐 pair 相关             | 已调结构           |
+| M17 Error correlation due to sample overlap | 3 | 动机（同一 cohort、偏倚 ∝ 1/F̄）→ null SNP 的 z 相关估计 ρ_j → pooled 与逐 pair 两种估计 | 已重写（11-21）    |
 
-**Supplementary：S1 Text**（`sections/s1_text.tex`，承接 M3–M4，2026-11-02 重组）
+**Supplementary：S1 Text**（`sections/s1_text.tex`，承接 M3–M4、M17，2026-11-02 重组，2026-11-21 改写）
 
 | 小节                                                     | 承接正文       | 状态            |
 | -------------------------------------------------------- | -------------- | --------------- |
-| S1.1 MR model and summary statistics                     | M3             | 已润色（11-02） |
-| S1.2 The NOME assumption                                 | M3             | 已润色（11-02） |
-| S1.3 Inverse-variance weighted method                    | M3 / M4a       | 已润色（11-02） |
-| S1.4 Consistency of the IVW estimator                    | M3             | 已润色（11-02） |
-| S1.5 MR-Egger regression and the InSIDE assumption       | M3 / M4b / M16 | 已润色（11-02） |
-| S1.6 Correlated variants                                 | M4             | 已润色（11-02） |
-| S1.7 Multiplicative random effects and overdispersion    | M4a–b / M9    | 已润色（11-02） |
-| S1.8 Truncated eigendecomposition for the GLS estimators | M4a            | 已润色（11-02） |
+| S1.1 Marginal association and causal effect（Fig A）       | M3、M7、M8、R1 | 已写（11-20），符号改为 G / ξ（11-21） |
+| S1.2 MR model（样本集合、残差相关）                        | M3             | 已改写（11-21） |
+| S1.3 Inverse-variance weighted method                      | M3 / M4a       | 已润色（11-02） |
+| S1.4 Consistency of the IVW estimator                      | M3             | 已润色（11-02） |
+| S1.5 Sample overlap and measurement error（含 NOME）       | M3、M17、R1-P3、Discussion | 新增（11-21） |
+| S1.6 MR-Egger regression and the InSIDE assumption         | M3 / M4b / M16 | 已润色（11-02），恢复 hats（11-21） |
+| S1.7 Correlated variants（含 LD 交叉项）                   | M4             | 已润色（11-02），补一句（11-21） |
+| S1.8 Multiplicative random effects                         | M4a–b / M9    | 已润色（11-02） |
+| S1.9 Stabilizing GLS estimation via eigenvalue truncation  | M4a            | 已润色（11-02） |
 
 ### 2.3 信息在哪里
 
 **定义和关键数字**（首次给出的位置 → 其他出现的位置）：
 
-- 类别名、$P_{\mathrm{adj}}$、MR-only：M0b → R1-P1（短版）。strong MR-only：M14 → R4-P2。MR-specific motif：M15 → R5-P1。GRN 阈值 0.05：M12 → R3-P2、Fig 3E caption。
-- 候选 pair 数 40,087 / 85,527 / 50,931：R1-P2（Methods 不再写）、S3 Table。
-- pseudobulk 335 / 372 / 346 人：R1-P1、M7。80 个 metacell：R1-P1、M8。
-- caQTL $P<10^{-8}$、clumping 参数：M2。$\hat\phi \le 10$：M9、S1.7。
+- 类别名、$P_{\mathrm{adj}}$、MR-only：Methods Terminology → R2-P1（MR-only 的短版定义和 4,749）。strong MR-only：M14 → R4-P2。MR-specific motif：M15 → R3-P6。GRN 阈值 0.05：M12 → R3-P5、Fig 3D caption。
+- 候选 pair 数 40,087 / 85,527 / 50,931：R2-P1（Methods 不再写）、S3 Table。
+- pseudobulk 335 / 372 / 346 人：M7、S3 Table。80 个 metacell：R1-P6、M8。
+- caQTL $P<10^{-8}$、clumping 参数：M2；$P<10^{-8}$ 也在 R1-P1 / P3、M17、S1.5（χ² > 32.8、1/F̄ ≲ 3%）、Discussion。$\hat\phi \le 10$：M4a、M9、S1.8。
+- sample overlap：不写人数（R1、M17、Discussion、S3 Table 脚注）；全局 ρ̂ 0.0035 / 0.0060 / 0.0053 只在 S1 Fig 图注。
 
-**图表引用**（2026-11-04；`\TODO` 里的提及不算引用）
+**图表引用**（2026-11-22 更新；`\TODO` 里的提及不算引用）
 
 | 条目             | 被引用的位置                                 |
 | ---------------- | -------------------------------------------- |
-| Fig 1A / 1B / 1C | R1-P1 / R1-P2、R3-P2 / R1-P3                 |
-| Fig 2A–D        | R2-P2（A、B）、R2-P3（C）、R2-P4（D）        |
-| Fig 3A           | **未引用**                             |
-| Fig 3B / 3C      | R3-P1；M11                                   |
-| Fig 3D           | **未引用**                             |
-| Fig 3E           | R3-P2；M12                                   |
-| Fig 4A / 4B      | R4-P1 / R4-P2；M14                           |
-| Table 1          | R5-P1、R5-P2；M15                            |
-| S1 Fig           | D5；M17                                      |
-| S2 Fig           | R5-P1；D6；M16                               |
-| S3 Fig           | R1-P2、R1-P3、R3-P2；Fig 1 caption           |
-| S4 Fig           | **未引用**                             |
-| S5 Fig           | **未引用**（只有 Fig 3D caption 提到） |
-| S6.1–S6.3 Fig   | **未引用**                             |
-| S7.1–S7.3 Fig   | **未引用**                             |
-| S8 Fig           | R3-P2；M12；Fig 3 caption                    |
-| S1 / S2 Table    | R3-P3；M10                                   |
-| S3 Table         | R1-P2                                        |
-| S1 Text          | M3、M4a、M4b                                 |
+| Fig 1A / 1B / 1C | R1-P1、P5 / R2-P1、R3-P5 / R2-P2、R2-P5 |
+| Fig 2A–D        | R2-P4、R2-P5（D） |
+| Fig 3A / 3B / 3C / 3D | R3-P1 / R3-P2 / R3-P4 / R3-P5；M11、M12 |
+| Fig 4A / 4B      | R4-P1 / R4-P2；M14 |
+| Table 1          | R3-P6、R3-P7；M15 |
+| S1 Fig           | R1；Discussion 局限段；M17 |
+| S2 Fig           | M16（Results 中的引用 11-22 随 Egger 等位方向句删除） |
+| S3 Fig           | R2-P1、R2-P2、R3-P5；Fig 1 图注 |
+| S4 Fig           | R2-P1 |
+| S5 Fig           | R3-P4；Fig 3C 图注 |
+| S6 Fig           | R2-P3 |
+| S7 Fig           | R3-P1；Fig 3A 图注 |
+| S8 Fig           | R3-P5；M12；Fig 3D 图注 |
+| S1 / S2 Table    | R3-P3；M10 |
+| S3 Table         | R2-P1 |
+| S1 Text          | R1（多处）、R2-P1、R2-P5；M3–M8、M17；Discussion 局限段 |
 
 ### 2.4 每一部分该写什么、不该写什么
 
@@ -178,8 +181,8 @@
 
 ## 3. 全文层面的问题（作者以后统一处理）
 
-- **标题**：`main.tex` 里的标题是 "Demystifying enhancer-gene linkage …"，要按 1.1 改成 peak 的说法；`\ShortTitle` 还没用上。
-- **未引用的图**：Fig 3A、3D，以及 S4、S5、S6.1–S6.3、S7.1–S7.3 Fig。放在哪里、怎么写由作者决定（见 R1、R3 的遗留问题）。
+- **标题**：`main.tex` 里的标题是 "Demystifying enhancer-gene linkage …"。正文已不再用 linkage（2026-11-22），标题暂按作者意见不动，以后由作者定（候选：enhancer–gene links / regulation；连字符应改为 en dash）；`\ShortTitle` 还没用上。
+- ~~**未引用的图**~~：2026-11-22 已全部在 Results 中引用（见 2.3）。
 - **文献**（2026-11-18 两轮补引已完成）：占位符全部换成 `\cite`；bib 新增 19 条（PMID / DOI 已核对），删 `fang2001cblb`；Methods 新加短小节 “Terminology”（`sec:terminology`，$\q$ 和 MR-only 的定义）。剩余：部分 bib 作者以 "others" 结尾，投稿前确认 PLOS 格式。
 - **软件版本**（3_LEDGER 1.8）：放进 S1 Text 的软件表，还是写在正文各处。
 - **暂缓的数据来源**：
@@ -195,65 +198,45 @@
 
 ### Results R1
 
-#### 【工作卡】R1 扩写（2026-11-21/22）
-- 作者已定：R1 约 6–7 段、800–1000 词；公式只留模型式和 SMR 比值；R1 / Methods / S1 Text 之间可以重复（换说法）；sample overlap 不写人数；Methods 该节改名为 "Error correlation due to sample overlap"。分两步：第 1 步 R1（已完成 W2），第 2 步 Methods M3–M8（含按 Zhu 2016 重写 SMR，已完成 W2，2026-11-22；快照 `../tmp/ms_rounds/20261122_methods/`）。
-- Q1【新】R1-P3 写了 null SNP 的 z 相关 "was small in all three cell types"——这是在 Results 报告 S1 Fig 的结果，可以吗？作者：可以。
-- Q2【新】R1-P1 的 IV 理由 "alleles are randomly allocated at meiosis" 是标准表述，Introduction 已提 Mendel's laws；保留还是删？作者：保留。
-
 - 已定：
-  - R1-P1 用一两句话定义类别名、$P_{\mathrm{adj}}$ 和 MR-only，并写 "see Methods"（作者要求：读者在 Results 开头就要明白这些术语）。
-  - R1-P3 用 24.1%（单个扇区），写清是“只与 marginal multiomics 不一致”。
+  - 2026-11-22 扩写为 7 段（约 1,000 词）：P1 IV 理由（保留 "alleles are randomly allocated at meiosis"）→ P2 causal IVW / Egger（模型式、GLS、截断、一致性条件、InSIDE、等位对齐、φ）→ P3 NOME 与 sample overlap（偏倚 ∝ 1/F；Results 里可以报告 S1 Fig 的结论 "was small"）→ P4 causal SMR / joint → P5 CIMA 数据 → P6 两种 marginal 方法的思路 → P7 术语（类别名、$\q$、link、MR-only，"see Methods"）。
+  - 公式只留 IVW / Egger 的模型式和 SMR 比值，其余性质用文字。
+  - R1、Methods、S1 Text 之间可以重复，当作强调，但要换说法。
+  - sample overlap 不写具体人数（只说同一 cohort、大部分重叠），R1、Methods、S3 Table 都一样。
+- 遗留问题：TensorQTL 待补 [CITE]（Methods M1）。
+
+### Results R2–R4（2026-11-22 审读 + 润色，待作者看；diff：`git diff --no-index ../tmp/ms_rounds/20261122_Results/sections/results.tex sections/results.tex`）
+
+- 已定（作者 11-22 批注）：
+  - R2-P1 放总体结果：各方法 link 数、MR-only 数（4,749）、870 组合、S4 Fig 的共享比例（只报数字，不解释 multiomics 的 91%）；multiomics link 多，只回扣 Introduction / S1 Sec 1 的细胞类型混杂（加限定语）。
+  - MR 方法之间一致写 “consistent across different MR methods”。
+  - S6 Fig 单独成段（R2-P3），支撑 “MR 估计与 marginal 关联基本无关”；不写 “differ substantially”（Abstract 11-18 的决定）。
+  - Fig 2：*RPL11* 的表达范围、*ERAP2* 的双峰分布都不解释；*RPL11* / *ARPC1B* 的 pseudobulk 不显著只回扣 S1 Sec 1 的“掩盖”，不做生物学推测。
+  - Fig 3A 只描述，不写含义。
+  - GO：*SRSF7* / *DDX5* / *UBE2N* 的 term 归属已核对，属实，保留；段末加全基因组背景的限定。
+  - S1 / S2 Table：S1（P 值）中 MR **不**更显著（multiomics link 最多，P 最小），只说 S2 Table 的 fold 更大，并注明 P 值受 link 数影响。
+  - Fig 3D：阈值 0.05（图注已改）；Egger 的两处例外（S8 Fig 中 Bn HQ、CD8 HQ）不单独点出，正文用 “generally”。
+  - Table 1：删去 “Egger 依赖等位方向” 一句（S2 Fig 在 Results 中不再引用）；仍如实写出 6 个都由 Egger 选出、4 个只由 Egger 选出。
+  - Fig 4B：β 来自结果表（LEDGER 1.5）；三个例子各一段、结构平行。
+- 收尾句（Claude 草拟）：R3 末句、R4-P1 的 “likely reflects their small size” 和末句，作者 11-22 已确认。
 - 遗留问题：
-  - P1 有 7 句，是把定义放在段末单独成一组句子，还是把数据介绍缩短？TensorQTL 待补 [CITE]。
-  - P2 要不要给出各方法的发现数（现在只给了 multiomics 的 37,181，数字见 LEDGER 1.2）？"for a fair comparison" 要不要保留？S4 Fig（细胞类型之间的共享）和 S6.1–S6.3 Fig（方法两两的相关）要不要在 R1 引用？
-  - P3：Bn 和 CD8 T cells 的对应比例（LEDGER 1.2）要不要写进正文？
-
-### Results R2
-
-- 已定：*ERAP2* 的 MR 方向是负（已改）；*ARPC1B* 写成 "effect of peak … on *ARPC1B*"（已改）。
-- 遗留问题：
-  - P1 里 "which is reasonable" 想表达什么？为什么一致是合理的？
-  - P2 的 "no clear pleiotropy"（有 `\TODO`）：删掉，还是补算 Egger 截距（属于补分析）？结论句里的 "within the same cell type" 指的是 pseudobulk 吗？
-  - P3 的 "surprisingly" 要不要保留？
-  - P5（有 `\TODO`）：保留这一段，还是并入 P4 的结尾？最后一句强于证据（见 1.3）；“未观测混杂”这个解释是不是作者的观点？
-
-### Results R3
-
-- 已定：R3-P3（超几何）2026-11-01 新增，目前只有事实。
-- 遗留问题：
-  - 小节开头的 `\TODO`：Fig 3A（Miami 图）、Fig 3D（MR-only 与 HiChIP 的校准）、S5 Fig、S7.1–S7.3 Fig（Manhattan 图）需要作者给出要点后再写。小节标题要不要随之调整？
-  - P1：举 *SRSF7*、*DDX5*、*ZNF143*、*IKZF3* 想说明什么？
-  - P2：要不要点出 causal SMR 在 6 个比较中 OR 都最高？要不要提 causal Egger 的例外？
-  - P3：想从这段得出什么结论？要不要和 P2 合并？
-
-### Results R4
-
-- 遗留问题：
-  - P1 的 OneK1K 一句（有 `\TODO`）：删掉，还是由作者提供出处？目前没有结论句，作者想说什么？
-  - P2：~~*UBAC2*（asthma）~~ 2026-11-06 已从 Fig 4B 和正文去掉，换成 *ERAP1*（Bn，CD）；2026-11-10 Fig 4B 换成 ERAP1 / DR1 / ERBB3 / GNAS / TMBIM1 / THBS3，例子句已同步（去掉 RGL2、POLR2E）；Methods 改为 “seven GWAS”。2026-11-11 按作者要求仿 scMultiMap PICALM 段重写为 8 段草稿（导语 + 6 个例子各一段 + 收尾；弱点只在收尾统一交代；旧的 “Although we cannot directly say…” 句删除），待作者微调和润色。
-  - 2026-11-11 第 2 版（作者要求更贴近 scMultiMap，不罗列）：每个例子按 “Fig 4B (位置) shows that … → 已知位点 / 病人表达 / 功能 → 变异位置和 FAVOR / RegulomeDB / GeneHancer / 3D 接触 → 方法补充了什么（细胞类型） → 本文数据（caQTL、方向、marginal 不显著）→ This implies that … may contribute to … risk by …” 写；导语去掉 Methods 式的注释罗列；strong MR-only 的阈值不再在 Results 重写（只写 see Methods）。约 1,900 词，作者会删减。v1 存 `tmp/ms_rounds/r4p2_20261111_v1/`。
-  - 待作者确认的解释句：每段 “nominate … as its target gene” 和 “This implies that … may contribute to … risk by altering the accessibility of this peak and, consequently, the expression of …”（仿 scMultiMap，比 1.3 “只写候选靶基因” 略强，已加 may）；ERBB3 段 “Previous studies … measured ERBB3 in bulk blood or APC” 一句；收尾最后一句。
-  - P2 新增约 20 处 `[CITE: …, PMID]`（文献 PMID 来自 `tmp/Valid6_GWAS/annot/GWAS_example_literature.tsv`，已核对；数据库 FAVOR、RegulomeDB、GeneHancer、Open Targets、ENCODE、CADD）。
-  - 2026-11-11 第 3 版（作者决定）：Fig 4B 和正文只留 ERAP1（Bn）/ ERBB3（CD4 T）/ THBS3（CD8 T）三个例子，删去 DR1 / GNAS / TMBIM1 三段和收尾段 “Several of these loci …”；每段写出 peak 的 hg38 坐标和外部证据的具体数值（HiChIP 计数和 Q、RegulomeDB 等级和概率、FAVOR aPC、GTEx P）；`[CITE]` 全部换成 `\cite`（新增 12 条 bib）；P1 已润色（OneK1K 句删去）。
+  - *ERAP1* 的 peak 同时与 *ERAP2* 相连（β +2.28，强得多且方向相反）；*ERBB3* 的 peak 与 *RPS26* 相连（β −1.23）。审稿人可能质疑 LD / 多效性。作者 11-22 决定暂不处理；写 Discussion 局限段（D4，相邻基因共享 caQTL 变异）时再定。
   - **待办 M14**：Methods GWAS overlap 只写了筛选标准，需补外部注释来源（HiChIP / PCHi-C / EnhancerAtlas / GTEx 同 M10；FAVOR、RegulomeDB、GeneHancer、ENCODE cCRE 用 2026-11 查询；Open Targets 共定位 H4；文献中的 LD 用 1000G EUR，MR SNP 的 LD 用 1000G EAS）。
-
-### Results R5
-
-- 已定：收紧说法，如实写出“6 个都在 causal Egger 中富集、4 个只由 Egger 选出”，并指向 M16 和 S2 Fig。
-- 遗留问题：
-  - P1：要不要加作者的限定句（例如“应谨慎解读”）？
-  - P2：*ATF3* 只点了名，要不要补一句文献（Table 1 已引用）？CD8 T cells 的两个例子和 CENPB 要不要换（文献证据偏弱）？（11-06：Table 1 已全部改引人类研究，motif 不变；MNT（Sézary 综合征）和 TEF（B-ALL 融合）的人类证据偏弱，作者已知。）
+  - Fig 1A 图内 “Median randomization” 由作者在 Figma 里改（图注已改）。
+  - MNT（Sézary 综合征）和 TEF（B-ALL 融合）的人类证据偏弱，作者已知。
 
 ### Discussion
 
 - 遗留问题（原 D0–D8 的候选要点，每段一行；写的时候由作者勾选）：
+  - 11-22 润色：D2 的 “consistently demonstrated strong biological support”、“immune-related functions”（与 GO 结果不符）、“therapeutic intervention” 已改；作者如果想保留治疗靶点的意思，可以写 “may inform future functional studies”。
+  - 局限段以 “First” 开头，但还没有后续；最后如果不补写其他局限（D4 / D6 / D7），就删掉 “First”。
   - 结构：D3 单独成段还是并入 D1？局限分成 D4–D7 四段，还是压缩成两段？
   - D1 主要发现：框架；causal 方法找到的 link 更少；方向一致性（与 pseudobulk 不一致 1.0–3.0%，与 multiomics 不一致 24–26%）；方法之间一致（措辞见 1.3）；SMR 的 OR 和 fold 最高（解释由作者给）。
   - D2 与已有工作的关系：peak–gene linking 方法估计的是 association；分子 QTL 的 SMR / MR 已有先例（对比式写法，不写 first）；与共定位的区别；CIMA 的 GRN；方向不一致主要来自跨细胞类型的相关（解释由作者给）。
   - D3 MR-only link 的生物学信息：GO、motif（依赖 Egger）、S-LDSC（nominal）、GWAS 重叠（没有共定位）。
   - D4 局限：IV 假设；相邻 peak 共享 caQTL 变异（exclusion restriction）；反向因果（没有做 Steiger）；IVW / Egger 的假设。
-  - D5（现有第 1 段）样本重叠：只能说相关的数值很小；“SNP 越多越独立”一句不准确，要删掉或改写；今后工作那句移到 D8。
-  - D6（现有第 2 段）工具变量数、EAS LD 参考、SMR 没有做 HEIDI、等位方向与 Egger："risk factor" 改为 exposure；补 S2 Fig 的规模（LEDGER 1.7）；方向惯例待补 [CITE]。
+  - D5 样本重叠 + NOME（2026-11-21 已合并为一段，已定）：两者作用于同一个协方差，只有违反 NOME 时 overlap 才产生偏倚，约 ∝ 1/F；主要论据是强工具变量，null SNP 的 z 相关很小作辅助；对真正有因果的 pair，残差本身相关，所以不写 “negligible”；不写人数；LIML 压缩成两句；今后工作（independent cohorts）一句暂留段末，写 D8 时再移。
+  - D6 工具变量数、EAS LD 参考、SMR 没有做 HEIDI、等位方向与 Egger："risk factor" 改为 exposure；补 S2 Fig 的规模（LEDGER 1.7）；方向惯例待补 [CITE]。
   - D7 比较与验证的局限：WNN 是外部、跨细胞类型的数据；pseudobulk 没有协变量；S-LDSC 证据弱且祖先不匹配；GRN 不是金标准；GWAS 重叠没有共定位；只看了 3 个细胞类型和 cis；BH 只在 gene 内做。
   - D8 今后工作：两样本 MR；多变量 MR 或 fine-mapping；HEIDI 或共定位；与等位编码无关的 Egger（GRIP）；细胞类型匹配的 multiome；更多细胞类型；模拟研究。结尾句由作者给。
 
@@ -278,8 +261,8 @@
   - 最后一段只写定性结论，不放数字；说法按 1.3（不写 outperform / validate / first）。
 - 遗留问题：
   - P2 跨个体相关的引文作者已换成 `kamal2023granie`、`zhang2026ra`：GRaNIE 是 bulk RNA-seq + ATAC-seq 跨个体（31–45 人的 iPSC-derived macrophages）的 Pearson 相关，可以用；`zhang2026ra`（Front Immunol 2026）在 PubMed 按标题和关键词都检索不到，bib 无 PMID，待作者核对 DOI 以及它是否做了跨个体的 peak–gene 相关。
-  - P3 Xie 2023 的例子没有写基因名（PMC 全文丢了斜体，*Stim2* 未能从正文确认）；作者对照 Fig 1 确认后可把 “one gene” 改为 *Stim2*。原文数字：ATAC r = 0.87（mCG r = −0.87），38 个神经元类型，25,027 个显著相关的 enhancer 中 23,526 个在其他染色体，8 个大类 vs 38 个亚型。
-  - P3 “A correlation across donor-level pseudobulk profiles measures exactly this between-donor association, which can differ from the association within a donor” 是作者的推论，不挂引用。
+  - ~~P3 Xie 2023 的基因名~~：2026-11-22 已写 *Stim2*（PMC10363915 全文确认）。
+  - P3 第 2 轮（11-22，已改，待作者看）：首句保留作者原中心句（改为 “biased or masked”）→ 理论 1 句指向 S1 Sec 1 → 后果句（arise / masked / biased / reversed）→ 三个例子，每个点明 U：Xie 2023 *Stim2*（U = shared upstream regulation，原文用语；不写 co-expression，作者不希望突出）、TRIPOD Fig 2C（U = TF，表达为基因所必需、与 peak 可及性负相关 → 掩盖；不写 trio / conditional 细节）、scMultiMap（U = donor；按原文写 pooled cells，旧稿 “donor-level pseudobulk profiles” 的归属错误已改，作者认可）。例子细节（TRIPOD 两类细胞、ψ_Y > 0、Cov(X,U) < 0）放到 S1 Sec 1 新增段；符号对应是我们的解读。Methods 两个 marginal 小节已指向 S1 Sec 1，不改。
   - P4 “few studies have used MR to estimate the effect of chromatin accessibility at a peak on …”：作者的论断，没有引文；强度由作者定（Discussion D2 要交代分子 QTL 之间的 SMR / MR 先例）。
   - P5 多效性的例子 “through another regulatory element in the same region” 取自 Discussion D4 的要点，作者确认是否保留。
   - P7 末句 “Together, these analyses show how MR … can complement correlation-based peak–gene linking” 是收尾句，由作者定稿。
@@ -299,22 +282,21 @@
 
 ### Methods M3 Mendelian randomization
 
+- 已定（2026-11-22）：M3–M8 各补一两句 S1 Text 的性质（边际斜率含混杂、NOME 与 overlap 偏倚、IVW 偏倚条件、InSIDE、Σ 不含 γ̂ 的误差、截断参数、φ̂ 只放大 SE、Egger 对测量误差更敏感、CCT 在相关下有效、marginal 方法估计的是含混杂的边际关联）。
 - 遗留问题：MR-Egger 式里的误差项写成 $\varepsilon_j \sim N(0, \phi s_{Yj}^2)$（与 S1 Text 一致）。正文要不要只留回归式，去掉误差分布？
 
 ### Methods M4 Causal IVW / Causal Egger
 
-- 遗留问题：
-  - 数学下标 `\text{GLS-IVW}` / `\text{GLS-Egger}` 要不要改成 IVW / Egger？
-  - Eckart–Young 定理要引用 Eckart & Young 1936（并入文献统一处理）。
+- 已定：数学下标已统一为 IVW / Egger；Eckart–Young 已引 `eckart1936approximation`；表示估计值的粗体向量一律带 hat（2026-11-21，与 Results、S1 Text 一致）。
 
 ### Methods M5 Causal SMR
 
-- 遗留问题（作者意见，还没有落实）：参照 `paper_reference/` 中 Zhu et al. 2016 的 Online Methods（"Summary data–based Mendelian randomization analysis"）重写：先讲基本的 SMR，再讲本研究的 causal SMR 怎么算。$\hat\beta_{\mathrm{SMR}}$ 的公式之后，在同一行给出 $T_{\mathrm{SMR}}$；不写 $p=\max(\cdot)$ 这类细节，也不写 Var($\hat\beta$)；直接写 z 统计量和 $T_{\mathrm{SMR}}$ 怎么构造。
+- 已定（2026-11-22 按 Zhu 2016 Online Methods 重写）：第 1 段基本 SMR（单工具变量比值 → $\hat\beta_{\mathrm{SMR}}$ 与 $T_{\mathrm{SMR}}$ 同一行 → $1/T$ 形式 → 计入 $\hat\gamma$ 的误差、不依赖 NOME，但假设 cov($\hat\gamma$, $\hat\Gamma$) = 0，指向 overlap 一节 → 单个 SNP 不能区分因果和多效性）；第 2 段本研究：lead SNP、由 P 反推 z、χ²₁（与 `Scripts/Model/MR_AllPairs.R` 一致）、与 IVW 的关系。不写 Var、不写 P 值下限。
 
 ### Methods M6–M8
 
-- M6：作者意见是“暂时这样”。
-- M7、M8：外部数据的细节见第 3 节，润色时不补。
+- M6：下标改为 causal 名，补 CCT 在相关 P 值下有效的性质（2026-11-22）。
+- M7、M8：外部数据的细节见第 3 节，润色时不补；相关系数下标为 individual / metacell（2026-11-22）。
 
 ### Methods M9 Filtering and multiple testing
 
@@ -329,20 +311,69 @@
 
 - 遗留问题：单独成节，还是并入 M4？
 
-### Methods M17 Sensitivity: overlapping samples
+### Methods M17 Error correlation due to sample overlap
 
-- 遗留问题："MR study is usually base on Two-Sample data …"、"Let's recall" 这类口语，润色时改写。
+- 已定（2026-11-21）：节名改为 “Error correlation due to sample overlap”（`\label{sec:overlap}` 不变）；三段：动机（同一 cohort、接近 one-sample，不写人数；偏倚 ∝ 1/F̄，指向 S1 Text）→ null SNP 的 z 相关估计 ρ_j → 两种估计（pooled 观测不独立；逐 pair t 检验）。只写方法，结果数字放 S1 Fig 图注。
 
 ### S1 Text
 
-#### 【工作卡】Sample overlap + NOME（S1 Text、M17、Discussion D5/D6；W1 2026-11-21）
-- 依据：`../tmp/sample_overlap_revision_brief.md`；推导链 ρ_ε → ρ_j → Cov(γ̂_j, ε_j) = ρ_j s_Xj s_Yj − β s_Xj² → bias ≈ (κβ̃ − β)/F̄。核心：overlap 只通过违反 NOME 产生偏倚，严格 NOME 下无偏，实际为 O(1/F)。
-- 作者已定：删独立的 NOME 小节，新小节 "Sample overlap and measurement error" 放在 IVW 一致性之后、开头先讲 NOME；Egger 只说明受 I²_GX 支配（引 bowden2016nome），不给数字；符号由 Claude 统一（Z → G，Fig A 误差 ξ，"MR model" 结构方程改为 ψ_Y U_i + ξ_{Yi}，MR 残差沿用 ε_j，全部估计值带 hat）；Discussion 合并两段、不写具体数字、LIML 压缩成一两句；M17 整节重写，与 S1 Text 呼应；不写 CIMA QTL 协变量。
-- Q1【新】S1 Fig 图注补全局 ρ̂（0.0035 / 0.0060 / 0.0053）可以吗？作者：
-- Q2【新】S3 Table 脚注 "partial sample overlap" 改为 "substantial … (at least 361–363 donors in both)" 可以吗？作者：
-
-- 遗留问题（2026-11-02 润色后留下）：
-  - NOME 小节最后一句 "All instruments in this study had caQTL nominal P < 10⁻⁸" 只陈述事实，要不要保留？
-  - Correlated variants 小节最后转述了原文的提醒：变异之间都相关时，相关变异的 InSIDE 条件不太可能满足。这对本文不利，保留还是删掉？
+- **工作卡（2026-11-22，S1 Text 重排；W2 已完成，等作者看）**
+  - 作者的决定：
+    - 理论按同一样本 N 推导，开头说明实际样本因各细胞类型、各模态单独 QC 略有不同，同一样本是 overlap 偏倚最大的情况；
+    - 新增第 3 节 "Assumptions: NOME and InSIDE"，放在 MR model 之后、overlap 之前；
+    - S1 Text 标题改为 "Statistical framework of the MR analysis"，各节编号 1–9，正文引用写成 (S1 Text, Section k)；
+    - 目录合成一个列表，不分 Text / Figures / Tables 三组；按 PLOS 惯例保留 S1 Text、S# Fig、S# Table 的名字。
+  - 作者第二轮意见：
+    - 残差相关只写 ρ_ε 一个式子，删去 σ_XY ⇒ β̃ 的推导；
+    - NOME 一节加上强工具变量的论证（\|z\| > 5.73、χ² > 32.8，SE < 18%，并说明这不是严格检验）；
+    - 偏倚部分改为定性解释，定量结论引 Burgess 2016（已核对原文：Eq 3 和摘要），删去自推的 (κβ̃ − β)/F̄。
+  - 节号对应：
+    - 1 Marginal
+    - 2 MR model
+    - 3 Assumptions
+    - 4 Overlap
+    - 5 IVW（含一致性）
+    - 6 MR-Egger
+    - 7 Correlated variants
+    - 8 Random effects
+    - 9 GLS truncation
+  - S1 Text 内部用 `\label{s1sec:*}` 和 `\ref`；正文的节号是手写的。
+  - 第三轮意见（11-22，已改）：
+    - 第 2、5、6 节开头写明这里介绍的是 standard IVW / MR-Egger，causal IVW / causal Egger 是 GLS 推广（Section 7）；
+    - Assumptions 开头改为：NOME 关于数据，作用是让 γ̂ 可当作已知；IVW（工具变量全部有效或平衡多效性）和 MR-Egger（允许方向性多效性）都依赖 InSIDE；
+    - InSIDE 的两种表述并列写出，各给一式：population（α_j ⫫ γ_j，J → ∞）、fixed-instrument-set（cov_v = 0）；
+    - IVW 的 Consistency 段补充分解式 Σv αγ/Σv = cov_v + ᾱ_v γ̄_v，对应这两种表述；
+    - 第 4 节改名 "Sample overlap"，删去 Residual variance 段，Egger 段只说推导类似（多了截距），不再提 SMR；
+    - IVW 和随机效应两节的权重统一为 v_j（删去 w_j）；
+    - 目录中的图表改用短标题（`\caption[...]`），图注正文不变。
+  - 第四轮意见（11-22，已改）：
+    - S1 Section 2 新增 Fig B（TikZ 绘制的经典 MR 图：U 在上方，α_j 为下方虚线弧，G_j–U 之间用打 × 的点线表示独立性）；Fig A 同步改为 U 在上方。
+    - 正文 Methods 的 "Mendelian randomization" 小节（sec:mr-overview）删除，三条 IV 假设的编号列表（lawlor2008mendelian）移到 S1 Section 2，Section 3 开头改为指回它。
+    - 正文 Causal IVW 第一段补定义：exposure / outcome、IV 假设、γ̂_j / s_Xj / Γ̂_j / s_Yj / J、NOME 和偏倚，以及“standard 估计量见 S1 Text 5–6”。
+    - Causal IVW 模型式后补 β、φ 的定义和一致性条件；Causal Egger 补 α_0（平均多效性）、InSIDE 和方向性多效性的说明。
+    - R1 的占位 "(ref method sec)" 改为 (S1 Text, Section 2)。
+  - 第五轮意见（11-22，已改）：S1 Section 4 开头重写 Section 2 的两个边际模型（X_i、Y_i）和残差相关 ρ_ε，承接下文；"Correlation between the estimation errors" 一段补上最小二乘误差的显式写法 δ = Σ_i c_ij ε_ij（c_ij 只取决于基因型，caQTL 和 eQTL 共用）。
+  - 第六轮意见（11-22，已改，正文）：
+    - Methods 的 Causal SMR 删去 "does not rely on NOME" 一句（作者：不提）。
+    - Data preprocessing、Filtering、Terminology 合并为 **Analysis settings**（`data_preprocessing.tex`，在 Data sources 之后，三个 label 都保留），BH 只写一遍。
+    - 阈值按代码统一为 q < 0.1：原 Filtering 写的 "≤ 0.1" 是错的，作者已确认。
+    - "causal / marginal methods" 的定义移进 Analysis settings。
+    - Results R1：
+      - 公式后紧接 α_0 和 IVW / Egger 的区别；LD、InSIDE、φ、NOME 简写，细节指向 Methods / S1；
+      - 删去 SMR 多效性句、"rest on different assumptions"、"We refer to these four tests"、细胞类型句和最后一段；
+      - causal joint 的名字并入 CCT 句；q 在 R2 第一次用阈值处定义。
+    - 细胞类型统一为 Bn / CD4 T / CD8 T cells（Results、图注、Methods 第 128 行、supplementary 图注）；外部数据和文献中的 naive 不改。
+  - 第七轮（11-22，已改）：
+    - S6 Fig 图注语法改正；S3 Fig 标题改为 "Overview of results from the six methods in Bn cells and CD8 T cells."；supplementary 图注里单独写的 "Bn" 都补全为 "Bn cells"。
+    - R1 给 "balanced pleiotropy" 加了一句解释。
+    - Supporting information 列表的标题改为与 supplementary 图表的完整 caption 第一句一致；S1 Text 的描述按现在的 9 节重写；S1 Table 的 "p-values" 改为 "$P$ values"。
+- 已定（2026-11-21）：
+  - 小节顺序：Marginal association and causal effect → MR model → IVW → Consistency of the IVW estimator → **Sample overlap and measurement error**（开头讲 NOME；独立的 NOME 小节已删）→ MR-Egger / InSIDE → Correlated variants → Multiplicative random effects → GLS 截断。
+  - 符号：工具变量 G；Fig A 结构误差 ξ_X、ξ_Y；边际回归残差 ε^X_ij、ε^Y_ij；MR 回归残差 ε_j；"MR model" 结构方程为 ψ_Y U_i + ξ_Yi（U 与 Fig A 相同）；带 hat 为估计值、不带为总体值（全篇，含 Egger 节）；样本集合 𝒮_X、𝒮_Y，N_X、N_Y、N_s，κ = N_s/N_Y，F_j、F̄。
+  - 新小节的结论：overlap 只通过违反 NOME 产生偏倚，严格 NOME 下无偏；bias ≈ (κβ̃ − β)/F̄，本数据 ≲ 3%。Egger 只写受 I²_GX 支配（`bowden2016nome`），不给数字；SMR 只写 lead SNP 也满足 χ² > 32.8（单工具变量比值没有有限矩，不套 1/F̄ 公式）；残差方差额外项的大小写成 eQTL / caQTL 期望 z² 之比（不是 O(1/F)）。
+  - 不写 CIMA QTL 的协变量（PEER / PC），作者自己核对后再定。
+  - S1 Fig 图注写全局 ρ̂（0.0035 / 0.0060 / 0.0053）。
+- 遗留问题：
+  - “Both cases agree with previous analyses of bias due to participant overlap in two-sample MR \cite{burgess2016overlap}” 一句来自对该文结论的记忆，作者核对原文后再保留。
   - Overdispersion 小节 "In our setting, many instruments may affect gene expression through pathways other than …"，这个措辞合适吗？
   - Correlated variants 小节中 causal IVW 的极限式（β + γᵀΨα / γᵀΨγ）是 Claude 推出来的，A.4 原文只给了 Egger 的式子，请作者核对。

@@ -66,13 +66,27 @@
 \renewcommand{\includegraphics}[2][]{%
   \ifdraftfigures\PLOSincludegraphics[#1]{#2}\fi}
 
-% Contents list for S1 Text: \SoneTOC makes each \subsection* of S1 Text also add a
-% contents entry (used only around \input{sections/s1_text}; s1_text.tex is unchanged).
+% Contents list for S1 Text: \SoneTOC numbers each \subsection* of S1 Text (1, 2, ...) and adds
+% a contents entry (used only around \input{sections/s1_text}). A \label after the heading
+% (s1sec:*) refers to the section number, so S1 Text can write Section~\ref{s1sec:overlap}.
+% The main text cites these numbers as fixed text, e.g. (S1 Text, Section 4); see notes/2_BOARD.md 2.3.
+\newcounter{sonesec}
 \makeatletter
 \newcommand{\SoneTOC}{\let\origsubsection\subsection
   \renewcommand{\subsection}{\@ifstar{\SoneSubStar}{\origsubsection}}}
+\newcommand{\SoneSubStar}[1]{\refstepcounter{sonesec}%
+  \origsubsection*{\thesonesec\quad #1}%
+  \addcontentsline{toc}{subsection}{\protect\numberline{\thesonesec}#1}}
+% One contents list: figure and table captions go to the .toc file, listed as "S1 Fig." / "S1 Table."
+\def\ext@figure{toc}
+\def\ext@table{toc}
+\renewcommand*\l@figure{\@dottedtocline{1}{0em}{4.6em}}
+\renewcommand*\l@table{\@dottedtocline{1}{0em}{4.6em}}
 \makeatother
-\newcommand{\SoneSubStar}[1]{\origsubsection*{#1}\phantomsection\addcontentsline{toc}{subsection}{#1}}
+\DeclareCaptionListFormat{plosfiglist}{#2 Fig.}
+\DeclareCaptionListFormat{plostablist}{#2 Table.}
+\captionsetup[figure]{listformat=plosfiglist}
+\captionsetup[table]{listformat=plostablist}
 
 % Supplementary item numbering: S1 Fig, S1 Table, ...
 \renewcommand{\thefigure}{S\arabic{figure}}
@@ -81,7 +95,7 @@
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\theHtable}{supp.\arabic{table}}
 \captionsetup[table]{labelformat=plossupporttable}
-\renewcommand{\contentsname}{Supplementary text}
+\renewcommand{\contentsname}{Contents}
 \renewcommand{\listfigurename}{Supplementary figures}
 \renewcommand{\listtablename}{Supplementary tables}
 
@@ -92,31 +106,29 @@
 \end{center}
 
 \tableofcontents
-\listoffigures
-\listoftables
 \clearpage
 
-\section*{S1 Text. Supplementary Methods}
+\section*{S1 Text. Statistical framework of the MR analysis}
 \label{sec:s1-text}
-\phantomsection\addcontentsline{toc}{section}{S1 Text. Supplementary Methods}
+\phantomsection\addcontentsline{toc}{section}{S1 Text. Statistical framework of the MR analysis}
 {\SoneTOC\input{sections/s1_text}}
 \clearpage
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{Figure_S1.pdf}
-\caption[Correlations between caQTL and eQTL $z$-scores among nonsignificant SNPs]{Correlations between caQTL and eQTL $z$-scores among nonsignificant SNPs.
-Within each cell type, correlations were calculated using LD-pruned SNPs with nominal $P>0.05$ for both the caQTL and eQTL associations, as described in the Methods. These correlations estimate the correlation between the caQTL and eQTL estimation errors, $\rho_j$ (S1 Text, ``Sample overlap and measurement error''). Pooling all (pair, SNP) observations, the genome-wide correlations were 0.0035, 0.0060, and 0.0053 in Bn, CD4 T cells, and CD8 T cells, respectively. 
+\caption[Correlations of caQTL and eQTL $z$-scores among null SNPs]{Correlations between caQTL and eQTL $z$-scores among nonsignificant SNPs.
+Within each cell type, correlations were calculated using LD-pruned SNPs with nominal $P>0.05$ for both the caQTL and eQTL associations, as described in the Methods. These correlations estimate the correlation between the caQTL and eQTL estimation errors, $\rho_j$ (S1 Text, Section~\ref{s1sec:overlap}). Pooling all (pair, SNP) observations, the genome-wide correlations were 0.0035, 0.0060, and 0.0053 in Bn cells, CD4 T cells, and CD8 T cells, respectively. 
 \textbf{A,} Distributions of peak--gene-pair-specific correlation estimates, grouped by the number of SNPs per pair.
 \textbf{B,} Distributions of the corresponding correlation $P$ values.
-Within each group, boxplots are shown side by side for Bn (purple), CD4 T cells (green), and CD8 T cells (orange). The analyses included 547,452, 1,051,953, and 686,829 peak--gene pairs in Bn, CD4 T cells, and CD8 T cells, respectively.}
+Within each group, boxplots are shown side by side for Bn cells (purple), CD4 T cells (green), and CD8 T cells (orange). The analyses included 547,452, 1,051,953, and 686,829 peak--gene pairs in Bn cells, CD4 T cells, and CD8 T cells, respectively.}
 \label{fig:supp-qc}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{Figure_S2.pdf}
-\caption[MR-Egger estimates with and without allele orientation in Bn, CD4 T cells, and CD8 T cells]{MR-Egger estimates with and without allele orientation.
+\caption[MR-Egger estimates with and without allele orientation]{MR-Egger estimates with and without allele orientation.
 Rows show cell types, and each pair of plots is one
 peak--gene pair. \textbf{A,} pairs whose estimates change little with orientation.
 \textbf{B,} pairs whose MR-Egger estimate changes markedly. For each pair, the left plot (No flipping) uses the original allele coding and the right plot (Flipping) orients the pair so that the caQTL effect is positive, as in the MR analysis. Red triangles are SNPs and gray bars are 95\% confidence intervals.}
@@ -126,8 +138,8 @@ peak--gene pair. \textbf{A,} pairs whose estimates change little with orientatio
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{Figure_S3.pdf}
-\caption[Overview of six methods results]{Overview of six methods results
-\textbf{A,} Bn; \textbf{B,} CD8 T cells. In each row, left: UpSet plot of the 15 largest distinct
+\caption[Overview of results from the six methods]{Overview of results from the six methods in Bn cells and CD8 T cells.
+\textbf{A,} Bn cells; \textbf{B,} CD8 T cells. In each row, left: UpSet plot of the 15 largest distinct
 significance combinations across six methods at within-gene BH-adjusted \(\q<0.1\); top bars give the size of each combination, and right bars give the number of significant pairs for each method. Right: among links significant in all six methods, the sign of the causal IVW estimate relative to the signs of the two marginal correlations; the center reports the number of links whose causal SMR, IVW, and Egger estimates agree in sign. }
 \label{fig:supp-bn-cd8}
 \end{figure}
@@ -135,7 +147,7 @@ significance combinations across six methods at within-gene BH-adjusted \(\q<0.1
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{Figure_S4.pdf}
-\caption[Sharing of significant links among Bn, CD4 T cells, and CD8 T cells for each method]{Sharing of significant links among Bn, CD4 T cells, and CD8 T cells for each method.
+\caption[Sharing of significant links across cell types]{Sharing of significant links among Bn cells, CD4 T cells, and CD8 T cells for each method.
 \textbf{A--F,} causal SMR, causal IVW, causal Egger, causal joint, marginal multiomics, and
 marginal pseudobulk. Each diagram is restricted to
 the 14,890 candidate peak--gene pairs that were tested in all three cell types. The circle contains the number of significant pairs (within-gene BH-adjusted P value < 0.1) .  Labels outside each circle give the number of that cell type's links that fall in the 14,890 candidate peak--gene pairs over the total number of links of that method in that cell type. 
@@ -146,7 +158,7 @@ Numbers inside the diagram give the number of links in each region and its perce
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{Figure_S5.pdf}
-\caption[Overlap of MR-only links with functional annotations]{
+\caption[MR-only links and functional annotations]{
 Overlap of MR-only links with functional annotations.
 \textbf{A--F,} GTEx, EnhancerAtlas, FANTOM5, 4DGenome, HiChIP, and PCHi-C, respectively.
 MR-only links were pooled across the three cell types. For each gene and reference
@@ -172,7 +184,7 @@ main text.}
 
 \clearpage
 {\small
-\noindent\textbf{Legend for S6 Fig. Pairwise comparison of effect estimates and signed \(-\log_{10}P\) across methods.} Panels A, B, and C show results for Bn, CD4 T cells, and CD8 T cells, respectively, using all peak--gene pairs tested in each cell type. Causal Joint is omitted because it combines yields no effect estimate.
+\noindent\textbf{Legend for S6 Fig. Pairwise comparison of effect estimates and signed \(-\log_{10}P\) across methods.} Panels A, B, and C show results for Bn cells, CD4 T cells, and CD8 T cells, respectively, using all peak--gene pairs tested in each cell type. Causal joint is omitted because it combines \(P\) values and yields no effect estimate.
 The upper matrix compares MR effect estimates (\(\beta\)) from Causal SMR, Causal IVW, and Causal Egger and Spearman correlation coefficients (\(\rho\)) from Marginal Multiomics and Marginal Pseudobulk. The lower matrix compares signed \(-\log_{10}P\) values, obtained by multiplying \(-\log_{10}P\) by the sign of the corresponding estimate. In both matrices, diagonal panels show the distribution of values for each
 method. Panels above the diagonal report the pairwise Spearman correlation (\(r\)) across all tested peak--gene pairs. Panels below the diagonal show
 two-dimensional kernel density estimates, with the column method on the x-axis and the row method on the y-axis.
@@ -182,9 +194,9 @@ two-dimensional kernel density estimates, with the column method on the x-axis a
 \begin{figure}[p]
 \centering
 \includegraphics[height=0.86\textheight,page=1]{Figure_S6.pdf}
-\caption[Pairwise comparison of results across five methods]{
+\caption[Pairwise comparison of the five methods]{
 Pairwise comparison of effect estimates and signed \(-\log_{10}P\) across five methods.
-\textbf{A,} Bn (40,087 tested peak--gene pairs). The upper matrix compares effect
+\textbf{A,} Bn cells (40,087 tested peak--gene pairs). The upper matrix compares effect
 estimates, and the lower matrix compares signed \(-\log_{10}P\) values.
 Panels B and C appear on the following pages. See the legend for S6 Fig for details.}
 \label{fig:supp-method-cor}
@@ -210,7 +222,7 @@ Panels B and C appear on the following pages. See the legend for S6 Fig for deta
 {\small
 \noindent\textbf{Legend for S7 Fig. Genome-wide distribution of peak--gene
 association signals across six methods.}
-Panels A, B, and C show all tested peak--gene pairs in Bn, CD4 T cells, and
+Panels A, B, and C show all tested peak--gene pairs in Bn cells, CD4 T cells, and
 CD8 T cells, respectively (40,087, 85,527, and 50,931 pairs). Each track
 shows results for one method (Causal SMR, Causal IVW, Causal Egger,
 Causal Joint, Marginal Multiomics, or Marginal Pseudobulk). Each point
@@ -225,8 +237,8 @@ example pairs shown in Fig~2.\par}
 \begin{figure}[p]
 \centering
 \includegraphics[height=0.86\textheight,page=1]{Figure_S7.pdf}
-\caption[Genome-wide association signals of the six methods in Bn, CD4 T cells, and CD8 T cells]{Genome-wide association signals of the six methods in Bn, CD4 T cells, and CD8 T cells.
-\textbf{A,} Bn (40,087 candidate peak--gene pairs). Panels B and C follow on the next pages. See the legend for S7 Fig.}
+\caption[Genome-wide association signals of the six methods]{Genome-wide association signals of the six methods in Bn cells, CD4 T cells, and CD8 T cells.
+\textbf{A,} Bn cells (40,087 candidate peak--gene pairs). Panels B and C follow on the next pages. See the legend for S7 Fig.}
 \label{fig:supp-manhattan}
 \end{figure}
 
@@ -248,16 +260,16 @@ example pairs shown in Fig~2.\par}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{Figure_S8.pdf}
-\caption[Overlap of significant links with the CIMA regulatory network in Bn and CD8 T cells]{
-Overlap of significant links with the CIMA regulatory network in Bn and CD8 T cells.
+\caption[Overlap with the CIMA regulatory network]{
+Overlap of significant links with the CIMA regulatory network in Bn cells and CD8 T cells.
 For each method and cell type, the odds ratio compares the odds of membership
 in the CIMA SCENIC+ regulatory network between significant and nonsignificant
 peak--gene pairs. Significance was defined as a within-gene BH-adjusted
 \(P<0.05\). Odds ratios were calculated using all pairs tested in each cell type, as in Fig~3D for CD4 T cells.
 Light bars show results for eRegulons active in the corresponding cell type
-(864 tested pairs in Bn and 1,364 in CD8 T cells). Dark bars show results
+(864 tested pairs in Bn cells and 1,364 in CD8 T cells). Dark bars show results
 restricted to the subset of those eRegulons classified as high quality in
-the corresponding lineage (817 tested pairs in Bn and 382 in CD8 T cells).}
+the corresponding lineage (817 tested pairs in Bn cells and 382 in CD8 T cells).}
 \label{fig:supp-grn}
 \end{figure}
 \FloatBarrier
